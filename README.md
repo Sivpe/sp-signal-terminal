@@ -51,6 +51,13 @@ news watch updates before and after gold-moving releases.
   BUY-vs-SELL split, equity curve, trade list. Labelled honestly: no
   spread/slippage, reference feed not Exness, in-test bias comes from the
   tested timeframe (live 15m scans use the H1 bias).
+- **Install as app (PWA)** — `manifest.webmanifest` + `sw.js` (network-first,
+  cache only as offline fallback) + generated SP icons; 📲 Install button
+  (Android prompt / iOS instructions). Opens full-screen from the home screen.
+- **Price-level alerts** — on the Terminal: user-set gold levels (stored per
+  device); while the page is open, a cross beeps (rising up / falling down)
+  and vibrates, fires once, then marks itself HIT. Foreground only, stated
+  plainly on the card.
 - **Journal** — daily notes, stored in the browser on that device only.
 - **My MT5 Panel** — load `SP_Scalp_Signal.json` from the SP Gold Scalp
   Panel indicator to see the MT5 signal beside the web desk. (An automatic

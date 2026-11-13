@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SP Gold Trading</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0f17">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SP Gold">
 <style>
 :root{
   --bg:#0b0f17; --panel:#121826; --panel2:#171f30; --line:#232d42;
@@ -137,6 +144,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <div class="pill">Feed: <b id="feedName">connecting…</b></div>
         <div class="pill">Candle closes in <b id="countdown">—</b></div>
         <button class="ghostbtn" id="beepBtn">🔔 Signal beep: OFF</button>
+        <button class="ghostbtn" id="installBtn" style="display:none">📲 Install app</button>
       </div>
     </div>
 
@@ -184,6 +192,16 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <div class="small mt">A scan reads structure, momentum, RSI and volatility on closed candles only, the same rules as your SP Gold Scalp Panel (EMA zone / breakout / range edge). WAIT means no setup passed — that is a result, not an error.</div>
           <div class="err mt" id="feedErr"></div>
         </div>
+      </div>
+      <div class="card mt">
+        <h3>🔔 Price-level alerts <button class="ghostbtn" id="paToggle">Price beeps: OFF</button></h3>
+        <p class="note">Set a gold price. While this page is open on screen, crossing that price beeps and buzzes — up-cross rising tones, down-cross falling tones (same as your signal beeps). Each level fires <b>once</b>, then marks itself HIT. Foreground only: a closed or backgrounded tab cannot beep — that limit is the browser's, and your MT5 notifier stays the tool for away-from-phone alerts.</p>
+        <div class="pillrow mt">
+          <input id="paInput" type="number" step="0.01" min="0" placeholder="e.g. 3900" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:150px">
+          <button class="ghostbtn" id="paAdd">+ Add level</button>
+          <span class="small" id="paMsg"></span>
+        </div>
+        <div id="paList" class="mt"></div>
       </div>
     </section>
 
@@ -292,6 +310,8 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <button class="ghostbtn" id="tdKeyClear">Remove</button>
           <span class="small" id="tdKeyMsg"></span>
         </div>
+        <h3 style="margin-top:22px">Install as an app</h3>
+        <p class="note">Use the <b>📲 Install app</b> button at the top (appears in Chrome on Android), or Chrome menu ⋮ → "Install app". On iPhone: Safari Share → "Add to Home Screen". The site then opens full-screen from its own SP icon. It still needs internet for prices — installed just means faster, cleaner access — and price beeps only sound while the app is open on screen, the browser's rule for all web apps.</p>
       </div>
     </section>
   </main>
@@ -490,6 +510,7 @@ function renderMarket(){
   $("stAtr").textContent=fmt(a);
   $("stAtrSub").textContent=a? ((a/price*100).toFixed(2)+"% of price · "+TF+" bars") : "—";
   drawChart(cs.slice(-90));
+  if(typeof checkPriceAlerts==="function") checkPriceAlerts(price);
 }
 function drawChart(cs){
   var cv=$("chart"), dpr=window.devicePixelRatio||1;
@@ -769,6 +790,89 @@ $("btRun").addEventListener("click", function(){
   }).catch(function(e){ $("btErr").textContent="Backtest failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="▶ Run backtest"; });
 });
+
+/* ================= price-level alerts ================= */
+var PAKEY="sp_price_alerts_v1";
+function loadPa(){ try{ var s=JSON.parse(localStorage.getItem(PAKEY)||"null"); if(s && s.levels) return s; }catch(e){} return {on:false, levels:[]}; }
+var paState=loadPa(), paLastPrice=null, paArmed=false;
+function savePa(){ try{ localStorage.setItem(PAKEY, JSON.stringify(paState)); }catch(e){} }
+function paBeep(up){
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    var t=audioCtx.currentTime, seq= up? [660,880,1100] : [880,700,520];
+    seq.forEach(function(f,i){ var o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=f; o.connect(g); g.connect(audioCtx.destination); var off=i*0.16; g.gain.setValueAtTime(0.12, t+off); g.gain.exponentialRampToValueAtTime(0.001, t+off+0.15); o.start(t+off); o.stop(t+off+0.16); });
+    if(navigator.vibrate) navigator.vibrate([120,60,120]);
+  }catch(e){}
+}
+function armPaAudio(){ if(paArmed) return; try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended") audioCtx.resume(); paArmed=true; }catch(e){} }
+document.addEventListener("pointerdown", function(){ if(paState.on) armPaAudio(); });
+function renderPa(){
+  var tg=$("paToggle"); if(!tg) return;
+  tg.textContent= paState.on? "Price beeps: ON" : "Price beeps: OFF";
+  tg.classList.toggle("on", !!paState.on);
+  var box=$("paList");
+  if(!paState.levels.length){ box.innerHTML='<p class="note">No levels set. Tonight\'s interesting prices, for example: 3900 (round number above) and 3870 (today\'s low area).</p>'; return; }
+  box.innerHTML=paState.levels.map(function(L,i){
+    var dist = paLastPrice? (paLastPrice-L.price) : null;
+    var state = L.hit? '<span style="color:var(--amber)"><b>HIT</b> '+new Date(L.hit).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+'</span>' : '<span style="color:var(--green)">watching</span>';
+    var d = dist===null? "" : ' · gold is '+(dist>=0? "+":"")+dist.toFixed(2)+' from it';
+    return '<div class="kv"><span style="font-size:16px"><b>'+fmt(L.price)+'</b>'+d+'</span><span>'+state+' <button class="ghostbtn" data-rm="'+i+'">✕</button></span></div>';
+  }).join("");
+}
+function checkPriceAlerts(price){
+  if(!price) return;
+  if(paLastPrice===null){ paLastPrice=price; renderPa(); return; }
+  var prev=paLastPrice; paLastPrice=price;
+  if(paState.on){
+    var changed=false;
+    paState.levels.forEach(function(L){
+      if(L.hit) return;
+      var up = prev<L.price && price>=L.price;
+      var dn = prev>L.price && price<=L.price;
+      if(up||dn){ L.hit=Date.now(); changed=true; paBeep(up); $("paMsg").textContent="🔔 Gold crossed "+fmt(L.price)+" going "+(up?"UP":"DOWN")+" — "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh"; }
+    });
+    if(changed) savePa();
+  }
+  renderPa();
+}
+$("paToggle").addEventListener("click", function(){
+  paState.on=!paState.on;
+  if(paState.on){ armPaAudio(); paBeep(true); $("paMsg").textContent="Price beeps ON — that was the test sound."; }
+  savePa(); renderPa();
+});
+$("paAdd").addEventListener("click", function(){
+  var v=parseFloat($("paInput").value);
+  if(!v || v<=0){ $("paMsg").textContent="Type a price first, e.g. 3900."; return; }
+  if(paState.levels.some(function(L){ return !L.hit && Math.abs(L.price-v)<0.001; })){ $("paMsg").textContent="That level is already being watched."; return; }
+  paState.levels.push({price:v, hit:null});
+  paState.levels.sort(function(a,b){ return a.price-b.price; });
+  $("paInput").value=""; savePa(); renderPa();
+  $("paMsg").textContent="Watching "+fmt(v)+(paState.on? "." : " — remember to switch Price beeps ON.");
+});
+$("paList").addEventListener("click", function(e){
+  var b=e.target.closest("[data-rm]"); if(!b) return;
+  paState.levels.splice(parseInt(b.getAttribute("data-rm"),10),1);
+  savePa(); renderPa();
+});
+renderPa();
+
+/* ================= install as app (PWA) ================= */
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(function(){}); }
+var deferredInstall=null;
+window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); deferredInstall=e; var b=$("installBtn"); if(b) b.style.display=""; });
+window.addEventListener("appinstalled", function(){ var b=$("installBtn"); if(b) b.style.display="none"; });
+$("installBtn").addEventListener("click", function(){
+  if(deferredInstall){
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(function(){ deferredInstall=null; var b=$("installBtn"); if(b) b.style.display="none"; });
+  } else {
+    alert("To install SP Gold Trading on your home screen:\n\nAndroid (Chrome): tap the ⋮ menu → \"Install app\" or \"Add to Home screen\".\n\niPhone (Safari): tap the Share button → \"Add to Home Screen\".\n\nAfter that it opens full-screen from its own icon, like an app.");
+  }
+});
+if(!window.matchMedia("(display-mode: standalone)").matches && !window.navigator.standalone){
+  setTimeout(function(){ var b=$("installBtn"); if(b) b.style.display=""; }, 3000);
+}
 
 /* ================= news blackout shield ================= */
 var SHIELD_PRE=30*60000, SHIELD_POST=60*60000, shieldEvents=[];

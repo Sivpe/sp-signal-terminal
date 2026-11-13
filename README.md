@@ -44,6 +44,13 @@ news watch updates before and after gold-moving releases.
   confirmation (otherwise a NO TRADE card is shown). Events come from
   `news-events.json` (ISO times, Phnom Penh), synced each morning from the
   news watch calendar plus hand-seeded Fed/BEA dates.
+- **Backtest** — runs the desk's exact live rules (the live scan and the
+  backtest share one `councilAt` function) over up to 1,000 past OKX/Twelve
+  Data candles per timeframe: one trade at a time, SL counted first when a
+  candle touches both, 96-candle max hold, wins/losses/expired, net R,
+  BUY-vs-SELL split, equity curve, trade list. Labelled honestly: no
+  spread/slippage, reference feed not Exness, in-test bias comes from the
+  tested timeframe (live 15m scans use the H1 bias).
 - **Journal** — daily notes, stored in the browser on that device only.
 - **My MT5 Panel** — load `SP_Scalp_Signal.json` from the SP Gold Scalp
   Panel indicator to see the MT5 signal beside the web desk. (An automatic

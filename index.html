@@ -116,6 +116,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <nav class="nav">
       <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
       <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
+      <button data-sec="backtest"><span class="ic">🧪</span> Backtest</button>
       <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
       <button data-sec="journal"><span class="ic">✎</span> Journal</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
@@ -201,6 +202,27 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <tbody id="histBody"><tr><td colspan="8" class="note">No signals yet. Run a scan on the Terminal — BUY and SELL scans are saved here automatically; WAIT scans are not saved.</td></tr></tbody>
         </table></div>
         <div class="small mt">Honest counting, on purpose: results are graded against the candles that came after the signal (TP1 or SL, whichever the price touched first). Nothing is deleted to make the number look better — a loss stays a loss. Grading uses the same OKX XAU gold feed as the chart, so a result can differ slightly from your Exness fill.</div>
+      </div>
+    </section>
+
+    <!-- ============ BACKTEST ============ -->
+    <section class="section" id="sec-backtest">
+      <div class="card">
+        <h3>🧪 Backtest my desk</h3>
+        <p class="note">Runs the desk's <b>exact live rules</b> (same council code, closed candles only, SL = 1×ATR, target = TP1) over past gold candles — one trade at a time. If a candle touches both SL and TP1, the stop is counted first (the honest, worse case). No spread or slippage is charged, and this is the OKX feed, not Exness — so treat results as optimistic. Trend bias inside the test comes from the tested timeframe itself; live 15m scans use the H1 bias.</p>
+        <div class="pillrow mt">
+          <div class="tfbtns" id="btTfBtns">
+            <button data-btf="15m" class="on">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
+          </div>
+          <label class="small">Candles
+            <select id="btBars" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
+              <option value="300">300</option><option value="600" selected>600</option><option value="1000">1000</option>
+            </select>
+          </label>
+          <button class="scanbtn" id="btRun" style="padding:10px 18px;font-size:14.5px">▶ Run backtest</button>
+        </div>
+        <p class="err" id="btErr"></p>
+        <div id="btOut" class="mt"><p class="note">No backtest run yet. Pick a timeframe and run it — 600 candles of 15m is about 6 days; 600 of 4h is about 3 months.</p></div>
       </div>
     </section>
 
@@ -358,6 +380,51 @@ function fetchBias(){
 <script>
 "use strict";
 /* ================= scan / council ================= */
+/* The desk's rules as a pure function: closed candles in, decision out.
+   Used by the live scan AND the backtest, so both grade the same rules. */
+function councilAt(cs, bias){
+  var cl=cs.map(function(c){return c.c;});
+  var last=cl.length-1, price=cl[last];
+  var e21=ema(cl,21), e55=ema(cl,55);
+  var r=rsi(cl), a=atr(cs), mh=macdHist(cl);
+  var hi20=Math.max.apply(null, cs.slice(-21,-1).map(function(c){return c.h;}));
+  var lo20=Math.min.apply(null, cs.slice(-21,-1).map(function(c){return c.l;}));
+  var rangePos=(price-lo20)/Math.max(hi20-lo20, 0.0001);
+  var votes=[];
+  var tech=0, techWhy="";
+  if(price>hi20){ tech=1; techWhy="Closed above the 20-bar high — breakout up."; }
+  else if(price<lo20){ tech=-1; techWhy="Closed below the 20-bar low — breakout down."; }
+  else if(e21[last]>e55[last] && rangePos<0.35){ tech=1; techWhy="Uptrend (EMA21>EMA55) and price near the range low — pullback zone."; }
+  else if(e21[last]<e55[last] && rangePos>0.65){ tech=-1; techWhy="Downtrend (EMA21<EMA55) and price near the range high — pullback zone."; }
+  else if(e21[last]>e55[last]){ tech=1; techWhy="EMA 21 above EMA 55 — trend is up, but no edge-zone entry."; }
+  else if(e21[last]<e55[last]){ tech=-1; techWhy="EMA 21 below EMA 55 — trend is down, but no edge-zone entry."; }
+  else { techWhy="EMAs flat — no trend edge."; }
+  votes.push({who:"Technical", v:tech, why:techWhy});
+  var mom=(mh>0 && price>e21[last]) ? 1 : (mh<0 && price<e21[last]) ? -1 : 0;
+  votes.push({who:"Momentum", v:mom, why: mom===0 ? "MACD and price disagree — momentum is mixed." : ("MACD histogram "+(mh>0?"positive":"negative")+" and price "+(price>e21[last]?"above":"below")+" EMA 21.")});
+  var sen=0, senWhy="";
+  if(r===null){ senWhy="RSI unavailable."; }
+  else if(r>=55 && r<=72){ sen=1; senWhy="RSI "+r.toFixed(0)+" — buyers in control, not yet overbought."; }
+  else if(r<=45 && r>=28){ sen=-1; senWhy="RSI "+r.toFixed(0)+" — sellers in control, not yet oversold."; }
+  else if(r>72){ sen=-1; senWhy="RSI "+r.toFixed(0)+" — overbought; chasing a BUY here is risky."; }
+  else if(r<28){ sen=1; senWhy="RSI "+r.toFixed(0)+" — oversold; chasing a SELL here is risky."; }
+  else { senWhy="RSI "+r.toFixed(0)+" — neutral zone."; }
+  votes.push({who:"Sentiment (RSI)", v:sen, why:senWhy});
+  var atrPct=a? (a/price*100) : null;
+  var riskVeto=atrPct!==null && atrPct>0.55;
+  votes.push({who:"Risk", v:0, why: atrPct===null? "ATR unavailable." : riskVeto? ("ATR is "+atrPct.toFixed(2)+"% of price — too wild. Risk veto: no trade.") : ("ATR is "+atrPct.toFixed(2)+"% of price — volatility is tradeable.")});
+  var buys=votes.filter(function(x){return x.v===1;}).length;
+  var sells=votes.filter(function(x){return x.v===-1;}).length;
+  var dir=0, conviction=0;
+  if(!riskVeto && buys>=3 && tech===1){ dir=1; conviction=55+buys*9; }
+  else if(!riskVeto && sells>=3 && tech===-1){ dir=-1; conviction=55+sells*9; }
+  var biasNote="";
+  if(dir!==0 && bias){ if((dir===1&&bias==="BEARISH")||(dir===-1&&bias==="BULLISH")){ conviction-=18; biasNote=" Against the H1 bias — conviction cut."; } else { conviction+=6; biasNote=" With the H1 bias."; } }
+  conviction=Math.max(5, Math.min(96, conviction));
+  var entry=price, sl=null, tp1=null, tp2=null, tp3=null;
+  if(dir!==0 && a){ var risk=a*1.0; sl=entry-dir*risk; tp1=entry+dir*risk*1.0; tp2=entry+dir*risk*1.8; tp3=entry+dir*risk*2.6; }
+  return {dir:dir, conviction:conviction, entry:entry, sl:sl, tp1:tp1, tp2:tp2, tp3:tp3, atr:a, votes:votes, biasNote:biasNote};
+}
 function runScan(){
   var st=(typeof shieldState==="function")? shieldState(Date.now()) : null;
   var inBlackout = !!(st && st.mode==="hot");
@@ -371,58 +438,13 @@ function runScan(){
   refresh().then(function(){
     var cs=closedOnly(candles);
     if(cs.length<60){ $("sigReason").textContent="Not enough candle data yet — try again in a moment."; return; }
-    var cl=cs.map(function(c){return c.c;});
-    var last=cl.length-1, price=cl[last];
-    var e21=ema(cl,21), e55=ema(cl,55);
-    var r=rsi(cl), a=atr(cs), mh=macdHist(cl);
-    var hi20=Math.max.apply(null, cs.slice(-21,-1).map(function(c){return c.h;}));
-    var lo20=Math.min.apply(null, cs.slice(-21,-1).map(function(c){return c.l;}));
-    var rangePos = (price-lo20)/Math.max(hi20-lo20, 0.0001); // 0 bottom, 1 top of last 20
-    var votes=[];
-    // Technical: trend + breakout / range edge
-    var tech=0, techWhy="";
-    if(price>hi20){ tech=1; techWhy="Closed above the 20-bar high — breakout up."; }
-    else if(price<lo20){ tech=-1; techWhy="Closed below the 20-bar low — breakout down."; }
-    else if(e21[last]>e55[last] && rangePos<0.35){ tech=1; techWhy="Uptrend (EMA21>EMA55) and price near the range low — pullback zone."; }
-    else if(e21[last]<e55[last] && rangePos>0.65){ tech=-1; techWhy="Downtrend (EMA21<EMA55) and price near the range high — pullback zone."; }
-    else if(e21[last]>e55[last]){ tech=1; techWhy="EMA 21 above EMA 55 — trend is up, but no edge-zone entry."; }
-    else if(e21[last]<e55[last]){ tech=-1; techWhy="EMA 21 below EMA 55 — trend is down, but no edge-zone entry."; }
-    else { techWhy="EMAs flat — no trend edge."; }
-    votes.push({who:"Technical", v:tech, why:techWhy});
-    // Momentum: MACD histogram + price vs EMA21
-    var mom = (mh>0 && price>e21[last]) ? 1 : (mh<0 && price<e21[last]) ? -1 : 0;
-    votes.push({who:"Momentum", v:mom, why: mom===0 ? "MACD and price disagree — momentum is mixed." : ("MACD histogram "+(mh>0?"positive":"negative")+" and price "+(price>e21[last]?"above":"below")+" EMA 21.")});
-    // Sentiment: RSI zone
-    var sen=0, senWhy="";
-    if(r===null){ senWhy="RSI unavailable."; }
-    else if(r>=55 && r<=72){ sen=1; senWhy="RSI "+r.toFixed(0)+" — buyers in control, not yet overbought."; }
-    else if(r<=45 && r>=28){ sen=-1; senWhy="RSI "+r.toFixed(0)+" — sellers in control, not yet oversold."; }
-    else if(r>72){ sen=-1; senWhy="RSI "+r.toFixed(0)+" — overbought; chasing a BUY here is risky."; }
-    else if(r<28){ sen=1; senWhy="RSI "+r.toFixed(0)+" — oversold; chasing a SELL here is risky."; }
-    else { senWhy="RSI "+r.toFixed(0)+" — neutral zone."; }
-    votes.push({who:"Sentiment (RSI)", v:sen, why:senWhy});
-    // Risk: ATR % veto
-    var atrPct = a? (a/price*100) : null;
-    var riskVeto = atrPct!==null && atrPct>0.55;
-    votes.push({who:"Risk", v:0, why: atrPct===null? "ATR unavailable." : riskVeto? ("ATR is "+atrPct.toFixed(2)+"% of price — too wild. Risk veto: no trade.") : ("ATR is "+atrPct.toFixed(2)+"% of price — volatility is tradeable.")});
-    var buys=votes.filter(function(x){return x.v===1;}).length;
-    var sells=votes.filter(function(x){return x.v===-1;}).length;
-    var dir=0, conviction=0;
-    if(!riskVeto && buys>=3 && tech===1){ dir=1; conviction=55+buys*9; }
-    else if(!riskVeto && sells>=3 && tech===-1){ dir=-1; conviction=55+sells*9; }
-    // H1 bias alignment
-    var bias = window._h1bias||null;
-    var biasNote="";
-    if(dir!==0 && bias){ if((dir===1&&bias==="BEARISH")||(dir===-1&&bias==="BULLISH")){ conviction-=18; biasNote=" Against the H1 bias — conviction cut."; } else { conviction+=6; biasNote=" With the H1 bias."; } }
-    conviction=Math.max(5, Math.min(96, conviction));
-    var entry=price, sl=null,tp1=null,tp2=null,tp3=null;
-    if(dir!==0 && a){ var risk=a*1.0; sl=entry-dir*risk; tp1=entry+dir*risk*1.0; tp2=entry+dir*risk*1.8; tp3=entry+dir*risk*2.6; }
+    var res=councilAt(cs, window._h1bias||null);
     var when=new Date();
-    lastSignal={dir:dir, entry:entry, sl:sl, tp1:tp1, tp2:tp2, tp3:tp3, tf:TF, time:when.getTime(), conviction:conviction, atr:a};
-    renderSignal(lastSignal, votes, biasNote);
+    lastSignal={dir:res.dir, entry:res.entry, sl:res.sl, tp1:res.tp1, tp2:res.tp2, tp3:res.tp3, tf:TF, time:when.getTime(), conviction:res.conviction, atr:res.atr};
+    renderSignal(lastSignal, res.votes, res.biasNote);
     if(inBlackout){ $("sigReason").textContent += " ⚠ Scanned during a NEWS BLACKOUT — your rule says NO TRADE."; }
-    renderCouncil(votes);
-    if(dir!==0){ saveSignal(lastSignal); maybeBeep(dir); }
+    renderCouncil(res.votes);
+    if(lastSignal.dir!==0){ saveSignal(lastSignal); maybeBeep(lastSignal.dir); }
   }).catch(function(e){ $("feedErr").textContent="Scan failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="↯ Run a scan"; });
 }
@@ -640,6 +662,113 @@ setInterval(function(){
   $("countdown").textContent=m+"m "+(s<10?"0":"")+s+"s";
 },1000);
 setInterval(function(){ refresh(); fetchBias(); }, 60000);
+
+/* ================= backtest ================= */
+var btTF="15m";
+$("btTfBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-btf]"); if(!b) return; btTF=b.getAttribute("data-btf"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i]===b); });
+function fetchHistory(tf, total){
+  var key=tdKey();
+  if(key){
+    var iv={"15m":"15min","1h":"1h","4h":"4h"}[tf];
+    return fetch("https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize="+total+"&apikey="+encodeURIComponent(key))
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){ return {t:Date.parse(v.datetime.replace(" ","T")+"Z"), o:+v.open, h:+v.high, l:+v.low, c:+v.close}; }).reverse(); });
+  }
+  var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];
+  var byT={};
+  function page(after){
+    var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300"+(after?("&after="+after):"");
+    return fetch(u).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
+      .then(function(j){
+        var rows=j.data||[];
+        rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4]}; });
+        if(rows.length===300 && Object.keys(byT).length<total){
+          var oldest=Math.min.apply(null, rows.map(function(k){ return +k[0]; }));
+          return page(oldest);
+        }
+        return Object.keys(byT).map(function(k){ return byT[k]; }).sort(function(a,b){ return a.t-b.t; }).slice(-total);
+      });
+  }
+  return page(null);
+}
+function simulate(cs, tf){
+  var ms=tfMs(tf), now=Date.now();
+  cs=cs.filter(function(c){ return c.t+ms<=now; });
+  var WARM=70, MAXHOLD=96, trades=[], i=WARM;
+  var closes=cs.map(function(c){ return c.c; });
+  var e21=ema(closes,21), e55=ema(closes,55);
+  while(i<cs.length){
+    var bias=e21[i]>e55[i] ? "BULLISH" : "BEARISH";
+    var res=councilAt(cs.slice(0,i+1), bias);
+    if(res.dir===0 || !res.sl){ i++; continue; }
+    var dir=res.dir, entry=res.entry, risk=Math.abs(entry-res.sl), sl=res.sl, tp1=res.tp1;
+    var exit=null, exitT=null, exitIdx=Math.min(i+MAXHOLD, cs.length-1), result=null, rMult=null;
+    for(var j=i+1;j<=exitIdx;j++){ var c=cs[j];
+      var hitSL = dir===1 ? c.l<=sl : c.h>=sl;
+      var hitTP = dir===1 ? c.h>=tp1 : c.l<=tp1;
+      if(hitSL){ exit=sl; exitT=c.t; exitIdx=j; result="LOSS"; rMult=-1; break; }
+      if(hitTP){ exit=tp1; exitT=c.t; exitIdx=j; result="WIN"; rMult=1; break; }
+    }
+    if(result===null){ var c2=cs[exitIdx]; exit=c2.c; exitT=c2.t; rMult=dir*(exit-entry)/risk; result="EXPIRED"; }
+    trades.push({t:cs[i].t, dir:dir, entry:entry, exit:exit, exitT:exitT, r:rMult, result:result});
+    i=exitIdx+1;
+  }
+  return trades;
+}
+function renderBacktest(trades, tf, bars){
+  var wins=trades.filter(function(x){return x.result==="WIN";}).length;
+  var losses=trades.filter(function(x){return x.result==="LOSS";}).length;
+  var expired=trades.length-wins-losses;
+  var netR=trades.reduce(function(s,x){ return s+x.r; },0);
+  var decisive=wins+losses;
+  var winRate=decisive? Math.round(wins/decisive*100) : 0;
+  var avgR=trades.length? netR/trades.length : 0;
+  var streak=0, maxStreak=0;
+  trades.forEach(function(x){ if(x.result==="LOSS"){ streak++; if(streak>maxStreak) maxStreak=streak; } else if(x.result==="WIN"){ streak=0; } });
+  function split(d){ var s=trades.filter(function(x){return x.dir===d;}); var w=s.filter(function(x){return x.result==="WIN";}).length, l=s.filter(function(x){return x.result==="LOSS";}).length; return {n:s.length, w:w, l:l, wr:(w+l)?Math.round(w/(w+l)*100):0, net:s.reduce(function(a,x){return a+x.r;},0)}; }
+  var sb=split(1), ss=split(-1);
+  var verdict;
+  if(decisive<8) verdict="Only "+decisive+" decisive trades — too few to judge this timeframe. Run more candles before believing anything here.";
+  else if(netR>0) verdict="On this window the desk made money on the "+tf+": "+(netR>=0?"+":"")+netR.toFixed(1)+"R over "+trades.length+" trades. That is history, not a promise — a different window can disagree.";
+  else verdict="On this window the desk LOST money on the "+tf+": "+netR.toFixed(1)+"R over "+trades.length+" trades. Do not trust live "+tf+" scans blindly — compare with the other timeframes.";
+  var rows=trades.slice(-25).reverse().map(function(x){
+    return '<tr><td>'+new Date(x.t).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+'</td><td style="color:'+(x.dir===1?"var(--green)":"var(--red)")+'"><b>'+(x.dir===1?"BUY":"SELL")+'</b></td><td>'+fmt(x.entry)+'</td><td>'+fmt(x.exit)+'</td><td>'+x.result+'</td><td style="color:'+(x.r>=0?"var(--green)":"var(--red)")+'">'+(x.r>=0?"+":"")+x.r.toFixed(2)+'R</td></tr>';
+  }).join("");
+  $("btOut").innerHTML=
+    '<div class="stats">'+
+    '<div class="stat"><div class="lab">Signals ('+tf+' · '+bars+' candles)</div><div class="val">'+trades.length+'</div><div class="sub">one trade at a time</div></div>'+
+    '<div class="stat"><div class="lab">Win rate (TP1 vs SL)</div><div class="val" style="color:'+(winRate>=50?"var(--green)":"var(--red)")+'">'+winRate+'%</div><div class="sub">'+wins+' wins · '+losses+' losses · '+expired+' expired</div></div>'+
+    '<div class="stat"><div class="lab">Net result</div><div class="val" style="color:'+(netR>=0?"var(--green)":"var(--red)")+'">'+(netR>=0?"+":"")+netR.toFixed(1)+'R</div><div class="sub">avg '+(avgR>=0?"+":"")+avgR.toFixed(2)+'R per trade · worst losing streak '+maxStreak+'</div></div>'+
+    '<div class="stat"><div class="lab">BUY vs SELL</div><div class="val" style="font-size:16px">BUY '+sb.wr+'% · SELL '+ss.wr+'%</div><div class="sub">BUY '+sb.n+' trades ('+(sb.net>=0?"+":"")+sb.net.toFixed(1)+'R) · SELL '+ss.n+' trades ('+(ss.net>=0?"+":"")+ss.net.toFixed(1)+'R)</div></div>'+
+    '</div>'+
+    '<canvas id="btEq" width="860" height="150" style="width:100%;height:150px"></canvas>'+
+    '<p class="note" style="margin:10px 0"><b>Read:</b> '+verdict+'</p>'+
+    (rows? '<div style="overflow-x:auto"><table><thead><tr><th>Signal time (Phnom Penh)</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>R</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="small">Last '+Math.min(25,trades.length)+' trades shown, newest first. Expired = neither TP1 nor SL touched within 96 candles; closed at the market price then, scored at its real R.</p>' : '<p class="note">The desk produced no signals in this window.</p>');
+  drawEquity(trades);
+}
+function drawEquity(trades){
+  var cv=$("btEq"); if(!cv || !trades.length) return;
+  var ctx=cv.getContext("2d"), W=cv.width, H=cv.height;
+  var pts=[0], s=0; trades.forEach(function(x){ s+=x.r; pts.push(s); });
+  var mn=Math.min.apply(null, pts.concat([0])), mx=Math.max.apply(null, pts.concat([0]));
+  var pad=8, X=function(i){ return pad+i*(W-2*pad)/Math.max(pts.length-1,1); }, Y=function(v){ return H-pad-((v-mn)/Math.max(mx-mn,0.001))*(H-2*pad); };
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle="rgba(255,255,255,0.18)"; ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+  ctx.strokeStyle=s>=0?"#34c77b":"#e5534b"; ctx.lineWidth=2; ctx.beginPath();
+  pts.forEach(function(v,i){ if(i===0) ctx.moveTo(X(i),Y(v)); else ctx.lineTo(X(i),Y(v)); });
+  ctx.stroke();
+  ctx.fillStyle="#9aa4b0"; ctx.font="11px sans-serif"; ctx.fillText("Equity curve · cumulative R · ends "+(s>=0?"+":"")+s.toFixed(1)+"R", pad, 14);
+}
+$("btRun").addEventListener("click", function(){
+  var btn=this; btn.disabled=true; btn.textContent="Running…"; $("btErr").textContent="";
+  var total=parseInt($("btBars").value,10)||600;
+  fetchHistory(btTF, total).then(function(cs){
+    if(!cs || cs.length<120) throw new Error("not enough history returned ("+(cs?cs.length:0)+" candles)");
+    var trades=simulate(cs, btTF);
+    renderBacktest(trades, btTF, cs.length);
+  }).catch(function(e){ $("btErr").textContent="Backtest failed: "+e.message; })
+  .finally(function(){ btn.disabled=false; btn.textContent="▶ Run backtest"; });
+});
 
 /* ================= news blackout shield ================= */
 var SHIELD_PRE=30*60000, SHIELD_POST=60*60000, shieldEvents=[];

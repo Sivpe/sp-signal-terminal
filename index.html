@@ -238,7 +238,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         </div>
         <div id="mt5Out" class="mt"><p class="note">No MT5 file loaded yet.</p></div>
         <div class="pillrow mt" id="mt5SavedRow" style="display:none">
-          <span class="small" id="mt5SavedMsg"></span>
+          <span class="small" id="mt5SavedMsg"></span><span class="small" id="mt5Age" style="font-weight:700"></span>
           <button class="ghostbtn" id="mt5Clear">Remove saved signal</button>
         </div>
       </div>
@@ -559,6 +559,7 @@ var MT5KEY="sp_mt5_signal_v1";
 function saveMt5(j){
   try{ localStorage.setItem(MT5KEY, JSON.stringify({savedAt:Date.now(), data:j})); }catch(e){}
   showMt5Saved(Date.now());
+  if(typeof updateMt5Age==="function") updateMt5Age();
 }
 function showMt5Saved(savedAt){
   var row=$("mt5SavedRow"); if(!row) return;
@@ -569,8 +570,25 @@ function showMt5Saved(savedAt){
 function restoreMt5(){
   var raw=null; try{ raw=localStorage.getItem(MT5KEY); }catch(e){}
   if(!raw) return;
-  try{ var s=JSON.parse(raw); if(s && s.data){ renderMt5(s.data); showMt5Saved(s.savedAt); } }catch(e){}
+  try{ var s=JSON.parse(raw); if(s && s.data){ renderMt5(s.data); showMt5Saved(s.savedAt); updateMt5Age(); } }catch(e){}
 }
+function mt5AgeMins(){
+  var raw=null; try{ raw=localStorage.getItem(MT5KEY); }catch(e){}
+  if(!raw) return -1;
+  var s; try{ s=JSON.parse(raw); }catch(e){ return -1; }
+  var d=s && s.data; if(!d || !d.updated) return -1;
+  var t=Date.parse(String(d.updated).replace(/\./g,"-").replace(" ","T")+"Z"); /* MT5 server time = UTC */
+  if(isNaN(t)) return -1;
+  return Math.max(0, Math.round((Date.now()-t)/60000));
+}
+function updateMt5Age(){
+  var el=$("mt5Age"); if(!el) return;
+  var mins=mt5AgeMins(); if(mins<0){ el.textContent=""; return; }
+  if(mins<=10){ el.textContent=" · Panel read is "+mins+" min old — fresh."; el.style.color="var(--green)"; }
+  else if(mins<=60){ el.textContent=" · ⚠ Panel read is "+mins+" min old — your VPS dashboard reads the panel LIVE and may already say something different. Load a fresh copy to update this."; el.style.color="var(--amber)"; }
+  else { el.textContent=" · ⚠ Panel read is "+Math.floor(mins/60)+"h "+(mins%60)+"m old — STALE. Load a fresh copy from the VPS."; el.style.color="var(--red)"; }
+}
+setInterval(updateMt5Age, 30000);
 $("jsonFile").addEventListener("change", function(ev){
   var f=ev.target.files[0]; if(!f) return;
   var rd=new FileReader();

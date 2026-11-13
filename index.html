@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SP Gold Signal Terminal</title>
+<title>SP Gold Trading</title>
 <style>
 :root{
   --bg:#0b0f17; --panel:#121826; --panel2:#171f30; --line:#232d42;
@@ -101,7 +101,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 <body>
 <div class="layout">
   <aside class="side">
-    <div class="logo"><div class="mark">SP</div><div><b>Gold Signal<br>Terminal</b><span>Public · XAUUSD</span></div></div>
+    <div class="logo"><div class="mark">SP</div><div><b>SP Gold<br>Trading</b><span>Public · XAUUSD</span></div></div>
     <nav class="nav">
       <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
       <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
@@ -115,7 +115,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 
   <main class="main">
     <div class="topbar">
-      <h1>XAUUSD <span class="thin">/ Gold Signal Terminal</span></h1>
+      <h1>XAUUSD <span class="thin">/ SP Gold Trading</span></h1>
       <div class="pillrow">
         <div class="tfbtns" id="tfbtns">
           <button data-tf="15m" class="active">15m</button>
@@ -128,12 +128,12 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       </div>
     </div>
 
-    <div class="warn">Gold feed note: live candles come from <b>PAXG</b> (gold-backed token, Binance public data) — it tracks spot gold within a few dollars, but it is <b>not</b> your Exness XAUUSDc price. Always check the entry against your MT5 price before trading. A Twelve Data key for true spot XAUUSD can be plugged in later.</div>
+    <div class="warn">Real gold market: candles are <b>OKX's XAU gold contract</b> — a real exchange-traded gold market that tracks spot XAU/USD trade by trade (no token). The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div>
 
     <!-- ============ TERMINAL ============ -->
     <section class="section active" id="sec-terminal">
       <div class="stats">
-        <div class="stat"><div class="k">Gold (PAXG ref)</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div></div>
+        <div class="stat"><div class="k">Gold — XAU market</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div><div class="s" id="spotRef">Spot XAU/USD: …</div></div>
         <div class="stat"><div class="k">H1 Bias</div><div class="v" id="stBias">—</div><div class="s" id="stBiasSub">EMA 21 / 55 + ADX</div></div>
         <div class="stat"><div class="k">RSI 14</div><div class="v" id="stRsi">—</div><div class="s" id="stRsiSub">—</div></div>
         <div class="stat"><div class="k">ATR 14</div><div class="v" id="stAtr">—</div><div class="s" id="stAtrSub">volatility</div></div>
@@ -185,7 +185,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <thead><tr><th>Time (Bangkok)</th><th>TF</th><th>Signal</th><th>Entry</th><th>SL</th><th>TP1</th><th>Result</th><th>R</th></tr></thead>
           <tbody id="histBody"><tr><td colspan="8" class="note">No signals yet. Run a scan on the Terminal — BUY and SELL scans are saved here automatically; WAIT scans are not saved.</td></tr></tbody>
         </table></div>
-        <div class="small mt">Honest counting, on purpose: results are graded against the candles that came after the signal (TP1 or SL, whichever the price touched first). Nothing is deleted to make the number look better — a loss stays a loss. Grading uses the PAXG reference feed, so a result can differ a few dollars from your Exness fill.</div>
+        <div class="small mt">Honest counting, on purpose: results are graded against the candles that came after the signal (TP1 or SL, whichever the price touched first). Nothing is deleted to make the number look better — a loss stays a loss. Grading uses the same OKX XAU gold feed as the chart, so a result can differ slightly from your Exness fill.</div>
       </div>
     </section>
 
@@ -242,6 +242,16 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           What this is <b>not</b>: it is not a broker, it holds no money, and it cannot execute on MT5 — there is no auto-trade bridge in v1 on purpose. It is also not Zoqira: same kind of desk, your own rules, your own honest record.
         </p>
       </div>
+      <div class="card mt">
+        <h3>Data feed — real gold</h3>
+        <p class="note">Default feed: <b>OKX XAU</b> — a real exchange gold market tracking spot XAU/USD, plus a live spot-gold reference price. Optional upgrade: a <b>Twelve Data</b> key switches the candles to true spot XAU/USD. Get a free key at twelvedata.com (sign up → your key is on the dashboard), paste it here — it is saved only in this browser on this device, never in the website code.</p>
+        <div class="pillrow mt">
+          <input type="text" id="tdKeyInput" placeholder="Twelve Data API key (optional)" style="max-width:340px">
+          <button class="ghostbtn" id="tdKeySave">Save key</button>
+          <button class="ghostbtn" id="tdKeyClear">Remove</button>
+          <span class="small" id="tdKeyMsg"></span>
+        </div>
+      </div>
     </section>
   </main>
 </div>
@@ -250,10 +260,17 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 "use strict";
 /* ================= state ================= */
 var TF = "15m";
-var FEEDS = [
-  {name:"Binance Vision · PAXGUSDT", url:function(tf){return "https://data-api.binance.vision/api/v3/klines?symbol=PAXGUSDT&interval="+tf+"&limit=200";}, parse:function(j){return j.map(function(k){return {t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};});}},
-  {name:"OKX · PAXG-USDT", url:function(tf){var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=PAXG-USDT&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}}
-];
+function tdKey(){ try{ return localStorage.getItem("sp_td_key")||""; }catch(e){ return ""; } }
+function feedList(){
+  var feeds=[];
+  var key=tdKey();
+  if(key){
+    feeds.push({name:"Twelve Data · XAU/USD spot", url:function(tf){var iv={"15m":"15min","1h":"1h","4h":"4h"}[tf];return "https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize=200&apikey="+encodeURIComponent(key);}, parse:function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){return {t:Date.parse(v.datetime.replace(" ","T")+"Z"),o:+v.open,h:+v.high,l:+v.low,c:+v.close};}).reverse(); }});
+  }
+  feeds.push({name:"OKX · XAU gold market", url:function(tf){var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
+  feeds.push({name:"OKX · XAU gold market (history)", url:function(tf){var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
+  return feeds;
+}
 var candles = [];       // ascending, includes the still-forming last candle
 var lastSignal = null;  // last scan result
 var beepOn = false, audioCtx = null;
@@ -277,7 +294,7 @@ function adxApprox(cs, n){ n=n||14; if(cs.length<3*n) return null; var pdm=[],md
 /* ================= data ================= */
 function fetchCandles(tf){
   var chain = Promise.reject(new Error("start"));
-  FEEDS.forEach(function(f){
+  feedList().forEach(function(f){
     chain = chain.catch(function(){
       return fetch(f.url(tf)).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
         .then(function(j){ var cs=f.parse(j); if(!cs || cs.length<60) throw new Error("short data"); $("feedName").textContent=f.name; return cs; });
@@ -288,7 +305,13 @@ function fetchCandles(tf){
 function tfMs(tf){ return {"15m":900000,"1h":3600000,"4h":14400000}[tf]; }
 function closedOnly(cs){ var now=Date.now(), ms=tfMs(TF); return cs.filter(function(c){ return c.t+ms<=now; }); }
 
+function fetchSpot(){
+  fetch("https://api.gold-api.com/price/XAU").then(function(r){return r.json();}).then(function(j){
+    if(j && j.price) $("spotRef").textContent="Spot XAU/USD: $"+fmt(j.price)+" · live spot feed";
+  }).catch(function(){});
+}
 function refresh(){
+  fetchSpot();
   return fetchCandles(TF).then(function(cs){
     candles = cs;
     $("feedErr").textContent="";
@@ -568,6 +591,11 @@ function loadNews(){
 }
 setInterval(loadNews, 120000);
 loadNews();
+
+/* Twelve Data key (device-local only) */
+try{ $("tdKeyInput").value=localStorage.getItem("sp_td_key")||""; if($("tdKeyInput").value) $("tdKeyMsg").textContent="Key saved on this device — spot XAU/USD feed active."; }catch(e){}
+$("tdKeySave").addEventListener("click", function(){ var v=$("tdKeyInput").value.trim(); if(!v){ $("tdKeyMsg").textContent="Paste a key first."; return; } localStorage.setItem("sp_td_key", v); $("tdKeyMsg").textContent="Saved ✓ — rescanning on the spot feed…"; refresh(); });
+$("tdKeyClear").addEventListener("click", function(){ localStorage.removeItem("sp_td_key"); $("tdKeyInput").value=""; $("tdKeyMsg").textContent="Removed — back to the OKX XAU gold feed."; refresh(); });
 
 renderHistory();
 refresh(); fetchBias();

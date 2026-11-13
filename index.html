@@ -182,7 +182,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <div class="card">
         <h3>Signal history <button class="ghostbtn" id="clearHist">Clear history</button></h3>
         <div style="overflow-x:auto"><table>
-          <thead><tr><th>Time (Bangkok)</th><th>TF</th><th>Signal</th><th>Entry</th><th>SL</th><th>TP1</th><th>Result</th><th>R</th></tr></thead>
+          <thead><tr><th>Time (Phnom Penh)</th><th>TF</th><th>Signal</th><th>Entry</th><th>SL</th><th>TP1</th><th>Result</th><th>R</th></tr></thead>
           <tbody id="histBody"><tr><td colspan="8" class="note">No signals yet. Run a scan on the Terminal — BUY and SELL scans are saved here automatically; WAIT scans are not saved.</td></tr></tbody>
         </table></div>
         <div class="small mt">Honest counting, on purpose: results are graded against the candles that came after the signal (TP1 or SL, whichever the price touched first). Nothing is deleted to make the number look better — a loss stays a loss. Grading uses the same OKX XAU gold feed as the chart, so a result can differ slightly from your Exness fill.</div>
@@ -193,7 +193,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-news">
       <div class="card">
         <h3>Gold news reports <span class="small" id="newsUpdated" style="text-transform:none;letter-spacing:0"></span></h3>
-        <p class="note" style="margin-bottom:14px">From Muse's gold news watch: a call with reasons ~10 minutes <b>before</b> each scheduled release that moves gold (US CPI/PPI, jobs data, FOMC, Fed speeches), then the result and an updated call <b>after</b> it lands. The same reports go to Steven in chat. All times Bangkok.</p>
+        <p class="note" style="margin-bottom:14px">From Muse's gold news watch: a call with reasons ~10 minutes <b>before</b> each scheduled release that moves gold (US CPI/PPI, jobs data, FOMC, Fed speeches), then the result and an updated call <b>after</b> it lands. The same reports go to Steven in chat. All times Phnom Penh.</p>
         <div id="newsList"><p class="note">Loading reports…</p></div>
         <div class="small mt">A pre-news call is a reasoned lean from the forecast, the dollar and yields, and gold's chart position — the print itself can go either way, and NO TRADE is a real call.</div>
       </div>
@@ -403,7 +403,7 @@ function renderSignal(s, votes, biasNote){
   var el=$("sigDir");
   el.textContent = s.dir===1?"BUY":(s.dir===-1?"SELL":"WAIT");
   el.className="sigdir "+(s.dir===1?"buy":(s.dir===-1?"sell":"wait"));
-  $("sigTime").textContent="· "+new Date(s.time).toLocaleTimeString("en-GB")+" Bangkok";
+  $("sigTime").textContent="· "+new Date(s.time).toLocaleTimeString("en-GB")+" Phnom Penh";
   var agree=votes.filter(function(x){return x.v===s.dir;}).length;
   $("sigReason").textContent = s.dir===0
     ? "No setup passed the council vote (Technical must agree, 3 of 4 the same way, no Risk veto). Staying flat is the plan."+(biasNote||"")
@@ -586,7 +586,7 @@ function loadNews(){
       return '<div class="newsitem"><div class="nh"><div>'+kindTag+" "+callTag+' <b style="margin-left:6px">'+esc(n.event||"")+'</b></div><div class="nt">'+esc(n.time_label||"")+'</div></div>'
         +(n.headline ? '<div class="nhl">'+esc(n.headline)+'</div>' : "")+body+'</div>';
     }).join("");
-    var u=$("newsUpdated"); if(u) u.textContent="· updated "+new Date().toLocaleTimeString("en-GB")+" Bangkok";
+    var u=$("newsUpdated"); if(u) u.textContent="· updated "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh";
   }).catch(function(e){ var u=$("newsUpdated"); if(u) u.textContent="· could not load reports ("+e.message+")"; });
 }
 setInterval(loadNews, 120000);

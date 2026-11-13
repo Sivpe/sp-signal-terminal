@@ -284,12 +284,25 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-mt5">
       <div class="card mb">
         <h3>My MT5 panel — SP Gold Scalp Signal</h3>
-        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b> on the VPS. Copy that file to this device, load it here, and the terminal shows your own MT5 signal next to the web desk — two opinions, one screen.</p>
+        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b> on the VPS. When the private live link is connected, this panel updates itself every 15 seconds — exactly like your VPS dashboard. Without it, load a copied file manually; it is saved on this device as a fallback.</p>
+        <div class="pillrow mt">
+          <span class="pill" id="mt5LivePill" style="display:none"></span><span class="small" id="mt5LiveMsg"></span>
+        </div>
         <div class="pillrow mt">
           <label class="ghostbtn" for="jsonFile" style="display:inline-block">Load SP_Scalp_Signal.json</label>
           <input type="file" id="jsonFile" accept=".json" style="display:none">
-          <span class="small">The file never leaves your device.</span>
+          <span class="small">Manual copy — the file never leaves your device.</span>
         </div>
+        <details class="mt">
+          <summary class="small" style="cursor:pointer">Live link settings (advanced)</summary>
+          <div class="pillrow mt">
+            <input id="mt5UrlInput" type="url" placeholder="https://your-vps.…ts.net/scalp.json" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:min(430px,80vw)">
+            <button class="ghostbtn" id="mt5UrlSave">Save link</button>
+            <button class="ghostbtn" id="mt5UrlReset">Reset</button>
+            <span class="small" id="mt5UrlMsg"></span>
+          </div>
+          <p class="small mt">Normally Muse wires your link into the site for you — you only need this box if the link ever changes. It is stored on this device only.</p>
+        </details>
         <div id="mt5Out" class="mt"><p class="note">No MT5 file loaded yet.</p></div>
         <div class="pillrow mt" id="mt5SavedRow" style="display:none">
           <span class="small" id="mt5SavedMsg"></span><span class="small" id="mt5Age" style="font-weight:700"></span>
@@ -660,6 +673,60 @@ $("mt5Clear").addEventListener("click", function(){
   $("mt5Out").innerHTML='<p class="note">Saved signal removed. Load the file again any time.</p>';
   showMt5Saved(null);
 });
+/* ================= MT5 live link ================= */
+var MT5_LIVE_DEFAULT=""; /* Steven's private ts.net link is wired in here by Muse once it exists */
+var mt5Live={url:"", timer:null, fails:0, data:null, at:0};
+function liveMt5Url(){ try{ var u=localStorage.getItem("sp_scalp_url"); if(u) return u; }catch(e){} return MT5_LIVE_DEFAULT; }
+function stampAgeMins(j){ if(!j || !j.updated) return -1; var t=Date.parse(String(j.updated).replace(/\./g,"-").replace(" ","T")+"Z"); if(isNaN(t)) return -1; return Math.max(0, Math.round((Date.now()-t)/60000)); }
+function setLivePill(mode, txt){ var p=$("mt5LivePill"); if(!p) return; if(!mode){ p.style.display="none"; $("mt5LiveMsg").textContent=""; return; } p.style.display=""; p.innerHTML=txt; p.style.borderColor= mode==="ok"? "var(--green)" : "var(--amber)"; }
+function hadSnapshot(){ try{ return !!localStorage.getItem(MT5KEY); }catch(e){ return false; } }
+function fetchLiveMt5(){
+  if(!mt5Live.url) return;
+  fetch(mt5Live.url, {cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(function(j){
+    if(!j || typeof j.signal!=="string") throw new Error("unexpected data");
+    mt5Live.fails=0; mt5Live.data=j; mt5Live.at=Date.now();
+    renderMt5(j);
+    var age=stampAgeMins(j);
+    if(age>3){ setLivePill("warn","🟡 LIVE LINK OK · panel data "+age+" min old"); $("mt5LiveMsg").textContent="The link works, but the indicator file is not fresh — is MT5 running on the VPS?"; }
+    else { setLivePill("ok","🟢 LIVE · updates every 15s"); $("mt5LiveMsg").textContent="Panel time "+(j.updated||"")+" (MT5 server) · received just now · private link — only your own devices can open it"; }
+    var sr=$("mt5SavedRow"); if(sr) sr.style.display="none";
+  })
+  .catch(function(){
+    mt5Live.fails++;
+    if(mt5Live.fails>=2){
+      setLivePill("warn","⚪ LIVE LINK NOT REACHABLE");
+      $("mt5LiveMsg").textContent="Showing your saved copy instead. Usual causes: Tailscale is off on this device, or the endpoint is not running on the VPS.";
+      if(hadSnapshot()) restoreMt5();
+      else $("mt5Out").innerHTML='<p class="note">Live link not reachable, and no saved copy on this device yet.</p>';
+    } else {
+      setLivePill("warn","🟡 LIVE LINK · reconnecting…");
+    }
+  });
+}
+function startLiveMt5(){
+  mt5Live.url=liveMt5Url();
+  if(mt5Live.timer){ clearInterval(mt5Live.timer); mt5Live.timer=null; }
+  mt5Live.fails=0;
+  if(!mt5Live.url){ setLivePill(null); return; }
+  setLivePill("warn","🟡 LIVE LINK · connecting…");
+  fetchLiveMt5();
+  mt5Live.timer=setInterval(fetchLiveMt5, 15000);
+}
+$("mt5UrlSave").addEventListener("click", function(){
+  var v=$("mt5UrlInput").value.trim();
+  if(v && v.indexOf("https://")!==0){ $("mt5UrlMsg").textContent="The link must start with https://"; return; }
+  try{ if(v) localStorage.setItem("sp_scalp_url", v); else localStorage.removeItem("sp_scalp_url"); }catch(e){}
+  $("mt5UrlMsg").textContent= v? "Saved — connecting…" : "Cleared.";
+  startLiveMt5();
+});
+$("mt5UrlReset").addEventListener("click", function(){
+  try{ localStorage.removeItem("sp_scalp_url"); }catch(e){}
+  $("mt5UrlInput").value=""; $("mt5UrlMsg").textContent="Reset to the built-in link.";
+  startLiveMt5();
+});
+try{ var savedUrl=localStorage.getItem("sp_scalp_url"); if(savedUrl) $("mt5UrlInput").value=savedUrl; }catch(e){}
+startLiveMt5();
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
   b.addEventListener("click", function(){

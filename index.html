@@ -222,6 +222,10 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <span class="small">The file never leaves your device.</span>
         </div>
         <div id="mt5Out" class="mt"><p class="note">No MT5 file loaded yet.</p></div>
+        <div class="pillrow mt" id="mt5SavedRow" style="display:none">
+          <span class="small" id="mt5SavedMsg"></span>
+          <button class="ghostbtn" id="mt5Clear">Remove saved signal</button>
+        </div>
       </div>
       <div class="card">
         <h3>Running both systems — the rule</h3>
@@ -527,14 +531,35 @@ function renderMt5(j){
     '<div class="kv"><span>Updated (MT5 server time)</span><b>'+(j.updated||"—")+'</b></div>'+
     '<div class="small mt">Compare this with the web desk on the Terminal page. Agree = stronger read. Disagree = WAIT.</div>';
 }
+var MT5KEY="sp_mt5_signal_v1";
+function saveMt5(j){
+  try{ localStorage.setItem(MT5KEY, JSON.stringify({savedAt:Date.now(), data:j})); }catch(e){}
+  showMt5Saved(Date.now());
+}
+function showMt5Saved(savedAt){
+  var row=$("mt5SavedRow"); if(!row) return;
+  if(!savedAt){ row.style.display="none"; return; }
+  row.style.display="flex";
+  $("mt5SavedMsg").textContent="💾 Saved on this device · loaded "+new Date(savedAt).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+" — it stays here when you refresh. Load a fresh file from the VPS to update it.";
+}
+function restoreMt5(){
+  var raw=null; try{ raw=localStorage.getItem(MT5KEY); }catch(e){}
+  if(!raw) return;
+  try{ var s=JSON.parse(raw); if(s && s.data){ renderMt5(s.data); showMt5Saved(s.savedAt); } }catch(e){}
+}
 $("jsonFile").addEventListener("change", function(ev){
   var f=ev.target.files[0]; if(!f) return;
   var rd=new FileReader();
   rd.onload=function(){
-    try{ renderMt5(JSON.parse(rd.result)); }
+    try{ var j=JSON.parse(rd.result); renderMt5(j); saveMt5(j); }
     catch(e){ $("mt5Out").innerHTML='<p class="err">That file could not be read as the Scalp Panel JSON: '+e.message+'</p>'; }
   };
   rd.readAsText(f);
+});
+$("mt5Clear").addEventListener("click", function(){
+  try{ localStorage.removeItem(MT5KEY); }catch(e){}
+  $("mt5Out").innerHTML='<p class="note">Saved signal removed. Load the file again any time.</p>';
+  showMt5Saved(null);
 });
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
@@ -600,6 +625,7 @@ try{ $("tdKeyInput").value=localStorage.getItem("sp_td_key")||""; if($("tdKeyInp
 $("tdKeySave").addEventListener("click", function(){ var v=$("tdKeyInput").value.trim(); if(!v){ $("tdKeyMsg").textContent="Paste a key first."; return; } localStorage.setItem("sp_td_key", v); $("tdKeyMsg").textContent="Saved ✓ — rescanning on the spot feed…"; refresh(); });
 $("tdKeyClear").addEventListener("click", function(){ localStorage.removeItem("sp_td_key"); $("tdKeyInput").value=""; $("tdKeyMsg").textContent="Removed — back to the OKX XAU gold feed."; refresh(); });
 
+restoreMt5();
 renderHistory();
 refresh(); fetchBias();
 </script>

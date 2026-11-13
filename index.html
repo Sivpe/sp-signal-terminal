@@ -215,13 +215,23 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-mt5">
       <div class="card mb">
         <h3>My MT5 panel — SP Gold Scalp Signal</h3>
-        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b>. Load that file here and the terminal shows your own MT5 signal next to the web desk — two opinions, one screen.</p>
+        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b> on the VPS. Connect the private link once and this panel updates itself every 30 seconds — or load the file by hand below.</p>
+        <div class="card mt" style="background:var(--panel2)">
+          <h3>Automatic — private link (Tailscale)</h3>
+          <p class="note">Paste the private <b>https://…ts.net/scalp.json</b> link from your VPS (setup steps are in the <b>sp-scalp-endpoint</b> package from Steven's chat). The link is saved only in this browser on this device — it is not in the website, and the address only works on your own Tailscale devices. Your phone's Tailscale must be ON.</p>
+          <div class="pillrow mt">
+            <input type="text" id="autoUrl" placeholder="https://your-vps.…ts.net/scalp.json" style="max-width:420px">
+            <button class="ghostbtn" id="autoSave">Save &amp; connect</button>
+            <button class="ghostbtn" id="autoClear">Disconnect</button>
+          </div>
+          <div class="small mt" id="autoStatus">Not connected — manual file load still works below.</div>
+        </div>
         <div class="pillrow mt">
-          <label class="ghostbtn" for="jsonFile" style="display:inline-block">Load SP_Scalp_Signal.json</label>
+          <label class="ghostbtn" for="jsonFile" style="display:inline-block">Load SP_Scalp_Signal.json by hand</label>
           <input type="file" id="jsonFile" accept=".json" style="display:none">
           <span class="small">The file never leaves your device.</span>
         </div>
-        <div id="mt5Out" class="mt"><p class="note">No MT5 file loaded yet.</p></div>
+        <div id="mt5Out" class="mt"><p class="note">No MT5 signal yet — connect the private link or load the file.</p></div>
       </div>
       <div class="card">
         <h3>Running both systems — the rule</h3>
@@ -510,28 +520,61 @@ try{ $("journalBox").value=localStorage.getItem(JKEY)||""; }catch(e){}
 $("saveJournal").addEventListener("click", function(){ localStorage.setItem(JKEY, $("journalBox").value); $("journalMsg").textContent="Saved ✓ "+new Date().toLocaleTimeString("en-GB")+" — on this device only."; });
 
 /* ================= MT5 JSON ================= */
+function renderMt5(j){
+  if(j && j.scalp) j=j.scalp; // tolerate an /api/status-shaped reply
+  var dirTxt = (j.dir===1||j.signal==="BUY")?"BUY":((j.dir===-1||j.signal==="SELL")?"SELL":"WAIT");
+  var cls = dirTxt==="BUY"?"buy":(dirTxt==="SELL"?"sell":"wait");
+  $("mt5Out").innerHTML =
+    '<div class="sigdir '+cls+'">'+dirTxt+'</div>'+
+    '<div class="sigreason">'+(j.reason||"")+'</div>'+
+    '<div class="kv"><span>Symbol / TF</span><b>'+(j.symbol||"—")+" · "+(j.tf||"—")+'</b></div>'+
+    '<div class="kv"><span>Entry</span><b>'+fmt(j.entry)+'</b></div>'+
+    '<div class="kv"><span>Stop loss</span><b class="sl">'+fmt(j.sl)+'</b></div>'+
+    '<div class="kv"><span>TP1 / TP2</span><b class="tp">'+fmt(j.tp1)+" / "+fmt(j.tp2)+'</b></div>'+
+    '<div class="kv"><span>H1 bias</span><b>'+(j.bias||"—")+" "+(j.strength||"")+'</b></div>'+
+    '<div class="kv"><span>RSI · ADX H1 · Spread</span><b>'+(j.rsi!==undefined?fmt(j.rsi,1):"—")+" · "+(j.adx_h1!==undefined?fmt(j.adx_h1,1):"—")+" · "+(j.spread_pips!==undefined?fmt(j.spread_pips,0)+" pips":"—")+'</b></div>'+
+    '<div class="kv"><span>Updated (MT5 server time)</span><b>'+(j.updated||"—")+'</b></div>'+
+    '<div class="small mt">Compare this with the web desk on the Terminal page. Agree = stronger read. Disagree = WAIT.</div>';
+}
 $("jsonFile").addEventListener("change", function(ev){
   var f=ev.target.files[0]; if(!f) return;
   var rd=new FileReader();
   rd.onload=function(){
-    try{
-      var j=JSON.parse(rd.result);
-      var dirTxt = (j.dir===1||j.signal==="BUY")?"BUY":((j.dir===-1||j.signal==="SELL")?"SELL":"WAIT");
-      var cls = dirTxt==="BUY"?"buy":(dirTxt==="SELL"?"sell":"wait");
-      $("mt5Out").innerHTML =
-        '<div class="sigdir '+cls+'">'+dirTxt+'</div>'+
-        '<div class="sigreason">'+(j.reason||"")+'</div>'+
-        '<div class="kv"><span>Symbol / TF</span><b>'+(j.symbol||"—")+" · "+(j.tf||"—")+'</b></div>'+
-        '<div class="kv"><span>Entry</span><b>'+fmt(j.entry)+'</b></div>'+
-        '<div class="kv"><span>Stop loss</span><b class="sl">'+fmt(j.sl)+'</b></div>'+
-        '<div class="kv"><span>TP1 / TP2</span><b class="tp">'+fmt(j.tp1)+" / "+fmt(j.tp2)+'</b></div>'+
-        '<div class="kv"><span>H1 bias</span><b>'+(j.bias||"—")+" "+(j.strength||"")+'</b></div>'+
-        '<div class="kv"><span>Updated</span><b>'+(j.updated||"—")+'</b></div>'+
-        '<div class="small mt">Compare this with the web desk above. Agree = stronger read. Disagree = WAIT.</div>';
-    }catch(e){ $("mt5Out").innerHTML='<p class="err">That file could not be read as the Scalp Panel JSON: '+e.message+'</p>'; }
+    try{ renderMt5(JSON.parse(rd.result)); }
+    catch(e){ $("mt5Out").innerHTML='<p class="err">That file could not be read as the Scalp Panel JSON: '+e.message+'</p>'; }
   };
   rd.readAsText(f);
 });
+/* ---- automatic private link (Tailscale) ---- */
+var AUTOKEY="sp_scalp_url", autoTimer=null;
+function scalpAgeSec(j){
+  if(!j || !j.updated) return null;
+  var t=Date.parse(String(j.updated).replace(/\./g,"-").replace(" ","T")+"Z");
+  if(isNaN(t)) return null;
+  return Math.round((Date.now()-t)/1000);
+}
+function fetchAuto(){
+  var url=""; try{ url=localStorage.getItem(AUTOKEY)||""; }catch(e){}
+  if(!url) return;
+  fetch(url+(url.indexOf("?")>=0?"&":"?")+"ts="+Date.now()).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(function(j){
+    renderMt5(j);
+    var data=(j && j.scalp)? j.scalp : j;
+    var age=scalpAgeSec(data);
+    $("autoStatus").innerHTML="🟢 Connected · last check "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh"
+      +(age===null?"":(age>180?' · <span style="color:var(--amber)"><b>STALE</b> — signal is '+Math.round(age/60)+' min old; check the indicator is running on the VPS</span>':" · signal "+Math.max(0,age)+"s old · auto-refresh 30s"));
+  })
+  .catch(function(e){ $("autoStatus").innerHTML='<span style="color:var(--red)">🔴 Could not reach the private link ('+e.message+'). Is Tailscale ON on this device, and the endpoint running on the VPS?</span>'; });
+}
+function startAuto(){ if(autoTimer) clearInterval(autoTimer); fetchAuto(); autoTimer=setInterval(fetchAuto, 30000); }
+try{ var savedUrl=localStorage.getItem(AUTOKEY)||""; if(savedUrl){ $("autoUrl").value=savedUrl; startAuto(); } }catch(e){}
+$("autoSave").addEventListener("click", function(){
+  var v=$("autoUrl").value.trim();
+  if(!v){ $("autoStatus").textContent="Paste the private https://…ts.net/scalp.json link first."; return; }
+  if(v.indexOf("https://")!==0){ $("autoStatus").textContent="The link must start with https:// — the http:// Tailscale address will be blocked by the browser on this https site. Use the Tailscale Serve https link."; return; }
+  localStorage.setItem(AUTOKEY, v); $("autoStatus").textContent="Saved on this device ✓ — connecting…"; startAuto();
+});
+$("autoClear").addEventListener("click", function(){ localStorage.removeItem(AUTOKEY); $("autoUrl").value=""; if(autoTimer) clearInterval(autoTimer); autoTimer=null; $("autoStatus").textContent="Disconnected on this device. Manual file load still works."; });
 
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
@@ -542,6 +585,7 @@ document.querySelectorAll(".nav button").forEach(function(b){
     $("sec-"+b.getAttribute("data-sec")).classList.add("active");
     if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
     if(b.getAttribute("data-sec")==="news") loadNews();
+    if(b.getAttribute("data-sec")==="mt5") fetchAuto();
   });
 });
 $("tfbtns").addEventListener("click", function(e){

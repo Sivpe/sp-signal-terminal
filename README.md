@@ -1,14 +1,16 @@
-# SP Gold Signal Terminal — PRIVATE
+# SP Gold Signal Terminal
 
 Steven's personal AI-style trading-signals terminal for **gold only (XAUUSD)**.
 Inspired by the layout of Zoqira's terminal, but original code, original
 branding, and Steven's own signal rules (the same EMA / breakout / range-edge
 logic as his SP Gold Scalp Panel, with ATR-based stop and targets).
 
-**This repository is private. Do not make it public and do not enable
-GitHub Pages on it** — on a normal GitHub account a Pages site is public on
-the internet even when the repository is private. Private live hosting
-options are listed at the bottom.
+**Live site: https://sivpe.github.io/sp-signal-terminal/**
+This repository is PUBLIC and the site is served by GitHub Pages from this
+repo (main branch, root) — Steven's decision on 2026-11-13, replacing the
+original private-only setup. Anyone with the link can open the terminal.
+Note: each visitor's saved signals, record and journal live only in their
+own browser — nothing is uploaded anywhere.
 
 ## What it does
 
@@ -38,14 +40,14 @@ Option A — on a computer: download `index.html` (or clone this repo) and
 open it in Chrome. Option B — serve the folder locally:
 `python3 -m http.server` then open `http://localhost:8000`.
 
-## If you later want it live but still only-you
+## Hosting
 
-1. **Your VPS over Tailscale** (recommended — same setup as your Smart Grid
-   dashboard): truly private, only your devices.
-2. **Cloudflare Pages + Cloudflare Access** (email code login): private,
-   free tier, code stays in this private repo.
-3. GitHub Pages is **not** private on a normal account — do not use it
-   for this one.
+GitHub Pages, public, from this repository (main / root):
+https://sivpe.github.io/sp-signal-terminal/
+
+(Earlier the repo was private with Pages off, because on a normal GitHub
+account a Pages site is public even from a private repo. Steven chose to
+make it public on 2026-11-13.)
 
 ## Later upgrades (not in v1)
 

@@ -88,6 +88,14 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 .mt{margin-top:14px}.mb{margin-bottom:14px}
 .small{font-size:12.5px;color:var(--dim2)}
 .err{color:var(--red);font-size:13.5px}
+/* news reports */
+.newsitem{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:12px}
+.newsitem .nh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.newsitem .nt{color:var(--dim2);font-size:12.5px}
+.newsitem .nh b{font-size:15px}
+.newsitem .nhl{font-weight:700;font-size:15px;margin:2px 0}
+.newsitem p{color:var(--dim);font-size:14px;line-height:1.55;margin-top:4px}
+.newsitem p b{color:var(--txt)}
 </style>
 </head>
 <body>
@@ -97,6 +105,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <nav class="nav">
       <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
       <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
+      <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
       <button data-sec="journal"><span class="ic">✎</span> Journal</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
       <button data-sec="about"><span class="ic">?</span> How it works</button>
@@ -177,6 +186,16 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <tbody id="histBody"><tr><td colspan="8" class="note">No signals yet. Run a scan on the Terminal — BUY and SELL scans are saved here automatically; WAIT scans are not saved.</td></tr></tbody>
         </table></div>
         <div class="small mt">Honest counting, on purpose: results are graded against the candles that came after the signal (TP1 or SL, whichever the price touched first). Nothing is deleted to make the number look better — a loss stays a loss. Grading uses the PAXG reference feed, so a result can differ a few dollars from your Exness fill.</div>
+      </div>
+    </section>
+
+    <!-- ============ GOLD NEWS ============ -->
+    <section class="section" id="sec-news">
+      <div class="card">
+        <h3>Gold news reports <span class="small" id="newsUpdated" style="text-transform:none;letter-spacing:0"></span></h3>
+        <p class="note" style="margin-bottom:14px">From Muse's gold news watch: a call with reasons ~10 minutes <b>before</b> each scheduled release that moves gold (US CPI/PPI, jobs data, FOMC, Fed speeches), then the result and an updated call <b>after</b> it lands. The same reports go to Steven in chat. All times Bangkok.</p>
+        <div id="newsList"><p class="note">Loading reports…</p></div>
+        <div class="small mt">A pre-news call is a reasoned lean from the forecast, the dollar and yields, and gold's chart position — the print itself can go either way, and NO TRADE is a real call.</div>
       </div>
     </section>
 
@@ -499,6 +518,7 @@ document.querySelectorAll(".nav button").forEach(function(b){
     document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
     $("sec-"+b.getAttribute("data-sec")).classList.add("active");
     if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
+    if(b.getAttribute("data-sec")==="news") loadNews();
   });
 });
 $("tfbtns").addEventListener("click", function(e){
@@ -527,6 +547,28 @@ setInterval(function(){
   $("countdown").textContent=m+"m "+(s<10?"0":"")+s+"s";
 },1000);
 setInterval(function(){ refresh(); fetchBias(); }, 60000);
+
+/* ================= gold news reports ================= */
+function esc(s){ return String(s===null||s===undefined?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function loadNews(){
+  fetch("news-reports.json?ts="+Date.now()).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(function(list){
+    var box=$("newsList"); if(!box) return;
+    if(!list || !list.length){ box.innerHTML='<p class="note">No news reports yet. The watch posts here before and after each gold-moving release.</p>'; return; }
+    box.innerHTML=list.slice().reverse().slice(0,30).map(function(n){
+      var kindTag = n.kind==="pre" ? '<span class="tag wait">⏰ BEFORE</span>' : (n.kind==="breaking" ? '<span class="tag sell">⚡ BREAKING</span>' : '<span class="tag open">RESULT</span>');
+      var callCls = n.call==="BUY" ? "buy" : (n.call==="SELL" ? "sell" : "wait");
+      var callTag = n.call ? '<span class="tag '+callCls+'">'+esc(n.call)+'</span>' : "";
+      var body=(n.body||[]).map(function(p){ return "<p>"+esc(p)+"</p>"; }).join("");
+      return '<div class="newsitem"><div class="nh"><div>'+kindTag+" "+callTag+' <b style="margin-left:6px">'+esc(n.event||"")+'</b></div><div class="nt">'+esc(n.time_label||"")+'</div></div>'
+        +(n.headline ? '<div class="nhl">'+esc(n.headline)+'</div>' : "")+body+'</div>';
+    }).join("");
+    var u=$("newsUpdated"); if(u) u.textContent="· updated "+new Date().toLocaleTimeString("en-GB")+" Bangkok";
+  }).catch(function(e){ var u=$("newsUpdated"); if(u) u.textContent="· could not load reports ("+e.message+")"; });
+}
+setInterval(loadNews, 120000);
+loadNews();
+
 renderHistory();
 refresh(); fetchBias();
 </script>

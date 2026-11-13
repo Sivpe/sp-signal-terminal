@@ -241,7 +241,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-backtest">
       <div class="card">
         <h3>🧪 Backtest my desk</h3>
-        <p class="note">Three engines, one honest simulator: closed candles only, one trade at a time, stop = 1×ATR (custom: your choice), exit at the stop or at your chosen <b>target</b>. If one candle touches both, the stop counts first (the worse case). No spread or slippage is charged, and this is the OKX feed, not Exness — treat results as optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
+        <p class="note">Four engines: the three signal strategies share one honest simulator (closed candles only, one trade at a time, stop = 1×ATR — custom: your choice — exit at the stop or at your chosen <b>target</b>); <b>Smart Grid Hunter</b> runs as a full money simulation with its own panel below. If one candle touches both, the stop counts first (the worse case). No spread or slippage is charged, and this is the OKX feed, not Exness — treat results as optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
         <div class="pillrow mt">
           <div class="tfbtns" id="btTfBtns">
             <button data-btf="5m">5m</button><button data-btf="15m" class="active">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
@@ -256,7 +256,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <div class="pillrow mt">
           <span class="small">Strategy</span>
           <div class="tfbtns" id="btStratBtns">
-            <button data-bstrat="desk" class="active">🖥️ Desk council</button><button data-bstrat="scalp">⚡ Scalp Panel</button><button data-bstrat="custom">🧩 Custom builder</button>
+            <button data-bstrat="desk" class="active">🖥️ Desk council</button><button data-bstrat="scalp">⚡ Scalp Panel</button><button data-bstrat="custom">🧩 Custom builder</button><button data-bstrat="grid">🤖 Smart Grid Hunter</button>
           </div>
           <label class="small">Target (reward vs 1 risk)
             <select id="btRR" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
@@ -285,6 +285,21 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
             <label>Stop loss = <input type="number" id="cuSlAtr" value="1" min="0.3" max="3" step="0.1" style="width:56px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"> × ATR(14) · target comes from the Target selector above</label>
           </div>
           <p class="note">All ticked conditions must be true on the same closed candle (AND). A signal with no condition ticked is blocked — a strategy needs at least one rule.</p>
+        </div>
+        <div id="btGrid" class="mt" style="display:none">
+          <p class="note">Your <b>Smart Grid Hunter v1.26</b> as a full basket simulation: the money is real in the model — the balance grows and shrinks trade by trade, lots re-size from the balance, and the EA's own protections (basket freeze, range/trend hard stops, breakout pause, daily profit lock) all fire at your settings. Defaults below are your live settings as recorded — change any of them. The Target selector does not apply (the EA uses its own basket TP + trailing). Runs on <b>5m or 15m</b> only: a grid lives inside the candles, so 1h/4h are too coarse to mean anything. Live, the EA executes tick-by-tick on M1 — inside one test candle the order of events is estimated (adds before take-profit), spread is not charged, and the margin guard is not modelled. Treat a survival result as encouraging, not proof.</p>
+          <div class="mt small" style="line-height:2.1">
+            <label>Start money <input type="number" id="gBal" value="5000" min="500" step="500" style="width:90px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"> cents (¢)</label> ·
+            <label>Base lot per 5,000¢ <input type="number" id="gLotPer" value="0.05" min="0.01" max="1" step="0.01" style="width:64px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"></label> ·
+            <label>Layer multiplier <input type="number" id="gMult" value="1.4" min="1" max="3" step="0.1" style="width:56px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"></label><br>
+            <label>Max layers <input type="number" id="gMaxLayers" value="10" min="1" max="20" style="width:52px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"></label> ·
+            <label>Max lots per direction <input type="number" id="gMaxLots" value="4" min="0.1" max="20" step="0.1" style="width:56px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"></label> ·
+            <label>Basket freeze at <input type="number" id="gFreeze" value="15" min="1" max="90" style="width:52px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px">% DD</label><br>
+            <label>Range hard stop <input type="number" id="gRangeStop" value="10" min="0" max="90" style="width:52px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px">%</label> ·
+            <label>Trend hard stop <input type="number" id="gTrendStop" value="25" min="0" max="90" style="width:52px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px">%</label> ·
+            <label><input type="checkbox" id="gDailyLock" checked> Daily profit lock 5%</label> ·
+            <label><input type="checkbox" id="gEqProt"> Equity protection 25% (off on your live account)</label>
+          </div>
         </div>
         <p class="err" id="btErr"></p>
         <div id="btOut" class="mt"><p class="note">No backtest run yet. Pick a strategy, timeframe and target, then run it — 600 candles: 5m ≈ 2 days, 15m ≈ 6 days, 1h ≈ 25 days, 4h ≈ 3 months.</p></div>
@@ -917,6 +932,262 @@ function customSignal(cs, i, S, P){
   if(!dir) return null;
   return {dir:dir, entry:cl, sl: dir===1? cl-P.slAtr*atrv : cl+P.slAtr*atrv};
 }
+/* ---- Smart Grid Hunter v1.26 basket simulation ----
+   A candle-granularity port of the EA's core loop (OnTick order approximated):
+   protections at the adverse extreme, grid adds at exact step levels, basket
+   TP / trailing at the favourable extreme, entries at the close. Money is in
+   cents; XAUUSD profit = lots x price move x 100 oz x 100 cents. */
+function stochSeries(cs, kP, dP, slow){
+  var raw=[];
+  for(var i=0;i<cs.length;i++){
+    if(i<kP-1){ raw.push(null); continue; }
+    var hh=-Infinity, ll=Infinity;
+    for(var j=i-kP+1;j<=i;j++){ if(cs[j].h>hh)hh=cs[j].h; if(cs[j].l<ll)ll=cs[j].l; }
+    raw.push(hh===ll? 50 : (cs[i].c-ll)/(hh-ll)*100);
+  }
+  function smaArr(a, n){ var out=[]; for(var i=0;i<a.length;i++){ var s=0, ok=(i>=n-1); if(ok){ for(var j=i-n+1;j<=i;j++){ if(a[j]===null){ ok=false; break; } s+=a[j]; } } out.push(ok? s/n : null); } return out; }
+  var K=smaArr(raw, slow), D=smaArr(K, dP);
+  return {k:K, d:D};
+}
+function h1IdxAt(h1cs, closeMs){
+  var lo=0, hi=h1cs.length-1, ans=-1;
+  while(lo<=hi){ var mid=(lo+hi)>>1; if(h1cs[mid].t+3600000<=closeMs){ ans=mid; lo=mid+1; } else hi=mid-1; }
+  return ans;
+}
+/* Per-H1-bar regime + confidence tier, exactly as SGH v1.25/1.26 computes them. */
+function h1GridArr(h1cs){
+  var cl=h1cs.map(function(c){ return c.c; });
+  var e21=ema(cl,21), e55=ema(cl,55), A=adxSeries(h1cs,14), atrH=atrSeries(h1cs,14);
+  return h1cs.map(function(c,i){
+    var a=A.adx[i];
+    if(a===null || atrH[i]===null) return {regime:0, tier:1, ok:false};
+    var regime = a<22 ? 0 : (e21[i]>e55[i] ? 1 : (e21[i]<e55[i] ? -1 : 0));
+    var tier;
+    if(regime!==0){
+      var old = i>=3? e21[i-3] : e21[i];
+      var slopeOK = regime>0 ? (e21[i]>old) : (e21[i]<old);
+      tier = (a>=22+8 && slopeOK) ? 2 : 1;
+    } else {
+      if(a>22-6) tier=0;
+      else tier = (Math.abs(e21[i]-e55[i]) <= 0.35*atrH[i]) ? 2 : 1;
+    }
+    return {regime:regime, tier:tier, ok:true};
+  });
+}
+function gridSimulate(cs, tf, P, env){
+  var ms=tfMs(tf), now=Date.now();
+  cs=cs.filter(function(c){ return c.t+ms<=now; });
+  var closes=cs.map(function(c){ return c.c; });
+  var atrSer=atrSeries(cs,14), sto=stochSeries(cs,14,3,3);
+  var WARM=210;
+  var bal=P.startBal, startBal=P.startBal;
+  var baskets={"1":null,"-1":null};
+  var freezeUntil={"1":0,"-1":0};
+  var breakoutUntil=0, blockedDay=-1, cooldownUntil=0, eqBlocked=false;
+  var peakEq=startBal, worstEqDD=0, worstBasketDD=0, maxLayersSeen=0;
+  var closed=[], eqCurve=[], dayReal={};
+  var smoothStep=0, band=null, startLotCache=null;
+  function profitAt(b, price){ if(!b) return 0; var s=0; for(var q=0;q<b.pos.length;q++) s+=b.pos[q].lot*(price-b.pos[q].p)*b.dir*10000; return s; }
+  function volOf(b){ var s=0; for(var q=0;q<b.pos.length;q++) s+=b.pos[q].lot; return s; }
+  function wEntry(b){ var s=0,v=0; for(var q=0;q<b.pos.length;q++){ s+=b.pos[q].lot*b.pos[q].p; v+=b.pos[q].lot; } return v? s/v : 0; }
+  function closeBasket(d, price, t, reason){
+    var b=baskets[String(d)]; if(!b) return 0;
+    var p=profitAt(b, price);
+    bal+=p;
+    var day=Math.floor(t/86400000); dayReal[day]=(dayReal[day]||0)+p;
+    closed.push({tOpen:b.openedT, tClose:t, dir:d, layers:b.pos.length, profit:p, reason:reason});
+    baskets[String(d)]=null;
+    return p;
+  }
+  function anyBasket(){ return baskets["1"]||baskets["-1"]; }
+  function floatAt(price){ return profitAt(baskets["1"],price)+profitAt(baskets["-1"],price); }
+  for(var i=WARM;i<cs.length;i++){
+    var bar=cs[i], ct=bar.t+ms, day=Math.floor(bar.t/86400000);
+    var atrv=atrSer[i]; if(atrv===null) continue;
+    var atrPips=atrv/0.01;
+    /* step (smoothed like the EA) */
+    var rawStep=Math.max(60, Math.min(800, atrPips*2)); rawStep=Math.max(rawStep, 24*3);
+    smoothStep = smoothStep<=0? rawStep : smoothStep+(rawStep-smoothStep)*0.3;
+    var stepPrice=Math.max(60, Math.min(800, smoothStep))*0.01;
+    /* H1 regime + confidence */
+    var hi2=h1IdxAt(env.h1cs, ct), hg = hi2>=0? env.h1arr[hi2] : {regime:0, tier:1, ok:false};
+    var regime=hg.regime, tier=hg.tier, confScale = tier>=2? 1 : 0.5, murky = tier===0;
+    /* volatility lot scale: ATR percentile over the last 200 bars */
+    var below=0, cnt=0;
+    for(var v2=Math.max(0,i-200);v2<i;v2++){ if(atrSer[v2]!==null){ cnt++; if(atrSer[v2]<atrv) below++; } }
+    var pct = cnt? below/cnt*100 : 0;
+    var volScale = pct<=50? 1 : pct<=75? 0.75 : pct<=90? 0.5 : 0.35;
+    /* M15 band while ranging */
+    if(regime===0 && ct>=breakoutUntil && env.m15){
+      var mArr=env.m15, mIdx=-1;
+      for(var mm=0;mm<mArr.length;mm++){ if(mArr[mm].t+900000<=ct) mIdx=mm; else break; }
+      if(mIdx>=20 && (!band || band.barT!==mArr[mIdx].t)){
+        var bh=-Infinity, bl=Infinity;
+        for(var bq=mIdx-20;bq<mIdx;bq++){ if(mArr[bq].h>bh)bh=mArr[bq].h; if(mArr[bq].l<bl)bl=mArr[bq].l; }
+        if(bh>bl) band={hi:bh, lo:bl, barT:mArr[mIdx].t};
+      }
+    }
+    /* ---- equity snapshot at the close (before actions) for DD stats ---- */
+    var eqClose=bal+floatAt(bar.c);
+    if(eqClose>peakEq) peakEq=eqClose;
+    if(peakEq>0){ var dd0=(peakEq-eqClose)/peakEq*100; if(dd0>worstEqDD) worstEqDD=dd0; }
+    /* ---- protections + TP at extremes, per direction ---- */
+    var dirs=[1,-1];
+    for(var di=0;di<2;di++){
+      var d=dirs[di], bk=baskets[String(d)];
+      if(!bk) continue;
+      var adv = d===1? bar.l : bar.h, fav = d===1? bar.h : bar.l;
+      var pAdv=profitAt(bk, adv);
+      var ddB = pAdv<0? -pAdv/bal*100 : 0; if(ddB>worstBasketDD) worstBasketDD=ddB;
+      var lim = regime===0? P.rangeStop : P.trendStop;
+      if(lim>0 && ddB>=lim){
+        /* close at the exact price where the loss reaches the limit — the live
+           EA watches tick by tick and exits at the limit, not at the candle's
+           worst tick; pricing the exit at the extreme would overstate losses. */
+        var limMoney=bal*lim/100, sSum=0, vSum=0;
+        for(var sp=0;sp<bk.pos.length;sp++){ sSum+=bk.pos[sp].lot*bk.pos[sp].p; vSum+=bk.pos[sp].lot; }
+        var stopPrice=(sSum - d*limMoney/10000)/vSum;
+        closeBasket(d, stopPrice, ct, "HARD STOP"); freezeUntil[String(d)]=ct+90*60000; continue;
+      }
+      /* grid adds at exact step levels (adverse first) */
+      var cap = regime===0? Math.min(P.maxLayers,4) : P.maxLayers;
+      var frozen = ct<freezeUntil[String(d)] || ct<breakoutUntil;
+      var counter = (regime>0 && d===-1) || (regime<0 && d===1);
+      if(!frozen && !counter && bk.pos.length<cap){
+        var guard=0;
+        while(bk.pos.length<cap && guard++<25){
+          var newest=bk.pos[bk.pos.length-1].p;
+          var level = d===1? newest-stepPrice : newest+stepPrice;
+          if(d===1? adv>level : adv<level) break;
+          var pAtLevel=profitAt(bk, level);
+          if(pAtLevel<0 && -pAtLevel/bal*100>=P.freeze) break; /* basket DD freeze */
+          if(startLotCache===null) startLotCache=Math.max(0.01, Math.round(P.lotPer*(bal/5000)*100)/100);
+          var base=startLotCache*confScale*volScale;
+          var lot = regime===0? base : base*Math.pow(P.mult, bk.pos.length);
+          lot=Math.round(lot*100)/100; if(lot<0.01) lot=0.01;
+          if(volOf(bk)+lot>P.maxLots+1e-9) break;
+          bk.pos.push({p:level, lot:lot});
+          if(bk.pos.length>maxLayersSeen) maxLayersSeen=bk.pos.length;
+          if(bk.trailOn){ var pNow=profitAt(bk, level); var nl=pNow-250; if(nl<bk.trailLock) bk.trailLock=nl; }
+        }
+      }
+      /* basket TP (pips from weighted entry), then trailing */
+      bk=baskets[String(d)]; if(!bk) continue;
+      var we=wEntry(bk), vol=volOf(bk);
+      var targetPips=Math.max(30, atrPips*0.5), tpPrice=we + d*targetPips*0.01;
+      if(d===1? fav>=tpPrice : fav<=tpPrice){ closeBasket(d, tpPrice, ct, "TAKE PROFIT"); continue; }
+      var pFav=profitAt(bk, fav);
+      if(pFav>=500){ if(!bk.trailOn){ bk.trailOn=true; bk.trailLock=pFav-250; } else if(pFav-250>bk.trailLock) bk.trailLock=pFav-250; }
+      if(bk.trailOn){
+        var pAdv2=profitAt(bk, adv);
+        if(pAdv2<=bk.trailLock){
+          var lockPrice=we + d*(bk.trailLock/(vol*10000));
+          closeBasket(d, lockPrice, ct, "TRAILING TP"); continue;
+        }
+      }
+    }
+    /* ---- equity protection (his live setting: OFF unless ticked) ---- */
+    if(P.eqProt && !eqBlocked && anyBasket()){
+      var eqNow=bal+floatAt(bar.c);
+      if(peakEq>0 && (peakEq-eqNow)/peakEq*100>=25){
+        closeBasket(1, bar.c, ct, "EQUITY PROTECTION"); closeBasket(-1, bar.c, ct, "EQUITY PROTECTION");
+        eqBlocked=true; cooldownUntil=ct+60*60000;
+      }
+    }
+    if(eqBlocked && ct>=cooldownUntil){ eqBlocked=false; peakEq=bal+floatAt(bar.c); }
+    /* ---- breakout tripwire ---- */
+    if(regime===0 && band && ct>=breakoutUntil){
+      var bandPips=(band.hi-band.lo)/0.01;
+      var buf=Math.max(atrPips*1.0, bandPips*0.05)*0.01;
+      var bdir=0;
+      if(bar.c>band.hi+buf) bdir=1; else if(bar.c<band.lo-buf) bdir=-1;
+      if(bdir!==0){ breakoutUntil=ct+P.breakoutMin*60000; freezeUntil[String(-bdir)]=breakoutUntil; }
+    }
+    /* ---- daily profit lock ---- */
+    if(P.dailyLock && blockedDay!==day && (dayReal[day]||0) >= bal*0.05 && bal>0){
+      if(anyBasket()){ closeBasket(1, bar.c, ct, "DAILY TARGET"); closeBasket(-1, bar.c, ct, "DAILY TARGET"); }
+      blockedDay=day;
+    }
+    /* ---- first entries (only when fully flat) ---- */
+    if(!anyBasket()){
+      startLotCache=Math.max(0.01, Math.round(P.lotPer*(bal/5000)*100)/100);
+      if(hg.ok && !murky && ct>=breakoutUntil && !eqBlocked && blockedDay!==day){
+        for(var ei=0;ei<2;ei++){
+          var ed=dirs[ei];
+          if(regime>0 && ed!==regime) continue;
+          if(regime<0 && ed!==regime) continue;
+          if(ct<freezeUntil[String(ed)]) continue;
+          if(regime===0 && band){
+            var zw=(band.hi-band.lo)*0.25;
+            if(ed===1 && !(bar.c<=band.lo+zw)) continue;
+            if(ed===-1 && !(bar.c>=band.hi-zw)) continue;
+          }
+          var kk=sto.k[i], dd2=sto.d[i];
+          if(kk===null || dd2===null) continue;
+          var sig=false;
+          if(ed===1) sig=((bar.c>bar.o) || (kk<=20 && kk>=dd2)) && kk<80;
+          else sig=((bar.c<bar.o) || (kk>=80 && kk<=dd2)) && kk>20;
+          if(!sig) continue;
+          var lot0=Math.round(startLotCache*confScale*volScale*100)/100; if(lot0<0.01) lot0=0.01;
+          if(lot0>P.maxLots) continue;
+          baskets[String(ed)]={pos:[{p:bar.c, lot:lot0}], openedT:bar.t, trailOn:false, trailLock:0, dir:ed};
+          if(maxLayersSeen<1) maxLayersSeen=1;
+          break;
+        }
+      }
+    } else {
+      startLotCache=null;
+    }
+    eqCurve.push({t:ct, eq:bal+floatAt(bar.c)});
+  }
+  var openList=[];
+  [1,-1].forEach(function(d){ var b=baskets[String(d)]; if(b) openList.push({dir:d, layers:b.pos.length, vol:volOf(b), float:profitAt(b, closes[closes.length-1])}); });
+  var finalEq=bal+openList.reduce(function(s,x){ return s+x.float; },0);
+  return {startBal:startBal, endBal:bal, finalEq:finalEq, closed:closed, eqCurve:eqCurve,
+          worstEqDD:worstEqDD, worstBasketDD:worstBasketDD, maxLayers:maxLayersSeen, open:openList};
+}
+function drawMoneyCurve(pts){
+  var cv=$("btEq"); if(!cv || !pts.length) return;
+  var ctx=cv.getContext("2d"), W=cv.width, H=cv.height;
+  var vals=pts.map(function(p){ return p.eq; });
+  var mn=Math.min.apply(null, vals), mx=Math.max.apply(null, vals);
+  var pad=8, X=function(i){ return pad+i*(W-2*pad)/Math.max(pts.length-1,1); }, Y=function(v){ return H-pad-((v-mn)/Math.max(mx-mn,0.01))*(H-2*pad); };
+  ctx.clearRect(0,0,W,H);
+  var end=vals[vals.length-1], start=vals[0];
+  ctx.strokeStyle=end>=start?"#34c77b":"#e5534b"; ctx.lineWidth=2; ctx.beginPath();
+  vals.forEach(function(v,i){ if(i===0) ctx.moveTo(X(i),Y(v)); else ctx.lineTo(X(i),Y(v)); });
+  ctx.stroke();
+  ctx.fillStyle="#9aa4b0"; ctx.font="11px sans-serif";
+  ctx.fillText("Equity curve (cents) · starts "+Math.round(start)+"¢ · ends "+Math.round(end)+"¢ · low "+Math.round(mn)+"¢", pad, 14);
+}
+function renderGrid(res, tf, bars, P){
+  var wins=res.closed.filter(function(x){ return x.profit>0; }).length;
+  var losses=res.closed.length-wins;
+  var net=res.endBal-res.startBal;
+  var hardStops=res.closed.filter(function(x){ return x.reason==="HARD STOP"; }).length;
+  var grossW=res.closed.filter(function(x){ return x.profit>0; }).reduce(function(s,x){ return s+x.profit; },0);
+  var grossL=res.closed.filter(function(x){ return x.profit<=0; }).reduce(function(s,x){ return s+x.profit; },0);
+  var verdict;
+  if(!res.closed.length && !res.open.length) verdict="The EA never opened a basket in this window — its gates (regime, confidence, range edges, stochastic) kept it out the whole time.";
+  else if(hardStops>0) verdict="⚠ The hard stop fired "+hardStops+" time(s) in this window — that is the protection doing its job, at a cost. Worst basket drawdown reached "+res.worstBasketDD.toFixed(1)+"% of balance and worst equity drawdown "+res.worstEqDD.toFixed(1)+"%. Check whether your stop settings match how much pain you accept.";
+  else if(net>=0) verdict="The EA survived this window and grew the account: "+(net>=0?"+":"")+Math.round(net)+"¢ ("+(net/res.startBal*100).toFixed(1)+"%) over "+res.closed.length+" closed baskets, worst equity drawdown "+res.worstEqDD.toFixed(1)+"%. One window is not proof — try the longest candle count and a different market mood.";
+  else verdict="The EA LOST money in this window: "+Math.round(net)+"¢ ("+(net/res.startBal*100).toFixed(1)+"% of the start), worst equity drawdown "+res.worstEqDD.toFixed(1)+"%, worst basket "+res.worstBasketDD.toFixed(1)+"% — without ever hitting a hard stop. That is the slow-bleed case: many small baskets against it.";
+  var openNote = res.open.length? '<p class="note" style="margin:10px 0">Still open at the end of the data: '+res.open.map(function(x){ return (x.dir===1?"BUY":"SELL")+" basket, "+x.layers+" layers, floating "+(x.float>=0?"+":"")+Math.round(x.float)+"¢"; }).join(" · ")+'. Final equity above includes it; the closed-basket record does not.</p>' : "";
+  var rows=res.closed.slice(-25).reverse().map(function(x){
+    return '<tr><td>'+new Date(x.tClose).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+'</td><td style="color:'+(x.dir===1?"var(--green)":"var(--red)")+'"><b>'+(x.dir===1?"BUY":"SELL")+'</b></td><td>'+x.layers+'</td><td>'+x.reason+'</td><td style="color:'+(x.profit>=0?"var(--green)":"var(--red)")+'">'+(x.profit>=0?"+":"")+Math.round(x.profit)+'¢</td></tr>';
+  }).join("");
+  $("btOut").innerHTML=
+    '<div class="stats">'+
+    '<div class="stat"><div class="lab">🤖 Smart Grid Hunter · '+tf+' · '+bars+' candles</div><div class="val" style="color:'+(net>=0?"var(--green)":"var(--red)")+'">'+Math.round(res.endBal)+'¢</div><div class="sub">started '+Math.round(res.startBal)+'¢ · net '+(net>=0?"+":"")+Math.round(net)+'¢ ('+(net/res.startBal*100).toFixed(1)+'%)</div></div>'+
+    '<div class="stat"><div class="lab">Final equity (incl. open)</div><div class="val">'+Math.round(res.finalEq)+'¢</div><div class="sub">'+res.open.length+' basket(s) still open at the end</div></div>'+
+    '<div class="stat"><div class="lab">Baskets closed</div><div class="val">'+res.closed.length+'</div><div class="sub">'+wins+' in profit · '+losses+' in loss · gross +'+Math.round(grossW)+'¢ / '+Math.round(grossL)+'¢</div></div>'+
+    '<div class="stat"><div class="lab">Worst drawdowns</div><div class="val" style="font-size:16px">Equity '+res.worstEqDD.toFixed(1)+'% · Basket '+res.worstBasketDD.toFixed(1)+'%</div><div class="sub">deepest basket reached '+res.maxLayers+' layers · hard stops: '+hardStops+'</div></div>'+
+    '</div>'+
+    '<canvas id="btEq" width="860" height="150" style="width:100%;height:150px"></canvas>'+
+    '<p class="note" style="margin:10px 0"><b>Read:</b> '+verdict+'</p>'+ openNote +
+    (rows? '<div style="overflow-x:auto"><table><thead><tr><th>Closed (Phnom Penh)</th><th>Dir</th><th>Layers</th><th>Reason</th><th>Profit</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="small">Last '+Math.min(25,res.closed.length)+' closed baskets, newest first. Simulation notes: candle-granularity port of the EA (it trades tick-by-tick on M1 live); inside one candle, adds are processed before take-profit; no spread or slippage charged; margin guard and the web START/STOP are not modelled; the entry signal is evaluated on the test timeframe (live: M5).</p>' : '<p class="note">No basket closed in this window.</p>');
+  drawMoneyCurve(res.eqCurve);
+}
 function simulate(cs, tf, opts){
   opts=opts||{};
   var strat=opts.strategy||"desk", rr=opts.rr||1;
@@ -1010,8 +1281,8 @@ function drawEquity(trades){
   ctx.fillStyle="#9aa4b0"; ctx.font="11px sans-serif"; ctx.fillText("Equity curve · cumulative R · ends "+(s>=0?"+":"")+s.toFixed(1)+"R", pad, 14);
 }
 var btStrat="desk";
-var STRAT_LABELS={desk:"🖥️ Desk council", scalp:"⚡ Scalp Panel", custom:"🧩 Custom builder"};
-$("btStratBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-bstrat]"); if(!b) return; btStrat=b.getAttribute("data-bstrat"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b); $("btCustom").style.display = btStrat==="custom"? "block":"none"; });
+var STRAT_LABELS={desk:"🖥️ Desk council", scalp:"⚡ Scalp Panel", custom:"🧩 Custom builder", grid:"🤖 Smart Grid Hunter"};
+$("btStratBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-bstrat]"); if(!b) return; btStrat=b.getAttribute("data-bstrat"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b); $("btCustom").style.display = btStrat==="custom"? "block":"none"; $("btGrid").style.display = btStrat==="grid"? "block":"none"; });
 function setCustomUI(p){
   $("cuDir").value=p.dirMode; $("cuTrend").checked=p.trend; $("cuRsi").checked=p.rsi; $("cuRsiX").value=p.rsiX;
   $("cuEmaPos").checked=p.emaPos; $("cuBreak").checked=p.brk; $("cuAdx").checked=p.adx; $("cuAdxY").value=p.adxY; $("cuSlAtr").value=p.slAtr;
@@ -1032,21 +1303,39 @@ function readCustom(){
   p.any = p.trend||p.rsi||p.emaPos||p.brk||p.adx;
   return p;
 }
+function readGrid(){
+  function num(id, def, lo, hi){ var v=parseFloat($(id).value); if(!isFinite(v)) v=def; return Math.min(hi, Math.max(lo, v)); }
+  return { startBal:num("gBal",5000,100,1000000), lotPer:num("gLotPer",0.05,0.01,2), mult:num("gMult",1.4,1,3),
+    maxLayers:Math.round(num("gMaxLayers",10,1,20)), maxLots:num("gMaxLots",4,0.1,50),
+    freeze:num("gFreeze",15,1,95), rangeStop:num("gRangeStop",10,0,95), trendStop:num("gTrendStop",25,0,95),
+    dailyLock:$("gDailyLock").checked, eqProt:$("gEqProt").checked, breakoutMin:90 };
+}
 $("btRun").addEventListener("click", function(){
   var btn=this; btn.disabled=true; btn.textContent="Running…"; $("btErr").textContent="";
   var total=parseInt($("btBars").value,10)||600;
   var rr=parseFloat($("btRR").value)||1;
   var custom=null;
   if(btStrat==="custom"){ custom=readCustom(); if(!custom.any){ $("btErr").textContent="Custom strategy needs at least one entry condition ticked."; btn.disabled=false; btn.textContent="▶ Run backtest"; return; } custom.break=custom.brk; }
+  if(btStrat==="grid" && btTF!=="5m" && btTF!=="15m"){ $("btErr").textContent="Smart Grid Hunter test needs the 5m or 15m timeframe — a grid lives inside the candles, so 1h/4h can't show it honestly."; btn.disabled=false; btn.textContent="▶ Run backtest"; return; }
   var jobs=[fetchHistory(btTF, total)];
   if(btStrat==="scalp" && btTF!=="1h") jobs.push(fetchHistory("1h", 500));
+  if(btStrat==="grid"){ jobs.push(fetchHistory("1h", 500)); if(btTF!=="15m") jobs.push(fetchHistory("15m", 1000)); }
   Promise.all(jobs).then(function(res){
     var cs=res[0];
     if(!cs || cs.length<120) throw new Error("not enough history returned ("+(cs?cs.length:0)+" candles)");
+    if(btStrat==="grid"){
+      var h1=res[1]; if(!h1 || h1.length<120) throw new Error("not enough H1 history for the regime ("+(h1?h1.length:0)+")");
+      var m15 = btTF==="15m"? cs : res[2];
+      if(!m15 || m15.length<40) throw new Error("not enough M15 history for the range band");
+      var P=readGrid();
+      var gres=gridSimulate(cs, btTF, P, {h1cs:h1, h1arr:h1GridArr(h1), m15:m15});
+      renderGrid(gres, btTF, cs.length, P);
+      return;
+    }
     var opts={strategy:btStrat, rr:rr, custom:custom};
     if(btStrat==="scalp"){
       if(btTF==="1h"){ opts.h1arr=h1BiasArr(cs); }
-      else { var h1=res[1]; if(!h1 || h1.length<80) throw new Error("not enough H1 history for the bias ("+(h1?h1.length:0)+")"); opts.h1cs=h1; opts.h1arr=h1BiasArr(h1); }
+      else { var h1b=res[1]; if(!h1b || h1b.length<80) throw new Error("not enough H1 history for the bias ("+(h1b?h1b.length:0)+")"); opts.h1cs=h1b; opts.h1arr=h1BiasArr(h1b); }
     }
     var trades=simulate(cs, btTF, opts);
     renderBacktest(trades, btTF, cs.length, {label:STRAT_LABELS[btStrat], rr:rr});

@@ -244,7 +244,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <p class="note">Three engines, one honest simulator: closed candles only, one trade at a time, stop = 1×ATR (custom: your choice), exit at the stop or at your chosen <b>target</b>. If one candle touches both, the stop counts first (the worse case). No spread or slippage is charged, and this is the OKX feed, not Exness — treat results as optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
         <div class="pillrow mt">
           <div class="tfbtns" id="btTfBtns">
-            <button data-btf="5m">5m</button><button data-btf="15m" class="on">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
+            <button data-btf="5m">5m</button><button data-btf="15m" class="active">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
           </div>
           <label class="small">Candles
             <select id="btBars" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
@@ -256,7 +256,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <div class="pillrow mt">
           <span class="small">Strategy</span>
           <div class="tfbtns" id="btStratBtns">
-            <button data-bstrat="desk" class="on">🖥️ Desk council</button><button data-bstrat="scalp">⚡ Scalp Panel</button><button data-bstrat="custom">🧩 Custom builder</button>
+            <button data-bstrat="desk" class="active">🖥️ Desk council</button><button data-bstrat="scalp">⚡ Scalp Panel</button><button data-bstrat="custom">🧩 Custom builder</button>
           </div>
           <label class="small">Target (reward vs 1 risk)
             <select id="btRR" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
@@ -801,7 +801,7 @@ setInterval(function(){ refresh(); fetchBias(); }, 60000);
 
 /* ================= backtest ================= */
 var btTF="15m";
-$("btTfBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-btf]"); if(!b) return; btTF=b.getAttribute("data-btf"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i]===b); });
+$("btTfBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-btf]"); if(!b) return; btTF=b.getAttribute("data-btf"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b); });
 function fetchHistory(tf, total){
   var key=tdKey();
   if(key){
@@ -1011,7 +1011,7 @@ function drawEquity(trades){
 }
 var btStrat="desk";
 var STRAT_LABELS={desk:"🖥️ Desk council", scalp:"⚡ Scalp Panel", custom:"🧩 Custom builder"};
-$("btStratBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-bstrat]"); if(!b) return; btStrat=b.getAttribute("data-bstrat"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on", bs[i]===b); $("btCustom").style.display = btStrat==="custom"? "block":"none"; });
+$("btStratBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-bstrat]"); if(!b) return; btStrat=b.getAttribute("data-bstrat"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b); $("btCustom").style.display = btStrat==="custom"? "block":"none"; });
 function setCustomUI(p){
   $("cuDir").value=p.dirMode; $("cuTrend").checked=p.trend; $("cuRsi").checked=p.rsi; $("cuRsiX").value=p.rsiX;
   $("cuEmaPos").checked=p.emaPos; $("cuBreak").checked=p.brk; $("cuAdx").checked=p.adx; $("cuAdxY").value=p.adxY; $("cuSlAtr").value=p.slAtr;

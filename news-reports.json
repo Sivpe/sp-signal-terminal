@@ -1,1 +1,33 @@
-[{"body":["Actual: +0.3% MoM vs +0.4% forecast (previous +1.4%, revised); +6.5% YoY vs +6.6% forecast. Core +0.3% MoM, in line.","What it means: the monthly number cooled, but the yearly number is still hot — +6.5% YoY is the biggest annual rise since November 2022, and core is +4.9% YoY. With a December Fed hike still priced and Treasury yields above 5%, the pressure on gold has paused, not lifted.","Gold's reaction (Kitco): spot caught a modest bid to about $3,897.90, +0.57% on the day, testing resistance at $3,900 — a bounce off Thursday's 52-week low near $3,852 after a three-session fall of about 6%.","Levels: a firm hold above $3,900 opens $3,930, then $3,950–$3,970 and $4,000. If the bounce fails, $3,870 and then the $3,852 low are exposed again.","Call: NO TRADE into the bounce — the desk's standing rule held (no manual scalps 20:15–21:30 Phnom Penh on release night). Reassess once gold either holds above $3,900 or loses $3,870."],"call":"NO TRADE","event":"US PPI (Oct)","headline":"PPI cooler than expected — a relief bounce for gold, not a trend change","kind":"post","time_label":"Fri 13 Nov · released 20:30 Phnom Penh","ts":"2026-11-13T20:45:00+07:00"}]
+[
+  {
+    "body": [
+      "Actual: +0.3% MoM vs +0.4% forecast (previous +1.4%, revised); +6.5% YoY vs +6.6% forecast. Core +0.3% MoM, in line.",
+      "What it means: the monthly number cooled, but the yearly number is still hot \u2014 +6.5% YoY is the biggest annual rise since November 2022, and core is +4.9% YoY. With a December Fed hike still priced and Treasury yields above 5%, the pressure on gold has paused, not lifted.",
+      "Gold's reaction (Kitco): spot caught a modest bid to about $3,897.90, +0.57% on the day, testing resistance at $3,900 \u2014 a bounce off Thursday's 52-week low near $3,852 after a three-session fall of about 6%.",
+      "Levels: a firm hold above $3,900 opens $3,930, then $3,950\u2013$3,970 and $4,000. If the bounce fails, $3,870 and then the $3,852 low are exposed again.",
+      "Call: NO TRADE into the bounce \u2014 the desk's standing rule held (no manual scalps 20:15\u201321:30 Phnom Penh on release night). Reassess once gold either holds above $3,900 or loses $3,870."
+    ],
+    "call": "NO TRADE",
+    "event": "US PPI (Oct)",
+    "headline": "PPI cooler than expected \u2014 a relief bounce for gold, not a trend change",
+    "kind": "post",
+    "time_label": "Fri 13 Nov \u00b7 released 20:30 Phnom Penh",
+    "ts": "2026-11-13T20:45:00+07:00"
+  },
+  {
+    "ts": "2026-11-13T21:30:00+07:00",
+    "kind": "pre",
+    "event": "Fed's Logan Speaks",
+    "time_label": "Fri 13 Nov \u00b7 21:40 Bangkok",
+    "call": "NO TRADE",
+    "headline": "Logan speaks in ~10 min \u2014 hawkish stance already priced in, no trade into the speech",
+    "body": [
+      "No forecast \u2014 a speech, not data. Dallas Fed President Lorie Logan (2026 FOMC voter) gives opening remarks at the 2026 Bank Funding Conference.",
+      "Her stance is already known and priced in: on Tuesday she said the FOMC needs 'at least two more 25bp hikes' and the rate is ~50bp below modestly restrictive. Gold has already fallen 4%+ this week on this hawkish repricing, with the dollar at a 19-month high.",
+      "Gold ~$3,890, just under $3,900, day range ~$3,873\u20133,923, just above its 52-week low near $3,853. A hawkish repeat keeps it capped under $3,900.",
+      "Tonight's PPI came in a touch softer than forecast (0.3% vs 0.4% MoM) and gave gold a small bounce \u2014 but core stayed sticky, so the Fed's hawkish line hasn't cracked.",
+      "Flip: a dovish softening (pause talk) would turn it BUY toward $3,900\u20133,923; a 50bp December hike endorsement would turn it SELL, watch $3,873 then $3,853.",
+      "Caution: the first minutes after any headline are spike territory \u2014 no manual scalps into the speech, per the standing rule."
+    ]
+  }
+]

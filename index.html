@@ -48,7 +48,12 @@ button{font-family:inherit;cursor:pointer}
 .tfbtns button{background:none;border:0;color:var(--dim);padding:7px 14px;font-size:13.5px}
 .tfbtns button.active{background:var(--gold);color:#171106;font-weight:700}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}}
+.mnav{display:none}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}
+.mnav{display:flex;flex-direction:row;gap:6px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+.mnav::-webkit-scrollbar{display:none}
+.mnav button{flex:0 0 auto;text-align:center;background:var(--panel);border:1px solid var(--line);white-space:nowrap}
+.mnav button.active{background:var(--panel2);border-color:var(--gold);color:var(--txt)}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
 .card h3{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .card h3 .live{color:var(--green);font-size:11px;letter-spacing:.05em}
@@ -133,6 +138,15 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
   </aside>
 
   <main class="main">
+    <nav class="nav mnav" id="mnav">
+      <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
+      <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
+      <button data-sec="backtest"><span class="ic">🧪</span> Backtest</button>
+      <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
+      <button data-sec="journal"><span class="ic">✎</span> Journal</button>
+      <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
+      <button data-sec="about"><span class="ic">?</span> How it works</button>
+    </nav>
     <div class="topbar">
       <h1>XAUUSD <span class="thin">/ SP Gold Trading</span></h1>
       <div class="pillrow">
@@ -649,9 +663,10 @@ $("mt5Clear").addEventListener("click", function(){
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
   b.addEventListener("click", function(){
-    document.querySelectorAll(".nav button").forEach(function(x){x.classList.remove("active");});
-    b.classList.add("active");
+    var sec=b.getAttribute("data-sec");
+    document.querySelectorAll(".nav button").forEach(function(x){x.classList.toggle("active", x.getAttribute("data-sec")===sec);});
     document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
+    window.scrollTo(0,0);
     $("sec-"+b.getAttribute("data-sec")).classList.add("active");
     if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
     if(b.getAttribute("data-sec")==="news") loadNews();

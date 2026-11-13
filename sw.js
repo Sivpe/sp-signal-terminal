@@ -2,7 +2,7 @@
    Strategy: network-first for everything same-origin, so live data
    (page, news JSON, events JSON) is never stuck stale; the cache is
    only a fallback when the network is gone. */
-var CACHE = "sp-gold-v4";
+var CACHE = "sp-gold-v5";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 self.addEventListener("install", function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(SHELL); }).then(function(){ return self.skipWaiting(); }));

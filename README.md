@@ -39,11 +39,10 @@ news watch updates before and after gold-moving releases.
   reasons ~10 min before, result + updated call after), from
   `news-reports.json`.
 - **Journal** — daily notes, stored in the browser on that device only.
-- **My MT5 Panel** — see the SP Gold Scalp Panel indicator's signal beside
-  the web desk: load `SP_Scalp_Signal.json` by hand, or connect the private
-  Tailscale link once (the `sp-scalp-endpoint` mini-server on the VPS +
-  Tailscale Serve) and it auto-refreshes every 30 seconds with a STALE
-  warning. The link is stored only in each device's browser.
+- **My MT5 Panel** — load `SP_Scalp_Signal.json` from the SP Gold Scalp
+  Panel indicator to see the MT5 signal beside the web desk. (An automatic
+  Tailscale-link loader was added on 2026-11-13 and removed the same day —
+  Steven found it confusing and chose the simple manual load.)
 - Optional signal beep (rising = BUY, falling = SELL) with vibration,
   foreground only — the same pattern as the Smart Grid dashboard.
 

@@ -215,23 +215,13 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-mt5">
       <div class="card mb">
         <h3>My MT5 panel — SP Gold Scalp Signal</h3>
-        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b> on the VPS. Connect the private link once and this panel updates itself every 30 seconds — or load the file by hand below.</p>
-        <div class="card mt" style="background:var(--panel2)">
-          <h3>Automatic — private link (Tailscale)</h3>
-          <p class="note">Paste the private <b>https://…ts.net/scalp.json</b> link from your VPS (setup steps are in the <b>sp-scalp-endpoint</b> package from Steven's chat). The link is saved only in this browser on this device — it is not in the website, and the address only works on your own Tailscale devices. Your phone's Tailscale must be ON.</p>
-          <div class="pillrow mt">
-            <input type="text" id="autoUrl" placeholder="https://your-vps.…ts.net/scalp.json" style="max-width:420px">
-            <button class="ghostbtn" id="autoSave">Save &amp; connect</button>
-            <button class="ghostbtn" id="autoClear">Disconnect</button>
-          </div>
-          <div class="small mt" id="autoStatus">Not connected — manual file load still works below.</div>
-        </div>
+        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b> on the VPS. Copy that file to this device, load it here, and the terminal shows your own MT5 signal next to the web desk — two opinions, one screen.</p>
         <div class="pillrow mt">
-          <label class="ghostbtn" for="jsonFile" style="display:inline-block">Load SP_Scalp_Signal.json by hand</label>
+          <label class="ghostbtn" for="jsonFile" style="display:inline-block">Load SP_Scalp_Signal.json</label>
           <input type="file" id="jsonFile" accept=".json" style="display:none">
           <span class="small">The file never leaves your device.</span>
         </div>
-        <div id="mt5Out" class="mt"><p class="note">No MT5 signal yet — connect the private link or load the file.</p></div>
+        <div id="mt5Out" class="mt"><p class="note">No MT5 file loaded yet.</p></div>
       </div>
       <div class="card">
         <h3>Running both systems — the rule</h3>
@@ -545,37 +535,6 @@ $("jsonFile").addEventListener("change", function(ev){
   };
   rd.readAsText(f);
 });
-/* ---- automatic private link (Tailscale) ---- */
-var AUTOKEY="sp_scalp_url", autoTimer=null;
-function scalpAgeSec(j){
-  if(!j || !j.updated) return null;
-  var t=Date.parse(String(j.updated).replace(/\./g,"-").replace(" ","T")+"Z");
-  if(isNaN(t)) return null;
-  return Math.round((Date.now()-t)/1000);
-}
-function fetchAuto(){
-  var url=""; try{ url=localStorage.getItem(AUTOKEY)||""; }catch(e){}
-  if(!url) return;
-  fetch(url+(url.indexOf("?")>=0?"&":"?")+"ts="+Date.now()).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
-  .then(function(j){
-    renderMt5(j);
-    var data=(j && j.scalp)? j.scalp : j;
-    var age=scalpAgeSec(data);
-    $("autoStatus").innerHTML="🟢 Connected · last check "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh"
-      +(age===null?"":(age>180?' · <span style="color:var(--amber)"><b>STALE</b> — signal is '+Math.round(age/60)+' min old; check the indicator is running on the VPS</span>':" · signal "+Math.max(0,age)+"s old · auto-refresh 30s"));
-  })
-  .catch(function(e){ $("autoStatus").innerHTML='<span style="color:var(--red)">🔴 Could not reach the private link ('+e.message+'). Is Tailscale ON on this device, and the endpoint running on the VPS?</span>'; });
-}
-function startAuto(){ if(autoTimer) clearInterval(autoTimer); fetchAuto(); autoTimer=setInterval(fetchAuto, 30000); }
-try{ var savedUrl=localStorage.getItem(AUTOKEY)||""; if(savedUrl){ $("autoUrl").value=savedUrl; startAuto(); } }catch(e){}
-$("autoSave").addEventListener("click", function(){
-  var v=$("autoUrl").value.trim();
-  if(!v){ $("autoStatus").textContent="Paste the private https://…ts.net/scalp.json link first."; return; }
-  if(v.indexOf("https://")!==0){ $("autoStatus").textContent="The link must start with https:// — the http:// Tailscale address will be blocked by the browser on this https site. Use the Tailscale Serve https link."; return; }
-  localStorage.setItem(AUTOKEY, v); $("autoStatus").textContent="Saved on this device ✓ — connecting…"; startAuto();
-});
-$("autoClear").addEventListener("click", function(){ localStorage.removeItem(AUTOKEY); $("autoUrl").value=""; if(autoTimer) clearInterval(autoTimer); autoTimer=null; $("autoStatus").textContent="Disconnected on this device. Manual file load still works."; });
-
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
   b.addEventListener("click", function(){
@@ -585,7 +544,6 @@ document.querySelectorAll(".nav button").forEach(function(b){
     $("sec-"+b.getAttribute("data-sec")).classList.add("active");
     if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
     if(b.getAttribute("data-sec")==="news") loadNews();
-    if(b.getAttribute("data-sec")==="mt5") fetchAuto();
   });
 });
 $("tfbtns").addEventListener("click", function(e){

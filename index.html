@@ -151,7 +151,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <h1>XAUUSD <span class="thin">/ SP Gold Trading</span></h1>
       <div class="pillrow">
         <div class="tfbtns" id="tfbtns">
-          <button data-tf="15m" class="active">15m</button>
+          <button data-tf="5m">5m</button><button data-tf="15m" class="active">15m</button>
           <button data-tf="1h">1h</button>
           <button data-tf="4h">4h</button>
         </div>
@@ -244,7 +244,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <p class="note">Four engines: the three signal strategies share one honest simulator (closed candles only, one trade at a time, stop = 1×ATR — custom: your choice — exit at the stop or at your chosen <b>target</b>); <b>Smart Grid Hunter</b> runs as a full money simulation with its own panel below. If one candle touches both, the stop counts first (the worse case). No spread or slippage is charged, and this is the OKX feed, not Exness — treat results as optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
         <div class="pillrow mt">
           <div class="tfbtns" id="btTfBtns">
-            <button data-btf="5m">5m</button><button data-btf="15m" class="active">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
+            <button data-btf="1m">1m</button><button data-btf="5m">5m</button><button data-btf="15m" class="active">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
           </div>
           <label class="small">Candles
             <select id="btBars" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
@@ -287,7 +287,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <p class="note">All ticked conditions must be true on the same closed candle (AND). A signal with no condition ticked is blocked — a strategy needs at least one rule.</p>
         </div>
         <div id="btGrid" class="mt" style="display:none">
-          <p class="note">Your <b>Smart Grid Hunter v1.26</b> as a full basket simulation: the money is real in the model — the balance grows and shrinks trade by trade, lots re-size from the balance, and the EA's own protections (basket freeze, range/trend hard stops, breakout pause, daily profit lock) all fire at your settings. Defaults below are your live settings as recorded — change any of them. The Target selector does not apply (the EA uses its own basket TP + trailing). Runs on <b>5m or 15m</b> only: a grid lives inside the candles, so 1h/4h are too coarse to mean anything. Live, the EA executes tick-by-tick on M1 — inside one test candle the order of events is estimated (adds before take-profit), spread is not charged, and the margin guard is not modelled. Treat a survival result as encouraging, not proof.</p>
+          <p class="note">Your <b>Smart Grid Hunter v1.26</b> as a full basket simulation: the money is real in the model — the balance grows and shrinks trade by trade, lots re-size from the balance, and the EA's own protections (basket freeze, range/trend hard stops, breakout pause, daily profit lock) all fire at your settings. Defaults below are your live settings as recorded — change any of them. The Target selector does not apply (the EA uses its own basket TP + trailing). Runs on <b>1m, 5m or 15m</b>: a grid lives inside the candles, so 1h/4h are too coarse to mean anything. <b>1m is the EA's real execution timeframe</b> and the most faithful choice — but 1,000 candles of 1m is only ~17 hours, so use 1m to inspect a short stretch (a news day, a crash) and judge the EA on 5m/15m. On 1m, pick the 1000-candle setting. Live, the EA executes tick-by-tick on M1 — inside one test candle the order of events is estimated (adds before take-profit), spread is not charged, and the margin guard is not modelled. Treat a survival result as encouraging, not proof.</p>
           <div class="mt small" style="line-height:2.1">
             <label>Start money <input type="number" id="gBal" value="5000" min="500" step="500" style="width:90px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"> cents (¢)</label> ·
             <label>Base lot per 5,000¢ <input type="number" id="gLotPer" value="0.05" min="0.01" max="1" step="0.01" style="width:64px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"></label> ·
@@ -302,7 +302,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           </div>
         </div>
         <p class="err" id="btErr"></p>
-        <div id="btOut" class="mt"><p class="note">No backtest run yet. Pick a strategy, timeframe and target, then run it — 600 candles: 5m ≈ 2 days, 15m ≈ 6 days, 1h ≈ 25 days, 4h ≈ 3 months.</p></div>
+        <div id="btOut" class="mt"><p class="note">No backtest run yet. Pick a strategy, timeframe and target, then run it — 600 candles: 1m ≈ 10 hours, 5m ≈ 2 days, 15m ≈ 6 days, 1h ≈ 25 days, 4h ≈ 3 months. 1000 candles of 1m ≈ 17 hours.</p></div>
       </div>
     </section>
 
@@ -401,10 +401,10 @@ function feedList(){
   var feeds=[];
   var key=tdKey();
   if(key){
-    feeds.push({name:"Twelve Data · XAU/USD spot", url:function(tf){var iv={"15m":"15min","1h":"1h","4h":"4h"}[tf];return "https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize=200&apikey="+encodeURIComponent(key);}, parse:function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){return {t:Date.parse(v.datetime.replace(" ","T")+"Z"),o:+v.open,h:+v.high,l:+v.low,c:+v.close};}).reverse(); }});
+    feeds.push({name:"Twelve Data · XAU/USD spot", url:function(tf){var iv={"5m":"5min","15m":"15min","1h":"1h","4h":"4h"}[tf];return "https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize=200&apikey="+encodeURIComponent(key);}, parse:function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){return {t:Date.parse(v.datetime.replace(" ","T")+"Z"),o:+v.open,h:+v.high,l:+v.low,c:+v.close};}).reverse(); }});
   }
-  feeds.push({name:"OKX · XAU gold market", url:function(tf){var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
-  feeds.push({name:"OKX · XAU gold market (history)", url:function(tf){var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
+  feeds.push({name:"OKX · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
+  feeds.push({name:"OKX · XAU gold market (history)", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
   return feeds;
 }
 var candles = [];       // ascending, includes the still-forming last candle
@@ -438,7 +438,7 @@ function fetchCandles(tf){
   });
   return chain;
 }
-function tfMs(tf){ return {"5m":300000,"15m":900000,"1h":3600000,"4h":14400000}[tf]; }
+function tfMs(tf){ return {"1m":60000,"5m":300000,"15m":900000,"1h":3600000,"4h":14400000}[tf]; }
 function closedOnly(cs){ var now=Date.now(), ms=tfMs(TF); return cs.filter(function(c){ return c.t+ms<=now; }); }
 
 function fetchSpot(){
@@ -820,12 +820,12 @@ $("btTfBtns").addEventListener("click", function(e){ var b=e.target.closest("[da
 function fetchHistory(tf, total){
   var key=tdKey();
   if(key){
-    var iv={"5m":"5min","15m":"15min","1h":"1h","4h":"4h"}[tf];
+    var iv={"1m":"1min","5m":"5min","15m":"15min","1h":"1h","4h":"4h"}[tf];
     return fetch("https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize="+total+"&apikey="+encodeURIComponent(key))
       .then(function(r){ return r.json(); })
       .then(function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){ return {t:Date.parse(v.datetime.replace(" ","T")+"Z"), o:+v.open, h:+v.high, l:+v.low, c:+v.close}; }).reverse(); });
   }
-  var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];
+  var bar={"1m":"1m","5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];
   var byT={};
   function page(after){
     var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300"+(after?("&after="+after):"");
@@ -1316,7 +1316,7 @@ $("btRun").addEventListener("click", function(){
   var rr=parseFloat($("btRR").value)||1;
   var custom=null;
   if(btStrat==="custom"){ custom=readCustom(); if(!custom.any){ $("btErr").textContent="Custom strategy needs at least one entry condition ticked."; btn.disabled=false; btn.textContent="▶ Run backtest"; return; } custom.break=custom.brk; }
-  if(btStrat==="grid" && btTF!=="5m" && btTF!=="15m"){ $("btErr").textContent="Smart Grid Hunter test needs the 5m or 15m timeframe — a grid lives inside the candles, so 1h/4h can't show it honestly."; btn.disabled=false; btn.textContent="▶ Run backtest"; return; }
+  if(btStrat==="grid" && btTF!=="1m" && btTF!=="5m" && btTF!=="15m"){ $("btErr").textContent="Smart Grid Hunter test needs the 1m, 5m or 15m timeframe — a grid lives inside the candles, so 1h/4h can't show it honestly."; btn.disabled=false; btn.textContent="▶ Run backtest"; return; }
   var jobs=[fetchHistory(btTF, total)];
   if(btStrat==="scalp" && btTF!=="1h") jobs.push(fetchHistory("1h", 500));
   if(btStrat==="grid"){ jobs.push(fetchHistory("1h", 500)); if(btTF!=="15m") jobs.push(fetchHistory("15m", 1000)); }

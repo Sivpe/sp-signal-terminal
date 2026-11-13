@@ -514,13 +514,14 @@ function renderMt5(j){
   if(j && j.scalp) j=j.scalp; // tolerate an /api/status-shaped reply
   var dirTxt = (j.dir===1||j.signal==="BUY")?"BUY":((j.dir===-1||j.signal==="SELL")?"SELL":"WAIT");
   var cls = dirTxt==="BUY"?"buy":(dirTxt==="SELL"?"sell":"wait");
+  var fz=function(x){ return (!x || +x===0) ? "—" : fmt(x); }; // WAIT signals carry 0 levels by design
   $("mt5Out").innerHTML =
     '<div class="sigdir '+cls+'">'+dirTxt+'</div>'+
     '<div class="sigreason">'+(j.reason||"")+'</div>'+
     '<div class="kv"><span>Symbol / TF</span><b>'+(j.symbol||"—")+" · "+(j.tf||"—")+'</b></div>'+
-    '<div class="kv"><span>Entry</span><b>'+fmt(j.entry)+'</b></div>'+
-    '<div class="kv"><span>Stop loss</span><b class="sl">'+fmt(j.sl)+'</b></div>'+
-    '<div class="kv"><span>TP1 / TP2</span><b class="tp">'+fmt(j.tp1)+" / "+fmt(j.tp2)+'</b></div>'+
+    '<div class="kv"><span>Entry</span><b>'+fz(j.entry)+'</b></div>'+
+    '<div class="kv"><span>Stop loss</span><b class="sl">'+fz(j.sl)+'</b></div>'+
+    '<div class="kv"><span>TP1 / TP2</span><b class="tp">'+fz(j.tp1)+" / "+fz(j.tp2)+'</b></div>'+
     '<div class="kv"><span>H1 bias</span><b>'+(j.bias||"—")+" "+(j.strength||"")+'</b></div>'+
     '<div class="kv"><span>RSI · ADX H1 · Spread</span><b>'+(j.rsi!==undefined?fmt(j.rsi,1):"—")+" · "+(j.adx_h1!==undefined?fmt(j.adx_h1,1):"—")+" · "+(j.spread_pips!==undefined?fmt(j.spread_pips,0)+" pips":"—")+'</b></div>'+
     '<div class="kv"><span>Updated (MT5 server time)</span><b>'+(j.updated||"—")+'</b></div>'+

@@ -674,7 +674,7 @@ $("mt5Clear").addEventListener("click", function(){
   showMt5Saved(null);
 });
 /* ================= MT5 live link ================= */
-var MT5_LIVE_DEFAULT=""; /* Steven's private ts.net link is wired in here by Muse once it exists */
+var MT5_LIVE_DEFAULT="https://win-54huck5cs86.tail0db2c5.ts.net/scalp.json"; /* Steven's private Tailscale Serve link — reachable only from his own devices (Tailscale is the lock) */
 var mt5Live={url:"", timer:null, fails:0, data:null, at:0};
 function liveMt5Url(){ try{ var u=localStorage.getItem("sp_scalp_url"); if(u) return u; }catch(e){} return MT5_LIVE_DEFAULT; }
 function stampAgeMins(j){ if(!j || !j.updated) return -1; var t=Date.parse(String(j.updated).replace(/\./g,"-").replace(" ","T")+"Z"); if(isNaN(t)) return -1; return Math.max(0, Math.round((Date.now()-t)/60000)); }

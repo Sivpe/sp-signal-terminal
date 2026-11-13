@@ -38,6 +38,12 @@ news watch updates before and after gold-moving releases.
 - **Gold News** — Muse's scheduled-release reports (pre-news call with
   reasons ~10 min before, result + updated call after), from
   `news-reports.json`.
+- **News Blackout Shield** — top of the Terminal: next gold event + live
+  countdown; from 30 min before to 60 min after a release the banner turns
+  red ("NEWS BLACKOUT — NO TRADE") and a scan asks for explicit
+  confirmation (otherwise a NO TRADE card is shown). Events come from
+  `news-events.json` (ISO times, Phnom Penh), synced each morning from the
+  news watch calendar plus hand-seeded Fed/BEA dates.
 - **Journal** — daily notes, stored in the browser on that device only.
 - **My MT5 Panel** — load `SP_Scalp_Signal.json` from the SP Gold Scalp
   Panel indicator to see the MT5 signal beside the web desk. (An automatic

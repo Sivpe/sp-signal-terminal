@@ -88,6 +88,17 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 .mt{margin-top:14px}.mb{margin-bottom:14px}
 .small{font-size:12.5px;color:var(--dim2)}
 .err{color:var(--red);font-size:13.5px}
+/* news blackout shield */
+.shield{border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--line);background:var(--panel)}
+.shield .smain{display:flex;gap:12px;align-items:center;min-width:0}
+.shield .sicon{font-size:24px}
+.shield .stitle{font-weight:800;font-size:16px}
+.shield .scount{font-size:21px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.shield.ok{border-left:5px solid var(--green)}
+.shield.soon{border-left:5px solid var(--amber);background:#201a0f}
+.shield.hot{background:#2e1119;border:1px solid #6e2432;border-left:5px solid var(--red)}
+.shield.hot .stitle{color:#ffb3ba}
+.shield.none{border-left:5px solid var(--dim2)}
 /* news reports */
 .newsitem{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:12px}
 .newsitem .nh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
@@ -132,6 +143,10 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 
     <!-- ============ TERMINAL ============ -->
     <section class="section active" id="sec-terminal">
+      <div class="shield ok" id="shield">
+        <div class="smain"><div class="sicon" id="shieldIcon">🛡️</div><div><div class="stitle" id="shieldTitle">News shield: checking the calendar…</div><div class="small" id="shieldSub">Shield window: 30 min before → 60 min after each gold release · Phnom Penh time</div></div></div>
+        <div class="scount" id="shieldCount">—</div>
+      </div>
       <div class="stats">
         <div class="stat"><div class="k">Gold — XAU market</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div><div class="s" id="spotRef">Spot XAU/USD: …</div></div>
         <div class="stat"><div class="k">H1 Bias</div><div class="v" id="stBias">—</div><div class="s" id="stBiasSub">EMA 21 / 55 + ADX</div></div>
@@ -344,6 +359,14 @@ function fetchBias(){
 "use strict";
 /* ================= scan / council ================= */
 function runScan(){
+  var st=(typeof shieldState==="function")? shieldState(Date.now()) : null;
+  var inBlackout = !!(st && st.mode==="hot");
+  if(inBlackout){
+    if(!window.confirm("🛑 NEWS BLACKOUT — "+st.ev.name+" at "+new Date(st.ev.t).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+" Phnom Penh.\n\nYour rule: NO TRADE inside the shield (30 min before → 60 min after the release).\n\nScan anyway?")){
+      renderBlackout(st);
+      return;
+    }
+  }
   var btn=$("scanBtn"); btn.disabled=true; btn.textContent="Scanning closed candles…";
   refresh().then(function(){
     var cs=closedOnly(candles);
@@ -397,6 +420,7 @@ function runScan(){
     var when=new Date();
     lastSignal={dir:dir, entry:entry, sl:sl, tp1:tp1, tp2:tp2, tp3:tp3, tf:TF, time:when.getTime(), conviction:conviction, atr:a};
     renderSignal(lastSignal, votes, biasNote);
+    if(inBlackout){ $("sigReason").textContent += " ⚠ Scanned during a NEWS BLACKOUT — your rule says NO TRADE."; }
     renderCouncil(votes);
     if(dir!==0){ saveSignal(lastSignal); maybeBeep(dir); }
   }).catch(function(e){ $("feedErr").textContent="Scan failed: "+e.message; })
@@ -598,6 +622,71 @@ setInterval(function(){
   $("countdown").textContent=m+"m "+(s<10?"0":"")+s+"s";
 },1000);
 setInterval(function(){ refresh(); fetchBias(); }, 60000);
+
+/* ================= news blackout shield ================= */
+var SHIELD_PRE=30*60000, SHIELD_POST=60*60000, shieldEvents=[];
+function loadEvents(){
+  fetch("news-events.json?ts="+Date.now()).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(function(list){
+    shieldEvents=(list||[]).map(function(e){ return {name:e.event||e.name||"Gold event", t:Date.parse(e.time)}; }).filter(function(e){ return !isNaN(e.t); }).sort(function(a,b){ return a.t-b.t; });
+    updateShield();
+  }).catch(function(){ /* keep whatever we have; updateShield shows the none state if empty */ updateShield(); });
+}
+function shieldState(now){
+  for(var i=0;i<shieldEvents.length;i++){ var ev=shieldEvents[i];
+    if(now>=ev.t-SHIELD_PRE && now<=ev.t+SHIELD_POST) return {mode:"hot", ev:ev, end:ev.t+SHIELD_POST};
+  }
+  for(var j=0;j<shieldEvents.length;j++){ var nx=shieldEvents[j];
+    if(nx.t>now) return {mode:(nx.t-now<=2*3600000)?"soon":"ok", ev:nx, end:nx.t+SHIELD_POST};
+  }
+  return {mode:"none", ev:null, end:0};
+}
+function fmtDur(ms){
+  if(ms<0) ms=0;
+  var s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60;
+  if(h>24) return Math.floor(h/24)+"d "+(h%24)+"h";
+  if(h>0) return h+"h "+(m<10?"0":"")+m+"m";
+  if(m>0) return m+"m "+(ss<10?"0":"")+ss+"s";
+  return ss+"s";
+}
+function evWhen(t){
+  var d=new Date(t), today=new Date(); 
+  var sameDay=d.toDateString()===today.toDateString();
+  var tom=new Date(today.getTime()+86400000).toDateString()===d.toDateString();
+  return (sameDay?"today":(tom?"tomorrow":d.toLocaleDateString("en-GB",{day:"2-digit",month:"short"})))+" "+d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+}
+function updateShield(){
+  var box=$("shield"); if(!box) return;
+  var st=shieldState(Date.now());
+  box.className="shield "+st.mode;
+  if(st.mode==="hot"){
+    $("shieldIcon").textContent="🛑";
+    $("shieldTitle").textContent="NEWS BLACKOUT — NO TRADE · "+st.ev.name;
+    $("shieldSub").textContent="Released "+evWhen(st.ev.t)+" · your rule: no scalps inside the shield · Phnom Penh time";
+    $("shieldCount").textContent="lifts in "+fmtDur(st.end-Date.now());
+  } else if(st.mode==="soon" || st.mode==="ok"){
+    $("shieldIcon").textContent= st.mode==="soon" ? "⚠️" : "🛡️";
+    $("shieldTitle").textContent="Next gold event: "+st.ev.name+" · "+evWhen(st.ev.t);
+    $("shieldSub").textContent="Shield window: 30 min before → 60 min after the release · Phnom Penh time · calendar refreshes each morning";
+    $("shieldCount").textContent="in "+fmtDur(st.ev.t-Date.now());
+  } else {
+    $("shieldIcon").textContent="🛡️";
+    $("shieldTitle").textContent="News shield: no events in the loaded calendar";
+    $("shieldSub").textContent="The calendar refreshes each morning. Check the Gold News section for today's reports — and still be careful around 20:30 (US data time).";
+    $("shieldCount").textContent="—";
+  }
+}
+function renderBlackout(st){
+  var el=$("sigDir"); el.textContent="NO TRADE"; el.className="sigdir sell";
+  $("sigTime").textContent="· news blackout shield";
+  $("sigReason").textContent="🛑 "+st.ev.name+" at "+evWhen(st.ev.t)+". The shield is on (30 min before → 60 min after). Your rule: no scalps in this window — gold can jump both ways on the print. Shield lifts at "+new Date(st.end).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+".";
+  $("sigEntry").textContent="—"; $("sigSL").textContent="—"; $("sigTP1").textContent="—";
+  $("sigTP2").textContent="—"; $("sigTP3").textContent="—"; $("sigRisk").textContent="—";
+  $("convBar").style.width="0%"; $("convTxt").textContent="Blackout — no conviction, no trade";
+}
+loadEvents();
+setInterval(loadEvents, 300000);
+setInterval(updateShield, 1000);
 
 /* ================= gold news reports ================= */
 function esc(s){ return String(s===null||s===undefined?"":s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SP Gold Signal Terminal — Private</title>
+<style>
+:root{
+  --bg:#0b0f17; --panel:#121826; --panel2:#171f30; --line:#232d42;
+  --gold:#e8b64c; --gold2:#f5d07a; --txt:#e8ecf3; --dim:#8b96ab; --dim2:#5d6a82;
+  --green:#2fbf71; --red:#f04b5d; --amber:#f5a623; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:15px}
+a{color:var(--gold)}
+button{font-family:inherit;cursor:pointer}
+.layout{display:flex;min-height:100vh}
+/* ------- sidebar ------- */
+.side{width:218px;flex:0 0 218px;background:#0e1420;border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;padding:2px 8px 16px}
+.logo .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#9a7422);display:flex;align-items:center;justify-content:center;font-weight:800;color:#171106;font-size:17px}
+.logo b{font-size:15.5px;line-height:1.15;display:block}
+.logo span{font-size:11px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{background:none;border:0;color:var(--dim);text-align:left;padding:10px 12px;border-radius:9px;font-size:14.5px;display:flex;gap:10px;align-items:center}
+.nav button.active{background:var(--panel2);color:var(--txt)}
+.nav button.active .ic{color:var(--gold)}
+.nav .ic{width:18px;text-align:center}
+.side .foot{margin-top:auto;padding:10px 8px;border-top:1px solid var(--line);color:var(--dim2);font-size:11.5px;line-height:1.5}
+.badge-priv{display:inline-block;background:#2a2113;color:var(--gold2);border:1px solid #57451d;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;letter-spacing:.05em}
+/* ------- main ------- */
+.main{flex:1;min-width:0;padding:18px 20px 40px}
+.topbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.topbar h1{font-size:20px}
+.topbar h1 .thin{color:var(--dim);font-weight:400}
+.pillrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13px;color:var(--dim)}
+.pill b{color:var(--txt)}
+.pill .up{color:var(--green)} .pill .dn{color:var(--red)}
+.tfbtns{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tfbtns button{background:none;border:0;color:var(--dim);padding:7px 14px;font-size:13.5px}
+.tfbtns button.active{background:var(--gold);color:#171106;font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.card h3{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.card h3 .live{color:var(--green);font-size:11px;letter-spacing:.05em}
+canvas#chart{width:100%;height:380px;display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em}
+.stat .v{font-size:20px;font-weight:700;margin-top:3px}
+.stat .s{font-size:12.5px;color:var(--dim);margin-top:2px}
+/* signal card */
+.sigdir{font-size:34px;font-weight:800;letter-spacing:.01em}
+.sigdir.buy{color:var(--green)} .sigdir.sell{color:var(--red)} .sigdir.wait{color:var(--amber)}
+.sigreason{color:var(--dim);font-size:14px;line-height:1.5;margin:6px 0 14px}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);font-size:14.5px}
+.kv span{color:var(--dim)} .kv b{font-variant-numeric:tabular-nums}
+.kv b.tp{color:var(--green)} .kv b.sl{color:var(--red)}
+.conv{height:9px;background:#0d1320;border-radius:6px;overflow:hidden;margin:6px 0 4px}
+.conv i{display:block;height:100%;background:linear-gradient(90deg,#9a7422,var(--gold));width:0%}
+.bigbtn{width:100%;background:var(--gold);color:#171106;border:0;border-radius:11px;padding:13px;font-size:15.5px;font-weight:800;margin-top:14px}
+.bigbtn:disabled{opacity:.45;cursor:wait}
+.ghostbtn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:8px 13px;font-size:13.5px}
+.ghostbtn.on{border-color:var(--gold);color:var(--gold2)}
+/* council */
+.council{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:900px){.council{grid-template-columns:repeat(2,1fr)}}
+.member{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:12px}
+.member .who{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em}
+.member .vote{font-size:17px;font-weight:800;margin:4px 0}
+.member .why{font-size:12.8px;color:var(--dim);line-height:1.45}
+.vote.buy{color:var(--green)} .vote.sell{color:var(--red)} .vote.wait{color:var(--amber)}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13.8px}
+th{color:var(--dim);text-align:left;font-weight:600;padding:7px 8px;border-bottom:1px solid var(--line);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+td{padding:8px;border-bottom:1px solid #1b2436;font-variant-numeric:tabular-nums}
+.tag{border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700}
+.tag.buy{background:#123324;color:var(--green)} .tag.sell{background:#3a1620;color:var(--red)} .tag.wait{background:#3a2c10;color:var(--amber)}
+.tag.win{background:#123324;color:var(--green)} .tag.loss{background:#3a1620;color:var(--red)} .tag.open{background:#1d2942;color:#9db8e8} .tag.be{background:#2c2c2c;color:#bbb}
+.section{display:none} .section.active{display:block}
+.note{color:var(--dim);font-size:13px;line-height:1.55}
+.warn{background:#2a2113;border:1px solid #57451d;color:#ecd9a0;border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.55;margin-bottom:14px}
+textarea{width:100%;background:#0d1320;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:inherit;font-size:14.5px;min-height:150px}
+input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:14px;width:100%}
+.mt{margin-top:14px}.mb{margin-bottom:14px}
+.small{font-size:12.5px;color:var(--dim2)}
+.err{color:var(--red);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="logo"><div class="mark">SP</div><div><b>Gold Signal<br>Terminal</b><span>Private · XAUUSD</span></div></div>
+    <nav class="nav">
+      <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
+      <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
+      <button data-sec="journal"><span class="ic">✎</span> Journal</button>
+      <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
+      <button data-sec="about"><span class="ic">?</span> How it works</button>
+    </nav>
+    <div class="foot"><span class="badge-priv">PRIVATE — ONLY YOU</span><br><br>Personal tool. Not financial advice. Signals are analysis only — you place your own trades.</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1>XAUUSD <span class="thin">/ Gold Signal Terminal</span></h1>
+      <div class="pillrow">
+        <div class="tfbtns" id="tfbtns">
+          <button data-tf="15m" class="active">15m</button>
+          <button data-tf="1h">1h</button>
+          <button data-tf="4h">4h</button>
+        </div>
+        <div class="pill">Feed: <b id="feedName">connecting…</b></div>
+        <div class="pill">Candle closes in <b id="countdown">—</b></div>
+        <button class="ghostbtn" id="beepBtn">🔔 Signal beep: OFF</button>
+      </div>
+    </div>
+
+    <div class="warn">Gold feed note: live candles come from <b>PAXG</b> (gold-backed token, Binance public data) — it tracks spot gold within a few dollars, but it is <b>not</b> your Exness XAUUSDc price. Always check the entry against your MT5 price before trading. A Twelve Data key for true spot XAUUSD can be plugged in later.</div>
+
+    <!-- ============ TERMINAL ============ -->
+    <section class="section active" id="sec-terminal">
+      <div class="stats">
+        <div class="stat"><div class="k">Gold (PAXG ref)</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div></div>
+        <div class="stat"><div class="k">H1 Bias</div><div class="v" id="stBias">—</div><div class="s" id="stBiasSub">EMA 21 / 55 + ADX</div></div>
+        <div class="stat"><div class="k">RSI 14</div><div class="v" id="stRsi">—</div><div class="s" id="stRsiSub">—</div></div>
+        <div class="stat"><div class="k">ATR 14</div><div class="v" id="stAtr">—</div><div class="s" id="stAtrSub">volatility</div></div>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Live chart — <span id="chartTf" style="color:var(--txt)">15m</span> <span class="live">● LIVE</span></h3>
+          <canvas id="chart"></canvas>
+          <div class="small mt">Gold line = EMA 21 · grey line = EMA 55 · shaded band = last signal entry zone. Chart uses the last <b>closed</b> candle for all readings — no repainting.</div>
+          <div class="card mt" style="background:var(--panel2)">
+            <h3>Analyst council — how the desk voted</h3>
+            <div class="council" id="council">
+              <div class="member"><div class="who">Technical</div><div class="vote wait">…</div><div class="why">Waiting for data</div></div>
+              <div class="member"><div class="who">Momentum</div><div class="vote wait">…</div><div class="why">Waiting for data</div></div>
+              <div class="member"><div class="who">Sentiment (RSI)</div><div class="vote wait">…</div><div class="why">Waiting for data</div></div>
+              <div class="member"><div class="who">Risk</div><div class="vote wait">…</div><div class="why">Waiting for data</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Desk signal <span id="sigTime" style="color:var(--dim2);text-transform:none;letter-spacing:0"></span></h3>
+          <div class="sigdir wait" id="sigDir">WAIT</div>
+          <div class="sigreason" id="sigReason">Press “Run a scan” — the desk reads the last closed candle and votes.</div>
+          <div class="kv"><span>Entry</span><b id="sigEntry">—</b></div>
+          <div class="kv"><span>Stop loss</span><b class="sl" id="sigSL">—</b></div>
+          <div class="kv"><span>Take profit 1 (1.0R)</span><b class="tp" id="sigTP1">—</b></div>
+          <div class="kv"><span>Take profit 2 (1.8R)</span><b class="tp" id="sigTP2">—</b></div>
+          <div class="kv"><span>Take profit 3 (2.6R)</span><b class="tp" id="sigTP3">—</b></div>
+          <div class="kv"><span>Risk distance</span><b id="sigRisk">—</b></div>
+          <div style="margin-top:12px"><span class="small">Conviction</span><div class="conv"><i id="convBar"></i></div><div class="small" id="convTxt">—</div></div>
+          <button class="bigbtn" id="scanBtn">↯ Run a scan</button>
+          <div class="small mt">A scan reads structure, momentum, RSI and volatility on closed candles only, the same rules as your SP Gold Scalp Panel (EMA zone / breakout / range edge). WAIT means no setup passed — that is a result, not an error.</div>
+          <div class="err mt" id="feedErr"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SIGNALS & RECORD ============ -->
+    <section class="section" id="sec-signals">
+      <div class="stats">
+        <div class="stat"><div class="k">My signals tracked</div><div class="v" id="recN">0</div><div class="s">every scan you save, wins and losses</div></div>
+        <div class="stat"><div class="k">Win rate (TP1)</div><div class="v" id="recWin">—</div><div class="s">closed signals only</div></div>
+        <div class="stat"><div class="k">Total R (at TP1)</div><div class="v" id="recR">—</div><div class="s">+1R win · −1R loss · 0R break-even</div></div>
+        <div class="stat"><div class="k">Open now</div><div class="v" id="recOpen">0</div><div class="s">checked against live candles on refresh</div></div>
+      </div>
+      <div class="card">
+        <h3>Signal history <button class="ghostbtn" id="clearHist">Clear history</button></h3>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Time (Bangkok)</th><th>TF</th><th>Signal</th><th>Entry</th><th>SL</th><th>TP1</th><th>Result</th><th>R</th></tr></thead>
+          <tbody id="histBody"><tr><td colspan="8" class="note">No signals yet. Run a scan on the Terminal — BUY and SELL scans are saved here automatically; WAIT scans are not saved.</td></tr></tbody>
+        </table></div>
+        <div class="small mt">Honest counting, on purpose: results are graded against the candles that came after the signal (TP1 or SL, whichever the price touched first). Nothing is deleted to make the number look better — a loss stays a loss. Grading uses the PAXG reference feed, so a result can differ a few dollars from your Exness fill.</div>
+      </div>
+    </section>
+
+    <!-- ============ JOURNAL ============ -->
+    <section class="section" id="sec-journal">
+      <div class="card">
+        <h3>Trading journal — today</h3>
+        <textarea id="journalBox" placeholder="What did the desk say? Did you take it? What happened? How did you feel?&#10;Example: 09:15 SELL scan, waited for my MT5 price, took 0.01, TP1 hit +$9. Felt calm."></textarea>
+        <div class="pillrow mt">
+          <button class="ghostbtn" id="saveJournal">Save journal</button>
+          <span class="small" id="journalMsg">Saved on this device only (browser storage).</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MT5 ============ -->
+    <section class="section" id="sec-mt5">
+      <div class="card mb">
+        <h3>My MT5 panel — SP Gold Scalp Signal</h3>
+        <p class="note">Your MT5 indicator (SP Gold Scalp Panel v1.02) writes <b>SP_Scalp_Signal.json</b>. Load that file here and the terminal shows your own MT5 signal next to the web desk — two opinions, one screen.</p>
+        <div class="pillrow mt">
+          <label class="ghostbtn" for="jsonFile" style="display:inline-block">Load SP_Scalp_Signal.json</label>
+          <input type="file" id="jsonFile" accept=".json" style="display:none">
+          <span class="small">The file never leaves your device.</span>
+        </div>
+        <div id="mt5Out" class="mt"><p class="note">No MT5 file loaded yet.</p></div>
+      </div>
+      <div class="card">
+        <h3>Running both systems — the rule</h3>
+        <p class="note">This terminal is <b>signal-only</b>, like your indicator: it never places a trade. Smart Grid Hunter stays on its M1 chart, the Scalp Panel on M5. If this desk and your MT5 panel disagree, the safe read is WAIT — two systems fighting is information, not a trade.</p>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section" id="sec-about">
+      <div class="card">
+        <h3>How the desk decides</h3>
+        <p class="note" style="line-height:1.7">
+          1. <b>Wake &amp; scan</b> — fetch the last 200 closed candles for the chosen timeframe (15m / 1h / 4h).<br>
+          2. <b>Council votes</b> — Technical (EMA 21/55 trend + 20-bar breakout / range-edge position), Momentum (MACD + price vs EMA), Sentiment (RSI zone), Risk (ATR as % of price — too wild = no trade).<br>
+          3. <b>Consensus</b> — at least 3 of 4 must agree the same way, and Risk must not veto. Otherwise the signal is WAIT.<br>
+          4. <b>Plan</b> — Entry = last close. Stop = 1.0 × ATR away. Targets at 1.0R / 1.8R / 2.6R — the same distances as your SP Gold Scalp Panel.<br>
+          5. <b>H1 bias</b> — computed on 1h candles (EMA 21/55 + ADX-style trend strength) and shown at the top; a scan against the H1 bias gets its conviction cut.<br><br>
+          What this is <b>not</b>: it is not a broker, it holds no money, and it cannot execute on MT5 — there is no auto-trade bridge in v1 on purpose. It is also not Zoqira: same kind of desk, your own rules, your own honest record.
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+"use strict";
+/* ================= state ================= */
+var TF = "15m";
+var FEEDS = [
+  {name:"Binance Vision · PAXGUSDT", url:function(tf){return "https://data-api.binance.vision/api/v3/klines?symbol=PAXGUSDT&interval="+tf+"&limit=200";}, parse:function(j){return j.map(function(k){return {t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};});}},
+  {name:"OKX · PAXG-USDT", url:function(tf){var bar={"15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=PAXG-USDT&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}}
+];
+var candles = [];       // ascending, includes the still-forming last candle
+var lastSignal = null;  // last scan result
+var beepOn = false, audioCtx = null;
+var $ = function(id){return document.getElementById(id);};
+
+/* ================= indicators (closed candles only) ================= */
+function ema(vals, n){var k=2/(n+1), out=[], e=null; for(var i=0;i<vals.length;i++){ e = (e===null)? vals[i] : vals[i]*k + e*(1-k); out.push(e);} return out;}
+function sma(vals, n){var out=[]; for(var i=0;i<vals.length;i++){ if(i<n-1){out.push(null); continue;} var s=0; for(var j=i-n+1;j<=i;j++) s+=vals[j]; out.push(s/n);} return out;}
+function rsi(closes, n){ n=n||14; if(closes.length<n+2) return null; var g=0,l=0; for(var i=closes.length-n;i<closes.length;i++){var d=closes[i]-closes[i-1]; if(d>0)g+=d; else l-=d;} if(l===0) return 100; var rs=(g/n)/(l/n); return 100-100/(1+rs);}
+function atr(cs, n){ n=n||14; if(cs.length<n+1) return null; var trs=[]; for(var i=1;i<cs.length;i++){var c=cs[i],p=cs[i-1]; trs.push(Math.max(c.h-c.l, Math.abs(c.h-p.c), Math.abs(c.l-p.c)));} var last=trs.slice(-n); var s=0; last.forEach(function(x){s+=x;}); return s/n;}
+function macdHist(closes){ var e12=ema(closes,12), e26=ema(closes,26); var line=closes.map(function(_,i){return e12[i]-e26[i];}); var sig=ema(line,9); return line[line.length-1]-sig[sig.length-1]; }
+function adxApprox(cs, n){ n=n||14; if(cs.length<3*n) return null; var pdm=[],mdm=[],trs=[];
+  for(var i=1;i<cs.length;i++){ var c=cs[i],p=cs[i-1]; var up=c.h-p.h, dn=p.l-c.l;
+    pdm.push(up>dn && up>0 ? up : 0); mdm.push(dn>up && dn>0 ? dn : 0);
+    trs.push(Math.max(c.h-c.l, Math.abs(c.h-p.c), Math.abs(c.l-p.c))); }
+  function wild(arr){ var out=[], s=0; for(var i=0;i<arr.length;i++){ s = (i<n)? s+arr[i] : s - s/n + arr[i]; out.push(s); } return out; }
+  var sP=wild(pdm), sM=wild(mdm), sT=wild(trs), dx=[];
+  for(var j=0;j<trs.length;j++){ if(sT[j]===0){ dx.push(0); continue; } var dip=sP[j]/sT[j]*100, dim=sM[j]/sT[j]*100; dx.push((dip+dim)===0?0:Math.abs(dip-dim)/(dip+dim)*100); }
+  var tail=dx.slice(-n), sum=0; tail.forEach(function(x){sum+=x;}); return sum/n; }
+
+/* ================= data ================= */
+function fetchCandles(tf){
+  var chain = Promise.reject(new Error("start"));
+  FEEDS.forEach(function(f){
+    chain = chain.catch(function(){
+      return fetch(f.url(tf)).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+        .then(function(j){ var cs=f.parse(j); if(!cs || cs.length<60) throw new Error("short data"); $("feedName").textContent=f.name; return cs; });
+    });
+  });
+  return chain;
+}
+function tfMs(tf){ return {"15m":900000,"1h":3600000,"4h":14400000}[tf]; }
+function closedOnly(cs){ var now=Date.now(), ms=tfMs(TF); return cs.filter(function(c){ return c.t+ms<=now; }); }
+
+function refresh(){
+  return fetchCandles(TF).then(function(cs){
+    candles = cs;
+    $("feedErr").textContent="";
+    renderMarket();
+    evaluateHistory();
+  }).catch(function(e){
+    $("feedErr").textContent="Feed error: "+e.message+" — check your connection and press Run a scan to retry.";
+  });
+}
+function fetchBias(){
+  fetchCandles("1h").then(function(cs){
+    var cl=closedOnly(cs).map(function(c){return c.c;});
+    if(cl.length<60) return;
+    var e21=ema(cl,21), e55=ema(cl,55), last=cl.length-1;
+    var a=adxApprox(closedOnly(cs));
+    var bias = e21[last]>e55[last] ? "BULLISH" : "BEARISH";
+    var strength = (a===null)? "" : (a>=25?" · STRONG":(a>=18?" · WEAK":" · RANGE"));
+    $("stBias").textContent=bias;
+    $("stBias").style.color = bias==="BULLISH" ? "var(--green)" : "var(--red)";
+    $("stBiasSub").textContent="EMA 21 "+(e21[last]>e55[last]?"above":"below")+" EMA 55"+strength+(a!==null?(" · ADX≈"+a.toFixed(0)):"");
+    window._h1bias=bias;
+  }).catch(function(){});
+}
+</script>
+<script>
+"use strict";
+/* ================= scan / council ================= */
+function runScan(){
+  var btn=$("scanBtn"); btn.disabled=true; btn.textContent="Scanning closed candles…";
+  refresh().then(function(){
+    var cs=closedOnly(candles);
+    if(cs.length<60){ $("sigReason").textContent="Not enough candle data yet — try again in a moment."; return; }
+    var cl=cs.map(function(c){return c.c;});
+    var last=cl.length-1, price=cl[last];
+    var e21=ema(cl,21), e55=ema(cl,55);
+    var r=rsi(cl), a=atr(cs), mh=macdHist(cl);
+    var hi20=Math.max.apply(null, cs.slice(-21,-1).map(function(c){return c.h;}));
+    var lo20=Math.min.apply(null, cs.slice(-21,-1).map(function(c){return c.l;}));
+    var rangePos = (price-lo20)/Math.max(hi20-lo20, 0.0001); // 0 bottom, 1 top of last 20
+    var votes=[];
+    // Technical: trend + breakout / range edge
+    var tech=0, techWhy="";
+    if(price>hi20){ tech=1; techWhy="Closed above the 20-bar high — breakout up."; }
+    else if(price<lo20){ tech=-1; techWhy="Closed below the 20-bar low — breakout down."; }
+    else if(e21[last]>e55[last] && rangePos<0.35){ tech=1; techWhy="Uptrend (EMA21>EMA55) and price near the range low — pullback zone."; }
+    else if(e21[last]<e55[last] && rangePos>0.65){ tech=-1; techWhy="Downtrend (EMA21<EMA55) and price near the range high — pullback zone."; }
+    else if(e21[last]>e55[last]){ tech=1; techWhy="EMA 21 above EMA 55 — trend is up, but no edge-zone entry."; }
+    else if(e21[last]<e55[last]){ tech=-1; techWhy="EMA 21 below EMA 55 — trend is down, but no edge-zone entry."; }
+    else { techWhy="EMAs flat — no trend edge."; }
+    votes.push({who:"Technical", v:tech, why:techWhy});
+    // Momentum: MACD histogram + price vs EMA21
+    var mom = (mh>0 && price>e21[last]) ? 1 : (mh<0 && price<e21[last]) ? -1 : 0;
+    votes.push({who:"Momentum", v:mom, why: mom===0 ? "MACD and price disagree — momentum is mixed." : ("MACD histogram "+(mh>0?"positive":"negative")+" and price "+(price>e21[last]?"above":"below")+" EMA 21.")});
+    // Sentiment: RSI zone
+    var sen=0, senWhy="";
+    if(r===null){ senWhy="RSI unavailable."; }
+    else if(r>=55 && r<=72){ sen=1; senWhy="RSI "+r.toFixed(0)+" — buyers in control, not yet overbought."; }
+    else if(r<=45 && r>=28){ sen=-1; senWhy="RSI "+r.toFixed(0)+" — sellers in control, not yet oversold."; }
+    else if(r>72){ sen=-1; senWhy="RSI "+r.toFixed(0)+" — overbought; chasing a BUY here is risky."; }
+    else if(r<28){ sen=1; senWhy="RSI "+r.toFixed(0)+" — oversold; chasing a SELL here is risky."; }
+    else { senWhy="RSI "+r.toFixed(0)+" — neutral zone."; }
+    votes.push({who:"Sentiment (RSI)", v:sen, why:senWhy});
+    // Risk: ATR % veto
+    var atrPct = a? (a/price*100) : null;
+    var riskVeto = atrPct!==null && atrPct>0.55;
+    votes.push({who:"Risk", v:0, why: atrPct===null? "ATR unavailable." : riskVeto? ("ATR is "+atrPct.toFixed(2)+"% of price — too wild. Risk veto: no trade.") : ("ATR is "+atrPct.toFixed(2)+"% of price — volatility is tradeable.")});
+    var buys=votes.filter(function(x){return x.v===1;}).length;
+    var sells=votes.filter(function(x){return x.v===-1;}).length;
+    var dir=0, conviction=0;
+    if(!riskVeto && buys>=3 && tech===1){ dir=1; conviction=55+buys*9; }
+    else if(!riskVeto && sells>=3 && tech===-1){ dir=-1; conviction=55+sells*9; }
+    // H1 bias alignment
+    var bias = window._h1bias||null;
+    var biasNote="";
+    if(dir!==0 && bias){ if((dir===1&&bias==="BEARISH")||(dir===-1&&bias==="BULLISH")){ conviction-=18; biasNote=" Against the H1 bias — conviction cut."; } else { conviction+=6; biasNote=" With the H1 bias."; } }
+    conviction=Math.max(5, Math.min(96, conviction));
+    var entry=price, sl=null,tp1=null,tp2=null,tp3=null;
+    if(dir!==0 && a){ var risk=a*1.0; sl=entry-dir*risk; tp1=entry+dir*risk*1.0; tp2=entry+dir*risk*1.8; tp3=entry+dir*risk*2.6; }
+    var when=new Date();
+    lastSignal={dir:dir, entry:entry, sl:sl, tp1:tp1, tp2:tp2, tp3:tp3, tf:TF, time:when.getTime(), conviction:conviction, atr:a};
+    renderSignal(lastSignal, votes, biasNote);
+    renderCouncil(votes);
+    if(dir!==0){ saveSignal(lastSignal); maybeBeep(dir); }
+  }).catch(function(e){ $("feedErr").textContent="Scan failed: "+e.message; })
+  .finally(function(){ btn.disabled=false; btn.textContent="↯ Run a scan"; });
+}
+function fmt(x, d){ if(x===null||x===undefined||isNaN(x)) return "—"; return Number(x).toLocaleString("en-US",{minimumFractionDigits:(d===undefined?2:d), maximumFractionDigits:(d===undefined?2:d)}); }
+function renderSignal(s, votes, biasNote){
+  var el=$("sigDir");
+  el.textContent = s.dir===1?"BUY":(s.dir===-1?"SELL":"WAIT");
+  el.className="sigdir "+(s.dir===1?"buy":(s.dir===-1?"sell":"wait"));
+  $("sigTime").textContent="· "+new Date(s.time).toLocaleTimeString("en-GB")+" Bangkok";
+  var agree=votes.filter(function(x){return x.v===s.dir;}).length;
+  $("sigReason").textContent = s.dir===0
+    ? "No setup passed the council vote (Technical must agree, 3 of 4 the same way, no Risk veto). Staying flat is the plan."+(biasNote||"")
+    : ("Council "+agree+" of 4 for "+(s.dir===1?"BUY":"SELL")+" on the "+s.tf+" closed candle."+(biasNote||"")+" Entry from the last close; stop = 1×ATR ("+fmt(s.atr)+").");
+  $("sigEntry").textContent=fmt(s.entry);
+  $("sigSL").textContent=fmt(s.sl); $("sigTP1").textContent=fmt(s.tp1);
+  $("sigTP2").textContent=fmt(s.tp2); $("sigTP3").textContent=fmt(s.tp3);
+  $("sigRisk").textContent = s.dir!==0? fmt(Math.abs(s.entry-s.sl))+" pts" : "—";
+  $("convBar").style.width=(s.dir===0?8:s.conviction)+"%";
+  $("convTxt").textContent = s.dir===0? "No conviction — WAIT" : s.conviction+"% — "+(s.conviction>=75?"high":(s.conviction>=55?"medium":"low — size down or skip"));
+}
+function renderCouncil(votes){
+  $("council").innerHTML=votes.map(function(x){
+    var cls=x.v===1?"buy":(x.v===-1?"sell":"wait");
+    var txt=x.v===1?"BUY":(x.v===-1?"SELL":(x.who==="Risk"?"CHECK":"WAIT"));
+    return '<div class="member"><div class="who">'+x.who+'</div><div class="vote '+cls+'">'+txt+'</div><div class="why">'+x.why+'</div></div>';
+  }).join("");
+}
+/* ================= market header + chart ================= */
+function renderMarket(){
+  if(!candles.length) return;
+  var cs=closedOnly(candles);
+  if(cs.length<30) return;
+  var cl=cs.map(function(c){return c.c;});
+  var price=cl[cl.length-1];
+  var dayAgo=cs[Math.max(0, cs.length-97)];
+  var chg=(price-dayAgo.o)/dayAgo.o*100;
+  $("stPrice").textContent=fmt(price);
+  $("stChange").innerHTML='<span class="'+(chg>=0?"up":"dn")+'">'+(chg>=0?"+":"")+chg.toFixed(2)+"%</span> vs ~24h ago (feed candles)";
+  var r=rsi(cl);
+  $("stRsi").textContent=r===null?"—":r.toFixed(0);
+  $("stRsiSub").textContent=r===null?"—":(r>70?"overbought":(r<30?"oversold":(r>=50?"buyers ahead":"sellers ahead")));
+  var a=atr(cs);
+  $("stAtr").textContent=fmt(a);
+  $("stAtrSub").textContent=a? ((a/price*100).toFixed(2)+"% of price · "+TF+" bars") : "—";
+  drawChart(cs.slice(-90));
+}
+function drawChart(cs){
+  var cv=$("chart"), dpr=window.devicePixelRatio||1;
+  var W=cv.clientWidth, H=cv.clientHeight;
+  cv.width=W*dpr; cv.height=H*dpr;
+  var ctx=cv.getContext("2d"); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  if(cs.length<10) return;
+  var cl=cs.map(function(c){return c.c;});
+  var e21=ema(cl,21), e55=ema(cl,55);
+  var hi=Math.max.apply(null, cs.map(function(c){return c.h;}).concat(e21));
+  var lo=Math.min.apply(null, cs.map(function(c){return c.l;}).concat(e55));
+  var pad=(hi-lo)*0.08||1; hi+=pad; lo-=pad;
+  var X=function(i){return i/(cs.length-1)*(W-56)+4;};
+  var Y=function(p){return (hi-p)/(hi-lo)*(H-28)+8;};
+  ctx.strokeStyle="#1d2740"; ctx.fillStyle="#5d6a82"; ctx.font="11px sans-serif"; ctx.lineWidth=1;
+  for(var g=0; g<=4; g++){ var p=lo+(hi-lo)*g/4, y=Y(p); ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); ctx.fillText(fmt(p), W-52, y+3); }
+  var bw=Math.max(2,(W-60)/cs.length*0.62);
+  cs.forEach(function(c,i){ var up=c.c>=c.o; ctx.strokeStyle=up?"#2fbf71":"#f04b5d"; ctx.fillStyle=ctx.strokeStyle;
+    ctx.beginPath(); ctx.moveTo(X(i),Y(c.h)); ctx.lineTo(X(i),Y(c.l)); ctx.stroke();
+    ctx.fillRect(X(i)-bw/2, Y(Math.max(c.o,c.c)), bw, Math.max(1, Math.abs(Y(c.o)-Y(c.c)))); });
+  function line(arr,color){ ctx.strokeStyle=color; ctx.lineWidth=1.6; ctx.beginPath(); arr.forEach(function(p,i){ if(p===null)return; if(i===0)ctx.moveTo(X(i),Y(p)); else ctx.lineTo(X(i),Y(p)); }); ctx.stroke(); ctx.lineWidth=1; }
+  line(e21,"#e8b64c"); line(e55,"#8b96ab");
+  if(lastSignal && lastSignal.dir!==0){ ctx.strokeStyle= lastSignal.dir===1?"#2fbf71":"#f04b5d"; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(0,Y(lastSignal.entry)); ctx.lineTo(W-56,Y(lastSignal.entry)); ctx.stroke(); ctx.setLineDash([]); }
+}
+window.addEventListener("resize", function(){ if(candles.length) renderMarket(); });
+
+/* ================= history & honest record ================= */
+var HKEY="sp_gold_signals_v1";
+function loadHist(){ try{ return JSON.parse(localStorage.getItem(HKEY)||"[]"); }catch(e){ return []; } }
+function storeHist(h){ localStorage.setItem(HKEY, JSON.stringify(h.slice(0,200))); }
+function saveSignal(s){ var h=loadHist(); h.unshift({time:s.time, tf:s.tf, dir:s.dir, entry:s.entry, sl:s.sl, tp1:s.tp1, result:"OPEN", r:null}); storeHist(h); renderHistory(); }
+function evaluateHistory(){
+  var h=loadHist(); if(!h.length || !candles.length) { renderHistory(); return; }
+  var changed=false;
+  h.forEach(function(s){
+    if(s.result!=="OPEN") return;
+    var after=candles.filter(function(c){ return c.t>s.time && c.t+ tfMs(s.tf) <= Date.now(); });
+    for(var i=0;i<after.length;i++){ var c=after[i];
+      if(s.dir===1){ if(c.l<=s.sl){ s.result="LOSS"; s.r=-1; changed=true; break; } if(c.h>=s.tp1){ s.result="WIN"; s.r=1; changed=true; break; } }
+      else { if(c.h>=s.sl){ s.result="LOSS"; s.r=-1; changed=true; break; } if(c.l<=s.tp1){ s.result="WIN"; s.r=1; changed=true; break; } }
+    }
+  });
+  if(changed) storeHist(h);
+  renderHistory();
+}
+function renderHistory(){
+  var h=loadHist();
+  var closed=h.filter(function(s){return s.result==="WIN"||s.result==="LOSS";});
+  var wins=closed.filter(function(s){return s.result==="WIN";}).length;
+  var totalR=closed.reduce(function(a,s){return a+(s.r||0);},0);
+  $("recN").textContent=h.length;
+  $("recWin").textContent=closed.length? Math.round(wins/closed.length*100)+"% ("+wins+"/"+closed.length+")" : "—";
+  $("recR").textContent=closed.length? ((totalR>0?"+":"")+totalR.toFixed(1)+"R") : "—";
+  $("recOpen").textContent=h.filter(function(s){return s.result==="OPEN";}).length;
+  if(!h.length) return;
+  $("histBody").innerHTML=h.slice(0,40).map(function(s){
+    var tag=s.dir===1?'<span class="tag buy">BUY</span>':'<span class="tag sell">SELL</span>';
+    var rt=s.result==="WIN"?'<span class="tag win">WIN · TP1</span>':(s.result==="LOSS"?'<span class="tag loss">LOSS · SL</span>':'<span class="tag open">OPEN</span>');
+    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
+  }).join("");
+}
+$("clearHist").addEventListener("click", function(){ if(confirm("Clear all saved signals and the record? This cannot be undone.")){ localStorage.removeItem(HKEY); renderHistory(); $("histBody").innerHTML='<tr><td colspan="8" class="note">History cleared.</td></tr>'; } });
+
+/* ================= journal ================= */
+var JKEY="sp_gold_journal_v1";
+try{ $("journalBox").value=localStorage.getItem(JKEY)||""; }catch(e){}
+$("saveJournal").addEventListener("click", function(){ localStorage.setItem(JKEY, $("journalBox").value); $("journalMsg").textContent="Saved ✓ "+new Date().toLocaleTimeString("en-GB")+" — on this device only."; });
+
+/* ================= MT5 JSON ================= */
+$("jsonFile").addEventListener("change", function(ev){
+  var f=ev.target.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var j=JSON.parse(rd.result);
+      var dirTxt = (j.dir===1||j.signal==="BUY")?"BUY":((j.dir===-1||j.signal==="SELL")?"SELL":"WAIT");
+      var cls = dirTxt==="BUY"?"buy":(dirTxt==="SELL"?"sell":"wait");
+      $("mt5Out").innerHTML =
+        '<div class="sigdir '+cls+'">'+dirTxt+'</div>'+
+        '<div class="sigreason">'+(j.reason||"")+'</div>'+
+        '<div class="kv"><span>Symbol / TF</span><b>'+(j.symbol||"—")+" · "+(j.tf||"—")+'</b></div>'+
+        '<div class="kv"><span>Entry</span><b>'+fmt(j.entry)+'</b></div>'+
+        '<div class="kv"><span>Stop loss</span><b class="sl">'+fmt(j.sl)+'</b></div>'+
+        '<div class="kv"><span>TP1 / TP2</span><b class="tp">'+fmt(j.tp1)+" / "+fmt(j.tp2)+'</b></div>'+
+        '<div class="kv"><span>H1 bias</span><b>'+(j.bias||"—")+" "+(j.strength||"")+'</b></div>'+
+        '<div class="kv"><span>Updated</span><b>'+(j.updated||"—")+'</b></div>'+
+        '<div class="small mt">Compare this with the web desk above. Agree = stronger read. Disagree = WAIT.</div>';
+    }catch(e){ $("mt5Out").innerHTML='<p class="err">That file could not be read as the Scalp Panel JSON: '+e.message+'</p>'; }
+  };
+  rd.readAsText(f);
+});
+
+/* ================= nav, timeframe, beep, countdown ================= */
+document.querySelectorAll(".nav button").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".nav button").forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
+    $("sec-"+b.getAttribute("data-sec")).classList.add("active");
+    if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
+  });
+});
+$("tfbtns").addEventListener("click", function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#tfbtns button").forEach(function(x){x.classList.remove("active");});
+  b.classList.add("active"); TF=b.getAttribute("data-tf"); $("chartTf").textContent=TF;
+  lastSignal=null; refresh();
+});
+$("scanBtn").addEventListener("click", runScan);
+function maybeBeep(dir){
+  if(!beepOn) return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    var t=audioCtx.currentTime;
+    [0,0.16].forEach(function(off,i){ var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.frequency.value= dir===1? (i?880:660) : (i?520:740); o.connect(g); g.connect(audioCtx.destination);
+      g.gain.setValueAtTime(0.12, t+off); g.gain.exponentialRampToValueAtTime(0.001, t+off+0.15);
+      o.start(t+off); o.stop(t+off+0.16); });
+    if(navigator.vibrate) navigator.vibrate(120);
+  }catch(e){}
+}
+$("beepBtn").addEventListener("click", function(){ beepOn=!beepOn; this.textContent=beepOn?"🔔 Signal beep: ON":"🔔 Signal beep: OFF"; this.classList.toggle("on", beepOn); if(beepOn) maybeBeep(1); });
+setInterval(function(){
+  var ms=tfMs(TF), remain=ms-(Date.now()%ms);
+  var m=Math.floor(remain/60000), s=Math.floor(remain%60000/1000);
+  $("countdown").textContent=m+"m "+(s<10?"0":"")+s+"s";
+},1000);
+setInterval(function(){ refresh(); fetchBias(); }, 60000);
+renderHistory();
+refresh(); fetchBias();
+</script>
+</body>
+</html>

@@ -310,7 +310,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-news">
       <div class="card">
         <h3>Gold news reports <span class="small" id="newsUpdated" style="text-transform:none;letter-spacing:0"></span></h3>
-        <p class="note" style="margin-bottom:14px">From Muse's gold news watch: a call with reasons ~10 minutes <b>before</b> each scheduled release that moves gold (US CPI/PPI, jobs data, FOMC, Fed speeches), then the result and an updated call <b>after</b> it lands. The same reports go to Steven in chat. All times Phnom Penh.</p>
+        <p class="note" style="margin-bottom:14px">From Muse's gold news watch: a call with reasons ~10 minutes <b>before</b> each scheduled release that moves gold (US CPI/PPI, jobs data, FOMC, Fed speeches), then the result and an updated call <b>after</b> it lands. The same reports go to Steven in chat. All times Phnom Penh. Impact badges follow ForexFactory colours — 🔴 HIGH and 🟠 MEDIUM are the only levels reported (🟡 LOW is skipped; the few LOW entries below are from the watch's first evening, before that rule).</p>
         <div id="newsList"><p class="note">Loading reports…</p></div>
         <div class="small mt">A pre-news call is a reasoned lean from the forecast, the dollar and yields, and gold's chart position — the print itself can go either way, and NO TRADE is a real call.</div>
       </div>
@@ -1500,10 +1500,11 @@ function loadNews(){
     if(!list || !list.length){ box.innerHTML='<p class="note">No news reports yet. The watch posts here before and after each gold-moving release.</p>'; return; }
     box.innerHTML=list.slice().reverse().slice(0,30).map(function(n){
       var kindTag = n.kind==="pre" ? '<span class="tag wait">⏰ BEFORE</span>' : (n.kind==="breaking" ? '<span class="tag sell">⚡ BREAKING</span>' : '<span class="tag open">RESULT</span>');
+      var impTag = n.impact==="high" ? '<span class="tag sell">🔴 HIGH</span>' : (n.impact==="medium" ? '<span class="tag wait">🟠 MEDIUM</span>' : (n.impact==="low" ? '<span class="tag be">🟡 LOW</span>' : ""));
       var callCls = n.call==="BUY" ? "buy" : (n.call==="SELL" ? "sell" : "wait");
       var callTag = n.call ? '<span class="tag '+callCls+'">'+esc(n.call)+'</span>' : "";
       var body=(n.body||[]).map(function(p){ return "<p>"+esc(p)+"</p>"; }).join("");
-      return '<div class="newsitem"><div class="nh"><div>'+kindTag+" "+callTag+' <b style="margin-left:6px">'+esc(n.event||"")+'</b></div><div class="nt">'+esc(n.time_label||"")+'</div></div>'
+      return '<div class="newsitem"><div class="nh"><div>'+impTag+" "+kindTag+" "+callTag+' <b style="margin-left:6px">'+esc(n.event||"")+'</b></div><div class="nt">'+esc(n.time_label||"")+'</div></div>'
         +(n.headline ? '<div class="nhl">'+esc(n.headline)+'</div>' : "")+body+'</div>';
     }).join("");
     var u=$("newsUpdated"); if(u) u.textContent="· updated "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh";

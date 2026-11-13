@@ -12,7 +12,8 @@
     "headline": "PPI cooler than expected — a relief bounce for gold, not a trend change",
     "kind": "post",
     "time_label": "Fri 13 Nov · released 20:30 Phnom Penh",
-    "ts": "2026-11-13T20:45:00+07:00"
+    "ts": "2026-11-13T20:45:00+07:00",
+    "impact": "high"
   },
   {
     "ts": "2026-11-13T21:30:00+07:00",
@@ -28,7 +29,8 @@
       "Tonight's PPI came in a touch softer than forecast (0.3% vs 0.4% MoM) and gave gold a small bounce — but core stayed sticky, so the Fed's hawkish line hasn't cracked.",
       "Flip: a dovish softening (pause talk) would turn it BUY toward $3,900–3,923; a 50bp December hike endorsement would turn it SELL, watch $3,873 then $3,853.",
       "Caution: the first minutes after any headline are spike territory — no manual scalps into the speech, per the standing rule."
-    ]
+    ],
+    "impact": "low"
   },
   {
     "ts": "2026-11-13T22:08:00+07:00",
@@ -43,7 +45,8 @@
       "Gold ~$3,890–3,910, recovering modestly from Thursday's 13-month low (~$3,874) but still under the $3,900–3,910 pivot and on track for a >4% weekly loss. No source reports a specific gold move on the speech.",
       "Levels: resistance $3,925 / $3,937 above; support $3,884 / $3,875 / $3,860 below. A break of $3,937 would change the picture.",
       "Call: NO TRADE — nothing tradable in a technical speech, and Bowman speaks at 22:50 Phnom Penh with Daly at 00:00. No manual scalps into those prints, per the standing rule."
-    ]
+    ],
+    "impact": "low"
   },
   {
     "ts": "2026-11-13T22:37:00+07:00",
@@ -59,7 +62,8 @@
       "Backdrop stays hawkish: a December 25bp hike is ~85–89% priced and the dollar is near a 19-month high; today's PPI came in a touch soft (MoM 0.3% vs 0.4% forecast), giving gold only a small lift.",
       "Flip: an explicit December hike or 50bp endorsement would turn it SELL (dollar up, gold down); a softening — hikes off the table or inflation easing — would turn it BUY.",
       "Caution: the first minutes after a Fed speech headline are spike territory — no manual scalps into the print, per the standing rule."
-    ]
+    ],
+    "impact": "low"
   },
   {
     "ts": "2026-11-13T22:58:00+07:00",
@@ -75,6 +79,7 @@
       "Gold ~$3,878, drifting just under $3,900 after today's small PPI bounce, still down ~4% on the week after Thursday's slide to a 13-month low near $3,853.",
       "Levels: resistance $3,900 / $3,937 above; support $3,870 / $3,853 below. Next up: Fed's Daly speaks at 00:00 Phnom Penh — no manual scalps into that print, per the standing rule.",
       "Call: NO TRADE — a supervision speech with no policy content is not tradable for gold."
-    ]
+    ],
+    "impact": "low"
   }
 ]

@@ -100,6 +100,9 @@ td{padding:8px;border-bottom:1px solid #1b2436;font-variant-numeric:tabular-nums
 .infobody{display:none;margin-top:8px}
 .infobody.open{display:block}
 .card .infotoggle{border-color:var(--line);color:var(--txt)}
+.pfrow{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);align-items:flex-start}
+.pfrow:first-child{border-top:none;padding-top:2px}
+.pfdot{font-size:14px;line-height:1.45}
 .ailog{max-height:330px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .aib{padding:9px 12px;border-radius:12px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
 .aib.u{align-self:flex-end;background:#23304d;max-width:88%}
@@ -182,6 +185,11 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <div class="shield ok" id="shield">
         <div class="smain"><div class="sicon" id="shieldIcon">🛡️</div><div><div class="stitle" id="shieldTitle">News shield: checking the calendar…</div><div class="small" id="shieldSub">Shield window: 30 min before → 60 min after each gold release · Phnom Penh time</div></div></div>
         <div class="scount" id="shieldCount">—</div>
+      </div>
+      <div class="card" id="pfCard" style="margin-bottom:14px">
+        <div class="infohead"><span style="font-size:15.5px"><b>🩺 Pre-flight check</b> <span class="small">· is everything ready to trade?</span></span><span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="pill" id="pfOverall">Not run yet</span><button class="ghostbtn" id="pfRun">Run check</button></span></div>
+        <div id="pfList" class="mt"><p class="note">Tap “Run check” before you trade — it tests the price feed, your MT5 link and panel read, the EA server, the news shield and the market clock, and tells you in plain words what to fix if anything is wrong. It runs once by itself when the page loads, too.</p></div>
+        <p class="small" id="pfWhen"></p>
       </div>
       <div class="stats">
         <div class="stat"><div class="k">Gold — XAU market</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div><div class="s" id="spotRef">Spot XAU/USD: …</div></div>
@@ -977,6 +985,92 @@ function updateAgreement(){
   $("agreeH1").textContent=v.h1Txt;
   $("agreeShield").textContent=v.shieldTxt;
 }
+/* ================= Pre-flight check =================
+   One-tap readiness test of the whole chain before trading:
+   feed → MT5 link → panel age → EA server → shield → market clock → VPS bill. */
+var PF_VPS_DUE="2026-12-02"; /* Steven's MassiveGRID VPS renewal date — move it when he renews */
+var PF_EA_URL="https://win-54huck5cs86.tail0db2c5.ts.net:8443/";
+function pfWorst(checks){ var w="ok"; checks.forEach(function(c){ if(c.st==="bad") w="bad"; else if(c.st==="warn" && w==="ok") w="warn"; }); return w; }
+function pfPanelStatus(source, age){
+  if(age<0 || !source || source==="none") return {st:"bad", txt:"No panel read on screen — connect the live link or load the JSON on the MT5 Panel page."};
+  if(source==="live"){
+    if(age<=3) return {st:"ok", txt:"Panel read is fresh ("+(age<=0? "just now" : age+" min old")+")."};
+    return {st:"bad", txt:"Panel read is "+age+" min old — MT5 or the endpoint window on the VPS may have stopped. Do not trust an old read."};
+  }
+  if(age<=10) return {st:"warn", txt:"Using a saved copy ("+age+" min old) — the live link is not feeding this device."};
+  if(age<=60) return {st:"warn", txt:"Saved copy is "+age+" min old — load a fresh file or fix the live link before trusting it."};
+  return {st:"bad", txt:"Saved copy is "+Math.floor(age/60)+"h "+(age%60)+"m old — STALE. Load a fresh SP_Scalp_Signal.json."};
+}
+function pfDaysLeft(now){
+  var pp=new Date(new Date(now).toLocaleString("en-US",{timeZone:"Asia/Phnom_Penh"}));
+  var today=Date.UTC(pp.getFullYear(), pp.getMonth(), pp.getDate());
+  var due=Date.parse(PF_VPS_DUE+"T00:00:00Z");
+  return Math.round((due-today)/86400000);
+}
+function pfRenewal(daysLeft){
+  if(daysLeft<0) return {st:"bad", txt:"VPS payment was due "+PF_VPS_DUE+" — OVERDUE. Pay MassiveGRID now, or the VPS, the EAs and these panels all stop."};
+  if(daysLeft===0) return {st:"bad", txt:"VPS renewal is due TODAY ("+PF_VPS_DUE+"). Pay it now so the EAs don't stop."};
+  if(daysLeft<=2) return {st:"bad", txt:"VPS renewal is due "+PF_VPS_DUE+" — in "+daysLeft+" day"+(daysLeft===1?"":"s")+". Pay it now so the EAs don't stop mid-week."};
+  if(daysLeft<=7) return {st:"warn", txt:"VPS renewal is due "+PF_VPS_DUE+" — in "+daysLeft+" days (about $6.07)."};
+  return {st:"ok", txt:"VPS paid until "+PF_VPS_DUE+" ("+daysLeft+" days left)."};
+}
+function renderPreflight(checks){
+  var w=pfWorst(checks);
+  var bads=checks.filter(function(c){ return c.st==="bad"; }).length;
+  var warns=checks.filter(function(c){ return c.st==="warn"; }).length;
+  var overall=$("pfOverall"); if(!overall) return;
+  overall.textContent= w==="ok"? "🟢 ALL READY" : (w==="bad"? "🔴 NOT READY · "+bads+" to fix" : "🟡 READY WITH WARNINGS · "+warns);
+  overall.style.borderColor= w==="ok"? "var(--green)" : (w==="bad"? "var(--red)" : "var(--amber)");
+  $("pfList").innerHTML=checks.map(function(c){
+    return '<div class="pfrow"><span class="pfdot">'+(c.st==="ok"? "🟢" : (c.st==="bad"? "🔴" : "🟡"))+'</span><div><b>'+c.label+'</b><div class="small">'+esc(c.txt)+'</div></div></div>';
+  }).join("");
+  $("pfWhen").textContent="Checked "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh · the check only reads — each red line names the one thing to fix.";
+}
+var pfRunning=false;
+function runPreflight(){
+  if(pfRunning) return; pfRunning=true;
+  var btn=$("pfRun"); if(btn){ btn.disabled=true; btn.textContent="Checking…"; }
+  var feedP=fetchCandles(TF).then(function(cs){
+    if(!cs || !cs.length) return {st:"bad", label:"Price feed", txt:"The feed returned no candles — check this device's internet."};
+    var last=cs[cs.length-1];
+    var ageMin=Math.max(0, Math.round((Date.now()-last.t)/60000));
+    var lim=Math.max(10, (tfMs(TF)/60000)*2);
+    if(ageMin<=lim) return {st:"ok", label:"Price feed", txt:"Live — newest "+TF+" candle started "+ageMin+" min ago, price "+fmt(last.c)+"."};
+    return {st:"warn", label:"Price feed", txt:"Newest candle is "+ageMin+" min old — the feed looks slow, or the market is very quiet."};
+  }).catch(function(e){ return {st:"bad", label:"Price feed", txt:"Feed failed ("+e.message+") — check this device's internet."}; });
+  var eaP=new Promise(function(res){
+    var done=false;
+    var to=setTimeout(function(){ if(!done){ done=true; res({st:"bad", label:"EA server", txt:"No answer in 6 seconds — Tailscale may be off on this device, or the Smart Grid Hunter server window is closed on the VPS."}); } }, 6000);
+    fetch(PF_EA_URL, {mode:"no-cors", cache:"no-store"}).then(function(){ if(!done){ done=true; clearTimeout(to); res({st:"ok", label:"EA server", txt:"Smart Grid Hunter dashboard answers on its private link."}); } })
+    .catch(function(){ if(!done){ done=true; clearTimeout(to); res({st:"bad", label:"EA server", txt:"No answer — Tailscale may be off on this device, or the Smart Grid Hunter server window is closed on the VPS."}); } });
+  });
+  Promise.all([feedP, eaP]).then(function(first){
+    var checks=[];
+    checks.push(first[0]);
+    if(mt5Live.data && mt5Live.at && (Date.now()-mt5Live.at)<90000) checks.push({st:"ok", label:"MT5 live link", txt:"Connected — last panel update received "+Math.max(0, Math.round((Date.now()-mt5Live.at)/1000))+" seconds ago."});
+    else if(mt5Live.url && mt5Live.at===0 && mt5Live.fails<2) checks.push({st:"warn", label:"MT5 live link", txt:"Still connecting — give it a few seconds and run the check again."});
+    else if(mt5Live.url && mt5Live.fails>=2) checks.push({st:"bad", label:"MT5 live link", txt:"Not reachable — Tailscale off on this device, or the endpoint is not running on the VPS."});
+    else if(mt5Current.data) checks.push({st:"warn", label:"MT5 live link", txt:"Not live right now — the panel below is showing the saved copy instead."});
+    else checks.push({st:"bad", label:"MT5 live link", txt:"No live data, and no saved copy on this device."});
+    var ps=pfPanelStatus(mt5Current.source, mt5Current.data? stampAgeMinsAt(mt5Current.data.updated, Date.now()) : -1);
+    checks.push({st:ps.st, label:"Panel read age", txt:ps.txt});
+    checks.push(first[1]);
+    var sh=(typeof shieldState==="function")? shieldState(Date.now()) : null;
+    if(!sh || sh.mode==="none") checks.push({st:"warn", label:"News shield", txt:"No events in the loaded calendar — still be careful around 20:30, the usual US data time."});
+    else if(sh.mode==="hot") checks.push({st:"bad", label:"News shield", txt:"NEWS BLACKOUT — "+sh.ev.name+". Your rule: NO TRADE until the shield lifts at "+new Date(sh.end).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+"." });
+    else if(sh.mode==="soon") checks.push({st:"warn", label:"News shield", txt:"Next: "+sh.ev.name+" · "+evWhen(sh.ev.t)+" — its shield starts 30 minutes before the release."});
+    else checks.push({st:"ok", label:"News shield", txt:"Clear — next event: "+sh.ev.name+" · "+evWhen(sh.ev.t)+"."});
+    if(typeof isWeekendPP==="function" && isWeekendPP()) checks.push({st:"warn", label:"Market clock", txt:"Weekend — the real gold market is closed until Monday ~05:00 Phnom Penh. Anything you see now is a preview, not a trade."});
+    else checks.push({st:"ok", label:"Market clock", txt:"The gold market is open."});
+    var rn=pfRenewal(pfDaysLeft(Date.now()));
+    checks.push({st:rn.st, label:"VPS renewal", txt:rn.txt});
+    renderPreflight(checks);
+  }).catch(function(){})
+  .finally(function(){ pfRunning=false; if(btn){ btn.disabled=false; btn.textContent="Run check"; } });
+}
+$("pfRun").addEventListener("click", runPreflight);
+setTimeout(runPreflight, 2500);
+
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
   b.addEventListener("click", function(){

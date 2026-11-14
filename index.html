@@ -156,13 +156,15 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <button data-tf="4h">4h</button>
         </div>
         <div class="pill">Feed: <b id="feedName">connecting…</b></div>
-        <div class="pill">Candle closes in <b id="countdown">—</b></div>
+        <div class="pill"><span id="cdLabel">Candle closes in</span> <b id="countdown">—</b></div>
         <button class="ghostbtn" id="beepBtn">🔔 Signal beep: OFF</button>
         <button class="ghostbtn" id="installBtn" style="display:none">📲 Install app</button>
       </div>
     </div>
 
     <div class="warn">Real gold market: candles are <b>OKX's XAU gold contract</b> — a real exchange-traded gold market that tracks spot XAU/USD trade by trade (no token). The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div>
+
+    <div class="warn" id="wkndBar" style="display:none">🏖️ <b>Weekend — the real gold market is closed.</b> This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div>
 
     <!-- ============ TERMINAL ============ -->
     <section class="section active" id="sec-terminal">
@@ -819,10 +821,21 @@ function maybeBeep(dir){
   }catch(e){}
 }
 $("beepBtn").addEventListener("click", function(){ beepOn=!beepOn; this.textContent=beepOn?"🔔 Signal beep: ON":"🔔 Signal beep: OFF"; this.classList.toggle("on", beepOn); if(beepOn) maybeBeep(1); });
+function isWeekendPP(){
+  var p=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Phnom_Penh"}));
+  var d=p.getDay(), h=p.getHours();
+  if(d===0) return true;                 /* Sunday: closed all day */
+  if(d===6 && h>=5) return true;         /* Saturday from 05:00 (Fri 22:00 UTC close) */
+  if(d===1 && h<5) return true;          /* Monday before the ~05:00 reopen */
+  return false;
+}
+var lastWk=null;
 setInterval(function(){
   var ms=tfMs(TF), remain=ms-(Date.now()%ms);
   var m=Math.floor(remain/60000), s=Math.floor(remain%60000/1000);
   $("countdown").textContent=m+"m "+(s<10?"0":"")+s+"s";
+  var wk=isWeekendPP();
+  if(wk!==lastWk){ lastWk=wk; var bar=$("wkndBar"); if(bar) bar.style.display= wk? "block":"none"; var lb=$("cdLabel"); if(lb) lb.textContent= wk? "Weekend candle in" : "Candle closes in"; }
 },1000);
 setInterval(function(){ refresh(); fetchBias(); }, 60000);
 

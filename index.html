@@ -100,6 +100,11 @@ td{padding:8px;border-bottom:1px solid #1b2436;font-variant-numeric:tabular-nums
 .infobody{display:none;margin-top:8px}
 .infobody.open{display:block}
 .card .infotoggle{border-color:var(--line);color:var(--txt)}
+.ailog{max-height:330px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.aib{padding:9px 12px;border-radius:12px;font-size:13.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.aib.u{align-self:flex-end;background:#23304d;max-width:88%}
+.aib.a{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);max-width:94%}
+.aib.sys{align-self:center;background:transparent;border:none;color:var(--dim2);font-size:12.5px;text-align:center}
 textarea{width:100%;background:#0d1320;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:inherit;font-size:14.5px;min-height:150px}
 input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:14px;width:100%}
 .mt{margin-top:14px}.mb{margin-bottom:14px}
@@ -224,6 +229,24 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <span class="small" id="paMsg"></span>
         </div>
         <div id="paList" class="mt"></div>
+      </div>
+      <div class="card mt">
+        <h3>🤖 SP Analyst — AI market read</h3>
+        <p class="note">A second opinion from an AI analyst (Muse or Gemini) reading the <b>same live numbers</b> as the desk: price, EMA/RSI/ATR/MACD, H1 bias, the news shield and your MT5 panel. It gives a call <b>with reasons</b> — and its BUY/SELL calls are logged to your Signals &amp; Record (marked 🤖) and graded like the desk's, so you can judge whether it earns its place. It can be wrong; it never trades.</p>
+        <div class="pillrow mt">
+          <input type="password" id="aiKeyInput" placeholder="AI API key (Gemini free key or Muse key)" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:250px;max-width:70vw">
+          <button class="ghostbtn" id="aiKeySave">Save key</button>
+          <button class="ghostbtn" id="aiKeyClear">Remove</button>
+          <span class="small" id="aiKeyMsg"></span>
+        </div>
+        <p class="small">The key is saved <b>only in this browser on this device</b> — never in the website code. No key yet? A Gemini key is free (2 minutes, no card): the steps are in <b>How it works → SP Analyst</b>.</p>
+        <button class="bigbtn" id="aiAnalyze">🔍 Analyze the market now</button>
+        <div class="ailog" id="aiLog"></div>
+        <div class="pillrow mt">
+          <input type="text" id="aiInput" placeholder="Ask the analyst… e.g. why is the desk saying WAIT?" style="flex:1;min-width:160px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:10px 12px">
+          <button class="ghostbtn" id="aiSend" style="padding:10px 16px">Send</button>
+        </div>
+        <div class="err mt" id="aiErr"></div>
       </div>
     </section>
 
@@ -428,6 +451,16 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         </div>
         <h3 style="margin-top:22px">Install as an app</h3>
         <p class="note">Use the <b>📲 Install app</b> button at the top (appears in Chrome on Android), or Chrome menu ⋮ → "Install app". On iPhone: Safari Share → "Add to Home Screen". The site then opens full-screen from its own SP icon. It still needs internet for prices — installed just means faster, cleaner access — and price beeps only sound while the app is open on screen, the browser's rule for all web apps.</p>
+      </div>
+      <div class="card mt">
+        <h3>SP Analyst — get your free AI key</h3>
+        <p class="note" style="line-height:1.75">The 🤖 SP Analyst on the Terminal needs an AI key <b>of your own</b> — the website cannot lend you one, because a key inside public code would be stolen in days. The free way (about 2 minutes, no card):<br>
+        1. Open <b>aistudio.google.com/apikey</b> and sign in with your Google account.<br>
+        2. Tap <b>Create API key</b> (create a project if it asks — any name).<br>
+        3. Copy the key it shows.<br>
+        4. Back here: <b>Terminal → 🤖 SP Analyst</b>, paste the key in the box, tap <b>Save key</b>.<br>
+        5. Tap <b>🔍 Analyze the market now</b>.<br>
+        Prefer real Muse instead? Get a key at <b>console.anthropic.com</b> (needs a small paid credit balance) — paste a key starting <b>sk-ant-</b> and the Analyst uses Muse automatically; any other key is treated as Gemini. Either way the key lives only in this device's browser, and calls go straight from your device to the AI — nothing passes through this website.</p>
       </div>
     </section>
   </main>
@@ -658,7 +691,7 @@ window.addEventListener("resize", function(){ if(candles.length) renderMarket();
 var HKEY="sp_gold_signals_v1";
 function loadHist(){ try{ return JSON.parse(localStorage.getItem(HKEY)||"[]"); }catch(e){ return []; } }
 function storeHist(h){ localStorage.setItem(HKEY, JSON.stringify(h.slice(0,200))); }
-function saveSignal(s){ var h=loadHist(); h.unshift({time:s.time, tf:s.tf, dir:s.dir, entry:s.entry, sl:s.sl, tp1:s.tp1, result:"OPEN", r:null}); storeHist(h); renderHistory(); }
+function saveSignal(s){ var h=loadHist(); h.unshift({time:s.time, tf:s.tf, dir:s.dir, entry:s.entry, sl:s.sl, tp1:s.tp1, result:"OPEN", r:null, src:s.src||null}); storeHist(h); renderHistory(); }
 function evaluateHistory(){
   var h=loadHist(); if(!h.length || !candles.length) { renderHistory(); return; }
   var changed=false;
@@ -686,7 +719,7 @@ function renderHistory(){
   $("histBody").innerHTML=h.slice(0,40).map(function(s){
     var tag=s.dir===1?'<span class="tag buy">BUY</span>':'<span class="tag sell">SELL</span>';
     var rt=s.result==="WIN"?'<span class="tag win">WIN · TP1</span>':(s.result==="LOSS"?'<span class="tag loss">LOSS · SL</span>':'<span class="tag open">OPEN</span>');
-    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
+    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+(s.src?"🤖 ":"")+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
   }).join("");
 }
 $("clearHist").addEventListener("click", function(){ if(confirm("Clear all saved signals and the record? This cannot be undone.")){ localStorage.removeItem(HKEY); renderHistory(); $("histBody").innerHTML='<tr><td colspan="8" class="note">History cleared.</td></tr>'; } });
@@ -699,6 +732,7 @@ $("saveJournal").addEventListener("click", function(){ localStorage.setItem(JKEY
 /* ================= MT5 JSON ================= */
 function renderMt5(j){
   if(j && j.scalp) j=j.scalp; // tolerate an /api/status-shaped reply
+  window._mt5j=j;
   var dirTxt = (j.dir===1||j.signal==="BUY")?"BUY":((j.dir===-1||j.signal==="SELL")?"SELL":"WAIT");
   var cls = dirTxt==="BUY"?"buy":(dirTxt==="SELL"?"sell":"wait");
   var fz=function(x){ return (!x || +x===0) ? "—" : fmt(x); }; // WAIT signals carry 0 levels by design
@@ -841,6 +875,108 @@ function loadEaFrames(){
     if(!f.getAttribute("src")) f.setAttribute("src", f.getAttribute("data-easrc"));
   });
 }
+
+/* ================= SP Analyst (AI second opinion) ================= */
+var AIKEY="sp_ai_key_v1", AICHAT="sp_ai_chat_v1";
+var AI_SYS="You are SP Analyst, the AI gold analyst inside Steven's SP Gold Trading terminal. Steven trades XAUUSD (gold) on Exness MT5 (a cent account), semi-manually, alongside his Smart Grid Hunter EA. Your job: read the market brief the terminal gives you and give a clear trading read with reasons.\n\nRules:\n- Use ONLY the numbers in the brief. Never invent prices, news, or indicator values.\n- Always take a position: CALL: BUY, CALL: SELL, or CALL: WAIT. WAIT is a real call when the setup is weak, the desk and the MT5 panel disagree, the news shield is hot, or it is the weekend.\n- For BUY/SELL add a LEVELS line: LEVELS: <entry> <stop loss> <take profit 1> <take profit 2> — entry at the last close, stop about 1x ATR away, TP1 = 1R, TP2 = 1.8R, unless the brief gives a strong reason to differ.\n- Keep the main answer short: 2-4 reasons tied to specific numbers in the brief, then the main risk, then the CALL line, then the LEVELS line if BUY/SELL. Plain language. No hype, no profit promises.\n- You are a second opinion next to his rule-based desk and his MT5 Scalp Panel. When you disagree with them, say so and say why.\n- Never advise bigger lots, revenge trading, or trading through a news blackout.\n- For follow-up questions without a fresh brief request, answer from the brief in the conversation and say if the brief may be stale.";
+function aiKey(){ try{ return localStorage.getItem(AIKEY)||""; }catch(e){ return ""; } }
+function aiProvider(k){ k=k||aiKey(); return k.indexOf("sk-ant-")===0? "anthropic" : "gemini"; }
+function aiBrief(){
+  var cs=closedOnly(candles); if(cs.length<30) return null;
+  var cl=cs.map(function(c){ return c.c; });
+  var price=cl[cl.length-1], last=cs[cs.length-1];
+  var e21=ema(cl,21), e55=ema(cl,55), r=rsi(cl), a=atr(cs), mh=macdHist(cl);
+  var L=[];
+  L.push("Time (Phnom Penh): "+new Date().toLocaleString("en-GB"));
+  L.push("Feed: OKX XAU gold contract (tracks spot XAU/USD; NOT his Exness XAUUSDc, where spread is ~24 pips). Timeframe: "+TF+".");
+  L.push("Last closed candle: O "+fmt(last.o)+" H "+fmt(last.h)+" L "+fmt(last.l)+" C "+fmt(last.c)+" ("+new Date(last.t).toLocaleTimeString("en-GB")+")");
+  L.push("EMA21 "+fmt(e21[e21.length-1])+" · EMA55 "+fmt(e55[e55.length-1])+" · RSI14 "+(r===null?"—":r.toFixed(1))+" · ATR14 "+fmt(a)+" · MACD histogram "+(mh[mh.length-1]>=0?"positive":"negative"));
+  L.push("Last 12 closes: "+cl.slice(-12).map(function(x){ return fmt(x); }).join(", "));
+  var dayAgo=cs[Math.max(0, cs.length-97)]; var chg=(price-dayAgo.o)/dayAgo.o*100;
+  L.push("Change vs ~24h ago: "+(chg>=0?"+":"")+chg.toFixed(2)+"%");
+  L.push("H1 bias (site): "+(window._h1bias||"unknown"));
+  if(lastSignal && lastSignal.time) L.push("Web desk last scan ("+lastSignal.tf+"): "+(lastSignal.dir===1?"BUY":(lastSignal.dir===-1?"SELL":"WAIT"))+" · entry "+fmt(lastSignal.entry)+" · SL "+fmt(lastSignal.sl)+" · TP1 "+fmt(lastSignal.tp1));
+  var st=(typeof shieldState==="function")? shieldState(Date.now()) : null;
+  if(st) L.push("News shield: "+st.mode+(st.ev? " — next/recent event: "+st.ev.name+" at "+new Date(st.ev.t).toLocaleString("en-GB")+" Phnom Penh" : ""));
+  if(typeof isWeekendPP==="function" && isWeekendPP()) L.push("WEEKEND: the real gold market is CLOSED. These are thin 24/7-contract candles, not tradable spot moves.");
+  var mj=window._mt5j||mt5Live.data;
+  if(mj) L.push("His MT5 Scalp Panel (live): signal "+(mj.signal||"")+" · H1 "+(mj.bias||"")+" "+(mj.trend_strength||mj.strength||"")+" · RSI "+(mj.rsi||"")+" · ADX H1 "+(mj.adx_h1||"")+" · spread "+(mj.spread||"")+" pips · bid "+(mj.bid||"")+" · last signal "+(mj.last_dir||"")+" @ "+(mj.last_price||""));
+  return L.join("\n");
+}
+function aiCall(messages){
+  var k=aiKey();
+  if(!k) return Promise.reject(new Error("No AI key saved yet — paste one in the SP Analyst card above (free Gemini steps: How it works → SP Analyst)."));
+  if(aiProvider(k)==="anthropic"){
+    return fetch("https://api.anthropic.com/v1/messages", {method:"POST", headers:{"content-type":"application/json", "x-api-key":k, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:"claude-sonnet-4-5", max_tokens:800, system:AI_SYS, messages:messages.map(function(m){ return {role:(m.role==="assistant"?"assistant":"user"), content:m.text}; })})})
+      .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error((j.error&&j.error.message)||("Muse API HTTP "+r.status)); return (j.content||[]).map(function(b){ return b.text||""; }).join("").trim(); }); });
+  }
+  return fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="+encodeURIComponent(k), {method:"POST", headers:{"content-type":"application/json"},
+    body:JSON.stringify({systemInstruction:{parts:[{text:AI_SYS}]}, contents:messages.map(function(m){ return {role:(m.role==="assistant"?"model":"user"), parts:[{text:m.text}]}; }), generationConfig:{maxOutputTokens:800}})})
+    .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error((j.error&&j.error.message)||("Gemini API HTTP "+r.status)); var c=j.candidates&&j.candidates[0]; if(!c) throw new Error("Gemini returned no answer (the key may be out of free quota — try again later)."); return (c.content.parts||[]).map(function(p){ return p.text||""; }).join("").trim(); }); });
+}
+var aiHistory=[];
+try{ aiHistory=JSON.parse(localStorage.getItem(AICHAT)||"[]"); if(!Array.isArray(aiHistory)) aiHistory=[]; }catch(e){ aiHistory=[]; }
+function aiStore(){ try{ localStorage.setItem(AICHAT, JSON.stringify(aiHistory.slice(-20))); }catch(e){} }
+function aiBubble(cls, text){
+  var log=$("aiLog"); if(!log) return null;
+  var d=document.createElement("div"); d.className="aib "+cls; d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight; return d;
+}
+function aiRenderStored(){
+  var log=$("aiLog"); if(!log) return; log.innerHTML="";
+  if(!aiHistory.length){ aiBubble("sys", "No analysis yet. Press “Analyze the market now”, or ask me a question — I read the same live brief the desk uses."); return; }
+  aiHistory.forEach(function(m){ aiBubble(m.role==="assistant"?"a":"u", m.show||m.text); });
+}
+function aiMaybeLog(text){
+  var cm=/CALL:\s*(BUY|SELL|WAIT)/i.exec(text); if(!cm) return "";
+  var dir=cm[1].toUpperCase();
+  if(dir==="WAIT") return "— Call logged as WAIT: nothing enters the record for a WAIT.";
+  var lm=/LEVELS:\s*([\d,]+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)\s+([\d,]+(?:\.\d+)?)/i.exec(text);
+  if(!lm) return "— The analyst called "+dir+" without usable LEVELS, so it was NOT logged. Check the levels yourself before any trade.";
+  var e=parseFloat(lm[1].replace(/,/g,"")), s=parseFloat(lm[2].replace(/,/g,"")), t=parseFloat(lm[3].replace(/,/g,""));
+  var d=dir==="BUY"?1:-1;
+  if(!(e>0&&s>0&&t>0) || (d===1 && !(s<e && e<t)) || (d===-1 && !(s>e && e>t))) return "— The analyst's LEVELS don't line up for a "+dir+" (stop and target on the wrong sides), so it was NOT logged.";
+  saveSignal({time:Date.now(), tf:TF, dir:d, entry:e, sl:s, tp1:t, src:"SP Analyst"});
+  if(typeof maybeBeep==="function") maybeBeep(d);
+  return "— ✓ Logged to your Signals & Record (marked 🤖) and graded like the desk's calls.";
+}
+function aiUserTurn(showText, wireText){
+  $("aiErr").textContent="";
+  aiHistory.push({role:"user", text:wireText, show:showText}); aiStore();
+  aiBubble("u", showText);
+  var thinking=aiBubble("a", "Reading the brief…");
+  aiCall(aiHistory.slice(-10)).then(function(reply){
+    if(thinking) thinking.remove();
+    if(!reply) throw new Error("The AI returned an empty answer.");
+    aiHistory.push({role:"assistant", text:reply}); aiStore();
+    aiBubble("a", reply);
+    var note=aiMaybeLog(reply); if(note) aiBubble("sys", note);
+  }).catch(function(e){
+    if(thinking) thinking.remove();
+    aiHistory.pop(); aiStore();
+    $("aiErr").textContent="Analyst failed: "+e.message;
+  });
+}
+function aiKeyStatus(){
+  var k=aiKey(), msg=$("aiKeyMsg"); if(!msg) return;
+  msg.textContent = k? ("Key saved on this device ✓ — using "+(aiProvider(k)==="anthropic"?"Muse":"Gemini")+".") : "No key saved on this device yet.";
+  var inp=$("aiKeyInput"); if(inp && k) inp.value="";
+}
+$("aiKeySave").addEventListener("click", function(){ var v=$("aiKeyInput").value.trim(); if(!v){ $("aiKeyMsg").textContent="Paste a key first."; return; } try{ localStorage.setItem(AIKEY, v); }catch(e){} aiKeyStatus(); });
+$("aiKeyClear").addEventListener("click", function(){ try{ localStorage.removeItem(AIKEY); }catch(e){} aiKeyStatus(); });
+$("aiAnalyze").addEventListener("click", function(){
+  var brief=aiBrief();
+  if(!brief){ $("aiErr").textContent="Not enough candle data yet — wait for the chart to load, then try again."; return; }
+  aiUserTurn("🔍 Analyze the market now ("+TF+")", "CURRENT MARKET BRIEF:\n"+brief+"\n\nGive your market read now: reasons first, then the CALL line, then LEVELS if BUY/SELL.");
+});
+function aiSendNow(){
+  var inp=$("aiInput"), q=inp.value.trim(); if(!q) return; inp.value="";
+  var brief=aiBrief();
+  aiUserTurn(q, (brief? ("CURRENT MARKET BRIEF:\n"+brief+"\n\n") : "")+"Steven asks: "+q);
+}
+$("aiSend").addEventListener("click", aiSendNow);
+$("aiInput").addEventListener("keydown", function(e){ if(e.key==="Enter") aiSendNow(); });
+aiKeyStatus(); aiRenderStored();
 $("tfbtns").addEventListener("click", function(e){
   var b=e.target.closest("button"); if(!b) return;
   document.querySelectorAll("#tfbtns button").forEach(function(x){x.classList.remove("active");});

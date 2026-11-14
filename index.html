@@ -95,6 +95,10 @@ td{padding:8px;border-bottom:1px solid #1b2436;font-variant-numeric:tabular-nums
 .section{display:none} .section.active{display:block}
 .note{color:var(--dim);font-size:13px;line-height:1.55}
 .warn{background:#2a2113;border:1px solid #57451d;color:#ecd9a0;border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.55;margin-bottom:14px}
+.infohead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.infotoggle{background:transparent;border:1px solid #57451d;color:#ecd9a0;border-radius:8px;padding:5px 11px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.infobody{display:none;margin-top:8px}
+.infobody.open{display:block}
 textarea{width:100%;background:#0d1320;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:inherit;font-size:14.5px;min-height:150px}
 input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:14px;width:100%}
 .mt{margin-top:14px}.mb{margin-bottom:14px}
@@ -164,9 +168,9 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       </div>
     </div>
 
-    <div class="warn">Real gold market: candles are <b>OKX's XAU gold contract</b> — a real exchange-traded gold market that tracks spot XAU/USD trade by trade (no token). The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div>
+    <div class="warn"><div class="infohead"><span>ℹ️ <b>About this feed</b> — OKX's XAU gold contract (not Exness XAUUSDc)</span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">Real gold market: candles are <b>OKX's XAU gold contract</b> — a real exchange-traded gold market that tracks spot XAU/USD trade by trade (no token). The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div></div>
 
-    <div class="warn" id="wkndBar" style="display:none">🏖️ <b>Weekend — the real gold market is closed.</b> This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div>
+    <div class="warn" id="wkndBar" style="display:none"><div class="infohead"><span>🏖️ <b>Weekend — the real gold market is closed</b></span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div></div>
 
     <!-- ============ TERMINAL ============ -->
     <section class="section active" id="sec-terminal">
@@ -824,6 +828,13 @@ document.querySelectorAll(".nav button").forEach(function(b){
     if(b.getAttribute("data-sec")==="news") loadNews();
     if(b.getAttribute("data-sec")==="easervers") loadEaFrames();
   });
+});
+document.addEventListener("click", function(e){
+  var b=e.target.closest(".infotoggle"); if(!b) return;
+  var body=b.parentElement.parentElement.querySelector(".infobody"); if(!body) return;
+  var open=body.classList.toggle("open");
+  b.textContent= open? "Hide ▴" : "Show more ▾";
+  b.setAttribute("aria-expanded", open? "true":"false");
 });
 function loadEaFrames(){
   document.querySelectorAll("iframe.eaframe").forEach(function(f){

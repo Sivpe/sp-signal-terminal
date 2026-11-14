@@ -132,6 +132,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
       <button data-sec="journal"><span class="ic">✎</span> Journal</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
+      <button data-sec="easervers"><span class="ic">🤖</span> My EA Servers</button>
       <button data-sec="about"><span class="ic">?</span> How it works</button>
     </nav>
     <div class="foot"><span class="badge-priv">PUBLIC SITE</span><br><br>Personal tool, shared publicly. Not financial advice. Signals are analysis only — you place your own trades.</div>
@@ -145,6 +146,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
       <button data-sec="journal"><span class="ic">✎</span> Journal</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
+      <button data-sec="easervers"><span class="ic">🤖</span> My EA Servers</button>
       <button data-sec="about"><span class="ic">?</span> How it works</button>
     </nav>
     <div class="topbar">
@@ -377,6 +379,28 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <div class="card">
         <h3>Running both systems — the rule</h3>
         <p class="note">This terminal is <b>signal-only</b>, like your indicator: it never places a trade. Smart Grid Hunter stays on its M1 chart, the Scalp Panel on M5. If this desk and your MT5 panel disagree, the safe read is WAIT — two systems fighting is information, not a trade.</p>
+      </div>
+    </section>
+
+    <!-- ============ MY EA SERVERS ============ -->
+    <section class="section" id="sec-easervers">
+      <div class="card">
+        <h3>🤖 My EA servers — on my VPS</h3>
+        <p class="note">These buttons open the web servers that run on your own VPS, carried over the same private Tailscale link as your MT5 Panel. They only work on <b>your</b> devices with <b>Tailscale ON</b> — this page is public, but the servers are not: anyone else who taps these buttons reaches a dead end, because the lock is your tailnet, not the website. <b>One rule: never turn on Tailscale Funnel for these</b> — Funnel would open them to the whole internet. Serve (what we use) keeps them private.</p>
+      </div>
+      <div class="card">
+        <h3>📊 Smart Grid Hunter — dashboard</h3>
+        <p class="note">Read-only view of your Smart Grid Hunter EA: regime, open baskets, equity, journal stats. VPS port 8080.</p>
+        <p class="mt"><a class="scanbtn" style="display:inline-block;text-decoration:none;padding:10px 18px" href="https://win-54huck5cs86.tail0db2c5.ts.net:8443/" target="_blank" rel="noopener">Open Smart Grid Hunter dashboard →</a></p>
+      </div>
+      <div class="card">
+        <h3>🎛️ Grid Hunter 5.5 — control panel</h3>
+        <p class="note">⚠️ This one has real power: it can <b>start and stop</b> the Grid Hunter EA on your account. VPS port 8082. Treat the button like the EA's own switch — because it is.</p>
+        <p class="mt"><a class="scanbtn" style="display:inline-block;text-decoration:none;padding:10px 18px" href="https://win-54huck5cs86.tail0db2c5.ts.net:8444/" target="_blank" rel="noopener">Open Grid Hunter control →</a></p>
+      </div>
+      <div class="card">
+        <h3>If a page won't open</h3>
+        <p class="note">1) Tailscale must be ON and signed in on this device. 2) The server must be running on the VPS (the Smart Grid Hunter server and the Grid Hunter Node control start with their usual launchers). 3) The one-time Tailscale Serve setup on the VPS must be done — Muse has the two commands in chat. Once set, Serve survives reboots; the servers themselves still need their windows open on the VPS.</p>
       </div>
     </section>
 

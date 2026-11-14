@@ -300,6 +300,18 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
             <label><input type="checkbox" id="gDailyLock" checked> Daily profit lock 5%</label> ·
             <label><input type="checkbox" id="gEqProt"> Equity protection 25% (off on your live account)</label>
           </div>
+          <div class="mt" style="border-top:1px solid var(--line);padding-top:12px">
+            <p class="small" style="margin:0 0 8px"><b>📅 Nonstop stretch test (1m)</b> — pick a day and let the EA run nonstop over just that day, or 5 days from it, to see whether leaving it running was good or bad. Uses the money and settings above; the timeframe/candle selectors don't apply. The result counts every trade it took.</p>
+            <label class="small">Start day <input type="date" id="gDate" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:5px 7px"></label> ·
+            <label class="small">Run for
+              <select id="gSpan" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 8px">
+                <option value="1">1 day</option><option value="5">5 days</option>
+              </select>
+            </label>
+            <button class="scanbtn" id="gStretch" style="padding:9px 15px;font-size:13.5px">▶ Run this stretch</button>
+            <span class="small" id="gStretchMsg"></span>
+            <p class="note">Days are Phnom Penh days (00:00 → 00:00). A 5-day run downloads ~7,600 one-minute candles, so give it a few seconds. OKX's 1m history only reaches back so far — if a day is too old, the result will say so instead of guessing.</p>
+          </div>
         </div>
         <p class="err" id="btErr"></p>
         <div id="btOut" class="mt"><p class="note">No backtest run yet. Pick a strategy, timeframe and target, then run it — 600 candles: 1m ≈ 10 hours, 5m ≈ 2 days, 15m ≈ 6 days, 1h ≈ 25 days, 4h ≈ 3 months. 1000 candles of 1m ≈ 17 hours.</p></div>
@@ -985,7 +997,7 @@ function gridSimulate(cs, tf, P, env){
   var freezeUntil={"1":0,"-1":0};
   var breakoutUntil=0, blockedDay=-1, cooldownUntil=0, eqBlocked=false;
   var peakEq=startBal, worstEqDD=0, worstBasketDD=0, maxLayersSeen=0;
-  var closed=[], eqCurve=[], dayReal={};
+  var closed=[], eqCurve=[], dayReal={}, totalTrades=0;
   var smoothStep=0, band=null, startLotCache=null;
   function profitAt(b, price){ if(!b) return 0; var s=0; for(var q=0;q<b.pos.length;q++) s+=b.pos[q].lot*(price-b.pos[q].p)*b.dir*10000; return s; }
   function volOf(b){ var s=0; for(var q=0;q<b.pos.length;q++) s+=b.pos[q].lot; return s; }
@@ -1003,6 +1015,7 @@ function gridSimulate(cs, tf, P, env){
   function floatAt(price){ return profitAt(baskets["1"],price)+profitAt(baskets["-1"],price); }
   for(var i=WARM;i<cs.length;i++){
     var bar=cs[i], ct=bar.t+ms, day=Math.floor(bar.t/86400000);
+    var trading = !P.tradeFrom || ct>=P.tradeFrom;
     var atrv=atrSer[i]; if(atrv===null) continue;
     var atrPips=atrv/0.01;
     /* step (smoothed like the EA) */
@@ -1028,9 +1041,11 @@ function gridSimulate(cs, tf, P, env){
       }
     }
     /* ---- equity snapshot at the close (before actions) for DD stats ---- */
-    var eqClose=bal+floatAt(bar.c);
-    if(eqClose>peakEq) peakEq=eqClose;
-    if(peakEq>0){ var dd0=(peakEq-eqClose)/peakEq*100; if(dd0>worstEqDD) worstEqDD=dd0; }
+    if(trading){
+      var eqClose=bal+floatAt(bar.c);
+      if(eqClose>peakEq) peakEq=eqClose;
+      if(peakEq>0){ var dd0=(peakEq-eqClose)/peakEq*100; if(dd0>worstEqDD) worstEqDD=dd0; }
+    }
     /* ---- protections + TP at extremes, per direction ---- */
     var dirs=[1,-1];
     for(var di=0;di<2;di++){
@@ -1053,7 +1068,7 @@ function gridSimulate(cs, tf, P, env){
       var cap = regime===0? Math.min(P.maxLayers,4) : P.maxLayers;
       var frozen = ct<freezeUntil[String(d)] || ct<breakoutUntil;
       var counter = (regime>0 && d===-1) || (regime<0 && d===1);
-      if(!frozen && !counter && bk.pos.length<cap){
+      if(trading && !frozen && !counter && bk.pos.length<cap){
         var guard=0;
         while(bk.pos.length<cap && guard++<25){
           var newest=bk.pos[bk.pos.length-1].p;
@@ -1066,7 +1081,7 @@ function gridSimulate(cs, tf, P, env){
           var lot = regime===0? base : base*Math.pow(P.mult, bk.pos.length);
           lot=Math.round(lot*100)/100; if(lot<0.01) lot=0.01;
           if(volOf(bk)+lot>P.maxLots+1e-9) break;
-          bk.pos.push({p:level, lot:lot});
+          bk.pos.push({p:level, lot:lot}); totalTrades++;
           if(bk.pos.length>maxLayersSeen) maxLayersSeen=bk.pos.length;
           if(bk.trailOn){ var pNow=profitAt(bk, level); var nl=pNow-250; if(nl<bk.trailLock) bk.trailLock=nl; }
         }
@@ -1109,7 +1124,7 @@ function gridSimulate(cs, tf, P, env){
       blockedDay=day;
     }
     /* ---- first entries (only when fully flat) ---- */
-    if(!anyBasket()){
+    if(trading && !anyBasket()){
       startLotCache=Math.max(0.01, Math.round(P.lotPer*(bal/5000)*100)/100);
       if(hg.ok && !murky && ct>=breakoutUntil && !eqBlocked && blockedDay!==day){
         for(var ei=0;ei<2;ei++){
@@ -1130,7 +1145,7 @@ function gridSimulate(cs, tf, P, env){
           if(!sig) continue;
           var lot0=Math.round(startLotCache*confScale*volScale*100)/100; if(lot0<0.01) lot0=0.01;
           if(lot0>P.maxLots) continue;
-          baskets[String(ed)]={pos:[{p:bar.c, lot:lot0}], openedT:bar.t, trailOn:false, trailLock:0, dir:ed};
+          baskets[String(ed)]={pos:[{p:bar.c, lot:lot0}], openedT:bar.t, trailOn:false, trailLock:0, dir:ed}; totalTrades++;
           if(maxLayersSeen<1) maxLayersSeen=1;
           break;
         }
@@ -1138,12 +1153,12 @@ function gridSimulate(cs, tf, P, env){
     } else {
       startLotCache=null;
     }
-    eqCurve.push({t:ct, eq:bal+floatAt(bar.c)});
+    if(trading) eqCurve.push({t:ct, eq:bal+floatAt(bar.c)});
   }
   var openList=[];
   [1,-1].forEach(function(d){ var b=baskets[String(d)]; if(b) openList.push({dir:d, layers:b.pos.length, vol:volOf(b), float:profitAt(b, closes[closes.length-1])}); });
   var finalEq=bal+openList.reduce(function(s,x){ return s+x.float; },0);
-  return {startBal:startBal, endBal:bal, finalEq:finalEq, closed:closed, eqCurve:eqCurve,
+  return {startBal:startBal, endBal:bal, finalEq:finalEq, closed:closed, eqCurve:eqCurve, totalTrades:totalTrades,
           worstEqDD:worstEqDD, worstBasketDD:worstBasketDD, maxLayers:maxLayersSeen, open:openList};
 }
 function drawMoneyCurve(pts){
@@ -1160,7 +1175,7 @@ function drawMoneyCurve(pts){
   ctx.fillStyle="#9aa4b0"; ctx.font="11px sans-serif";
   ctx.fillText("Equity curve (cents) · starts "+Math.round(start)+"¢ · ends "+Math.round(end)+"¢ · low "+Math.round(mn)+"¢", pad, 14);
 }
-function renderGrid(res, tf, bars, P){
+function renderGrid(res, tf, bars, P, meta){
   var wins=res.closed.filter(function(x){ return x.profit>0; }).length;
   var losses=res.closed.length-wins;
   var net=res.endBal-res.startBal;
@@ -1178,8 +1193,9 @@ function renderGrid(res, tf, bars, P){
   }).join("");
   $("btOut").innerHTML=
     '<div class="stats">'+
-    '<div class="stat"><div class="lab">🤖 Smart Grid Hunter · '+tf+' · '+bars+' candles</div><div class="val" style="color:'+(net>=0?"var(--green)":"var(--red)")+'">'+Math.round(res.endBal)+'¢</div><div class="sub">started '+Math.round(res.startBal)+'¢ · net '+(net>=0?"+":"")+Math.round(net)+'¢ ('+(net/res.startBal*100).toFixed(1)+'%)</div></div>'+
+    '<div class="stat"><div class="lab">🤖 Smart Grid Hunter · '+tf+' · '+(meta&&meta.window? meta.window : bars+' candles')+'</div><div class="val" style="color:'+(net>=0?"var(--green)":"var(--red)")+'">'+Math.round(res.endBal)+'¢</div><div class="sub">started '+Math.round(res.startBal)+'¢ · net '+(net>=0?"+":"")+Math.round(net)+'¢ ('+(net/res.startBal*100).toFixed(1)+'%)</div></div>'+
     '<div class="stat"><div class="lab">Final equity (incl. open)</div><div class="val">'+Math.round(res.finalEq)+'¢</div><div class="sub">'+res.open.length+' basket(s) still open at the end</div></div>'+
+    '<div class="stat"><div class="lab">Total trades</div><div class="val">'+(res.totalTrades||0)+'</div><div class="sub">every position opened, first entries + grid layers, across '+res.closed.length+' closed baskets'+(res.open.length? ' + '+res.open.length+' still open':'')+'</div></div>'+
     '<div class="stat"><div class="lab">Baskets closed</div><div class="val">'+res.closed.length+'</div><div class="sub">'+wins+' in profit · '+losses+' in loss · gross +'+Math.round(grossW)+'¢ / '+Math.round(grossL)+'¢</div></div>'+
     '<div class="stat"><div class="lab">Worst drawdowns</div><div class="val" style="font-size:16px">Equity '+res.worstEqDD.toFixed(1)+'% · Basket '+res.worstBasketDD.toFixed(1)+'%</div><div class="sub">deepest basket reached '+res.maxLayers+' layers · hard stops: '+hardStops+'</div></div>'+
     '</div>'+
@@ -1341,6 +1357,63 @@ $("btRun").addEventListener("click", function(){
     renderBacktest(trades, btTF, cs.length, {label:STRAT_LABELS[btStrat], rr:rr});
   }).catch(function(e){ $("btErr").textContent="Backtest failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="▶ Run backtest"; });
+});
+
+/* ---- chosen-stretch fetch: OKX history bounded to [fromMs, toMs) ---- */
+function fetchWindow(tf, fromMs, toMs){
+  var bar={"1m":"1m","5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];
+  var byT={};
+  function done(){
+    return Object.keys(byT).map(function(k){ return byT[k]; })
+      .filter(function(c){ return c.t>=fromMs && c.t<toMs; })
+      .sort(function(a,b){ return a.t-b.t; });
+  }
+  function page(after){
+    var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300&after="+after;
+    return fetch(u).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
+      .then(function(j){
+        var rows=j.data||[];
+        rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4]}; });
+        if(!rows.length) return done();
+        var oldest=Math.min.apply(null, rows.map(function(k){ return +k[0]; }));
+        if(oldest>fromMs && rows.length===300) return page(oldest);
+        return done();
+      });
+  }
+  return page(toMs);
+}
+/* ---- EA nonstop stretch test: one chosen day (or 5) on 1m ---- */
+(function(){
+  var dEl=$("gDate"); if(!dEl) return;
+  var ppNow=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Phnom_Penh"}));
+  function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  dEl.max=iso(ppNow);
+  var y=new Date(ppNow); y.setDate(y.getDate()-1); dEl.value=iso(y);
+})();
+$("gStretch").addEventListener("click", function(){
+  var btn=this, dv=$("gDate").value, span=parseInt($("gSpan").value,10)||1;
+  $("btErr").textContent=""; $("gStretchMsg").textContent="";
+  if(!dv){ $("btErr").textContent="Pick a start day first."; return; }
+  var start=Date.parse(dv+"T00:00:00+07:00");
+  if(!isFinite(start)){ $("btErr").textContent="That date could not be read."; return; }
+  var nowMs=Date.now();
+  if(start>nowMs){ $("btErr").textContent="That day has not happened yet — pick today or an earlier day."; return; }
+  var end=Math.min(start+span*86400000, nowMs);
+  btn.disabled=true; btn.textContent="Downloading…"; $("gStretchMsg").textContent=" fetching 1m candles from OKX…";
+  var jobs=[ fetchWindow("1m", start-400*60000, end), fetchWindow("1h", start-12*86400000, end), fetchWindow("15m", start-2*86400000, end) ];
+  Promise.all(jobs).then(function(res){
+    var cs=res[0], h1=res[1], m15=res[2];
+    var inWin=cs.filter(function(c){ return c.t>=start && c.t<end; }).length;
+    var expected=Math.round((end-start)/60000);
+    if(inWin < expected*0.5) throw new Error("OKX returned only "+inWin+" of ~"+expected+" one-minute candles for that stretch — its 1m history does not reach that far back. Try a more recent day.");
+    if(!h1 || h1.length<120) throw new Error("not enough H1 history for the regime ("+(h1?h1.length:0)+")");
+    if(!m15 || m15.length<40) throw new Error("not enough M15 history for the range band");
+    var P=readGrid(); P.tradeFrom=start;
+    var gres=gridSimulate(cs, "1m", P, {h1cs:h1, h1arr:h1GridArr(h1), m15:m15});
+    function fmt(t){ return new Date(t).toLocaleString("en-GB",{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}); }
+    renderGrid(gres, "1m", cs.length, P, {window: fmt(start)+" → "+fmt(end)+" · Phnom Penh · "+inWin+" candles in the window"});
+  }).catch(function(e){ $("btErr").textContent="Stretch test failed: "+e.message; })
+  .finally(function(){ btn.disabled=false; btn.textContent="▶ Run this stretch"; $("gStretchMsg").textContent=""; });
 });
 
 /* ================= price-level alerts ================= */

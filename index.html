@@ -385,22 +385,18 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <!-- ============ MY EA SERVERS ============ -->
     <section class="section" id="sec-easervers">
       <div class="card">
-        <h3>🤖 My EA servers — on my VPS</h3>
-        <p class="note">These buttons open the web servers that run on your own VPS, carried over the same private Tailscale link as your MT5 Panel. They only work on <b>your</b> devices with <b>Tailscale ON</b> — this page is public, but the servers are not: anyone else who taps these buttons reaches a dead end, because the lock is your tailnet, not the website. <b>One rule: never turn on Tailscale Funnel for these</b> — Funnel would open them to the whole internet. Serve (what we use) keeps them private.</p>
+        <h3>🤖 My EA server — on my VPS</h3>
+        <p class="note">Your Smart Grid Hunter web server, shown live inside this page over the same private Tailscale link as your MT5 Panel. It only loads on <b>your</b> devices with <b>Tailscale ON</b> — this page is public, but the server is not: anyone else who opens this section sees an empty frame, because the lock is your tailnet, not the website. <b>One rule: never turn on Tailscale Funnel for it</b> — Funnel would open it to the whole internet. Serve (what we use) keeps it private.</p>
       </div>
       <div class="card">
         <h3>📊 Smart Grid Hunter — dashboard</h3>
-        <p class="note">Read-only view of your Smart Grid Hunter EA: regime, open baskets, equity, journal stats. VPS port 8080.</p>
-        <p class="mt"><a class="scanbtn" style="display:inline-block;text-decoration:none;padding:10px 18px" href="https://win-54huck5cs86.tail0db2c5.ts.net:8443/" target="_blank" rel="noopener">Open Smart Grid Hunter dashboard →</a></p>
+        <p class="note">Read-only view of your Smart Grid Hunter EA: regime, open baskets, equity, journal stats. VPS port 8080 — shown right here on the page.</p>
+        <iframe class="eaframe" data-easrc="https://win-54huck5cs86.tail0db2c5.ts.net:8443/" title="Smart Grid Hunter dashboard" style="width:100%;height:660px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);margin-top:10px" loading="lazy"></iframe>
+        <p class="small mt">Frame stays empty or blocked? <a href="https://win-54huck5cs86.tail0db2c5.ts.net:8443/" target="_blank" rel="noopener" style="color:var(--gold)">Open the dashboard directly ↗</a></p>
       </div>
       <div class="card">
-        <h3>🎛️ Grid Hunter 5.5 — control panel</h3>
-        <p class="note">⚠️ This one has real power: it can <b>start and stop</b> the Grid Hunter EA on your account. VPS port 8082. Treat the button like the EA's own switch — because it is.</p>
-        <p class="mt"><a class="scanbtn" style="display:inline-block;text-decoration:none;padding:10px 18px" href="https://win-54huck5cs86.tail0db2c5.ts.net:8444/" target="_blank" rel="noopener">Open Grid Hunter control →</a></p>
-      </div>
-      <div class="card">
-        <h3>If a page won't open</h3>
-        <p class="note">1) Tailscale must be ON and signed in on this device. 2) The server must be running on the VPS (the Smart Grid Hunter server and the Grid Hunter Node control start with their usual launchers). 3) The one-time Tailscale Serve setup on the VPS must be done — Muse has the two commands in chat. Once set, Serve survives reboots; the servers themselves still need their windows open on the VPS.</p>
+        <h3>If the dashboard won't show</h3>
+        <p class="note">1) Tailscale must be ON and signed in on this device. 2) The Smart Grid Hunter server must be running on the VPS, as usual. 3) The one-time Tailscale Serve setup on the VPS must be done — Muse has the command in chat. Once set, Serve survives reboots; the server itself still needs its window open on the VPS.</p>
       </div>
     </section>
 
@@ -826,8 +822,14 @@ document.querySelectorAll(".nav button").forEach(function(b){
     $("sec-"+b.getAttribute("data-sec")).classList.add("active");
     if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
     if(b.getAttribute("data-sec")==="news") loadNews();
+    if(b.getAttribute("data-sec")==="easervers") loadEaFrames();
   });
 });
+function loadEaFrames(){
+  document.querySelectorAll("iframe.eaframe").forEach(function(f){
+    if(!f.getAttribute("src")) f.setAttribute("src", f.getAttribute("data-easrc"));
+  });
+}
 $("tfbtns").addEventListener("click", function(e){
   var b=e.target.closest("button"); if(!b) return;
   document.querySelectorAll("#tfbtns button").forEach(function(x){x.classList.remove("active");});

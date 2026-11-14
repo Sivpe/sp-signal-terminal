@@ -403,6 +403,16 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <button class="ghostbtn" id="mt5Clear">Remove saved signal</button>
         </div>
       </div>
+      <div class="card mt">
+        <h3>🤝 Desk + MT5 agreement check</h3>
+        <div class="sigdir wait" id="agreeVerdict">CHECKING…</div>
+        <div class="sigreason" id="agreeReason">Reading your last desk scan, the live MT5 panel, the H1 context and the news shield…</div>
+        <div class="kv"><span>Web desk</span><b id="agreeDesk">—</b></div>
+        <div class="kv"><span>MT5 Scalp Panel</span><b id="agreePanel">—</b></div>
+        <div class="kv"><span>H1 context</span><b id="agreeH1">—</b></div>
+        <div class="kv"><span>News shield</span><b id="agreeShield">—</b></div>
+        <p class="small mt">One final verdict from all four checks, so you don't have to compare them in your head while the market moves. Agreement is a discipline check, not a guarantee — both systems can still be wrong together, and the entry must always be confirmed on your Exness chart.</p>
+      </div>
       <div class="card">
         <h3>Running both systems — the rule</h3>
         <p class="note">This terminal is <b>signal-only</b>, like your indicator: it never places a trade. Smart Grid Hunter stays on its M1 chart, the Scalp Panel on M5. If this desk and your MT5 panel disagree, the safe read is WAIT — two systems fighting is information, not a trade.</p>
@@ -613,6 +623,7 @@ function runScan(){
     renderSignal(lastSignal, res.votes, res.biasNote);
     if(inBlackout){ $("sigReason").textContent += " ⚠ Scanned during a NEWS BLACKOUT — your rule says NO TRADE."; }
     renderCouncil(res.votes);
+    if(typeof updateAgreement==="function") updateAgreement();
     if(lastSignal.dir!==0){ saveSignal(lastSignal); maybeBeep(lastSignal.dir); }
   }).catch(function(e){ $("feedErr").textContent="Scan failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="↯ Run a scan"; });
@@ -730,9 +741,10 @@ try{ $("journalBox").value=localStorage.getItem(JKEY)||""; }catch(e){}
 $("saveJournal").addEventListener("click", function(){ localStorage.setItem(JKEY, $("journalBox").value); $("journalMsg").textContent="Saved ✓ "+new Date().toLocaleTimeString("en-GB")+" — on this device only."; });
 
 /* ================= MT5 JSON ================= */
-function renderMt5(j){
+function renderMt5(j, source){
   if(j && j.scalp) j=j.scalp; // tolerate an /api/status-shaped reply
   window._mt5j=j;
+  if(typeof mt5Current!=="undefined" && mt5Current){ mt5Current.data=j; if(source) mt5Current.source=source; mt5Current.receivedAt=Date.now(); }
   var dirTxt = (j.dir===1||j.signal==="BUY")?"BUY":((j.dir===-1||j.signal==="SELL")?"SELL":"WAIT");
   var cls = dirTxt==="BUY"?"buy":(dirTxt==="SELL"?"sell":"wait");
   var fz=function(x){ return (!x || +x===0) ? "—" : fmt(x); }; // WAIT signals carry 0 levels by design
@@ -747,6 +759,7 @@ function renderMt5(j){
     '<div class="kv"><span>RSI · ADX H1 · Spread</span><b>'+(j.rsi!==undefined?fmt(j.rsi,1):"—")+" · "+(j.adx_h1!==undefined?fmt(j.adx_h1,1):"—")+" · "+(j.spread_pips!==undefined?fmt(j.spread_pips,0)+" pips":"—")+'</b></div>'+
     '<div class="kv"><span>Updated (MT5 server time)</span><b>'+(j.updated||"—")+'</b></div>'+
     '<div class="small mt">Compare this with the web desk on the Terminal page. Agree = stronger read. Disagree = WAIT.</div>';
+  if(typeof updateAgreement==="function") updateAgreement();
 }
 var MT5KEY="sp_mt5_signal_v1";
 function saveMt5(j){
@@ -763,7 +776,7 @@ function showMt5Saved(savedAt){
 function restoreMt5(){
   var raw=null; try{ raw=localStorage.getItem(MT5KEY); }catch(e){}
   if(!raw) return;
-  try{ var s=JSON.parse(raw); if(s && s.data){ renderMt5(s.data); showMt5Saved(s.savedAt); updateMt5Age(); } }catch(e){}
+  try{ var s=JSON.parse(raw); if(s && s.data){ renderMt5(s.data, "saved"); showMt5Saved(s.savedAt); updateMt5Age(); } }catch(e){}
 }
 function mt5AgeMins(){
   var raw=null; try{ raw=localStorage.getItem(MT5KEY); }catch(e){}
@@ -786,19 +799,23 @@ $("jsonFile").addEventListener("change", function(ev){
   var f=ev.target.files[0]; if(!f) return;
   var rd=new FileReader();
   rd.onload=function(){
-    try{ var j=JSON.parse(rd.result); renderMt5(j); saveMt5(j); }
+    try{ var j=JSON.parse(rd.result); renderMt5(j, "manual"); saveMt5(j); }
     catch(e){ $("mt5Out").innerHTML='<p class="err">That file could not be read as the Scalp Panel JSON: '+e.message+'</p>'; }
   };
   rd.readAsText(f);
 });
 $("mt5Clear").addEventListener("click", function(){
   try{ localStorage.removeItem(MT5KEY); }catch(e){}
+  window._mt5j=null;
+  if(typeof mt5Current!=="undefined" && mt5Current && mt5Current.source!=="live"){ mt5Current.data=null; mt5Current.source="none"; }
   $("mt5Out").innerHTML='<p class="note">Saved signal removed. Load the file again any time.</p>';
   showMt5Saved(null);
+  if(typeof updateAgreement==="function") updateAgreement();
 });
 /* ================= MT5 live link ================= */
 var MT5_LIVE_DEFAULT="https://win-54huck5cs86.tail0db2c5.ts.net/scalp.json"; /* Steven's private Tailscale Serve link — reachable only from his own devices (Tailscale is the lock) */
 var mt5Live={url:"", timer:null, fails:0, data:null, at:0};
+var mt5Current={data:null, source:"none", receivedAt:0}; // the panel read currently on screen + where it came from
 function liveMt5Url(){ try{ var u=localStorage.getItem("sp_scalp_url"); if(u) return u; }catch(e){} return MT5_LIVE_DEFAULT; }
 function stampAgeMins(j){ if(!j || !j.updated) return -1; var t=Date.parse(String(j.updated).replace(/\./g,"-").replace(" ","T")+"Z"); if(isNaN(t)) return -1; return Math.max(0, Math.round((Date.now()-t)/60000)); }
 function setLivePill(mode, txt){ var p=$("mt5LivePill"); if(!p) return; if(!mode){ p.style.display="none"; $("mt5LiveMsg").textContent=""; return; } p.style.display=""; p.innerHTML=txt; p.style.borderColor= mode==="ok"? "var(--green)" : "var(--amber)"; }
@@ -809,7 +826,7 @@ function fetchLiveMt5(){
   .then(function(j){
     if(!j || typeof j.signal!=="string") throw new Error("unexpected data");
     mt5Live.fails=0; mt5Live.data=j; mt5Live.at=Date.now();
-    renderMt5(j);
+    renderMt5(j, "live");
     var age=stampAgeMins(j);
     if(age>3){ setLivePill("warn","🟡 LIVE LINK OK · panel data "+age+" min old"); $("mt5LiveMsg").textContent="The link works, but the indicator file is not fresh — is MT5 running on the VPS?"; }
     else { setLivePill("ok","🟢 LIVE · updates every 15s"); $("mt5LiveMsg").textContent="Panel time "+(j.updated||"")+" (MT5 server) · received just now · private link — only your own devices can open it"; }
@@ -821,7 +838,7 @@ function fetchLiveMt5(){
       setLivePill("warn","⚪ LIVE LINK NOT REACHABLE");
       $("mt5LiveMsg").textContent="Showing your saved copy instead. Usual causes: Tailscale is off on this device, or the endpoint is not running on the VPS.";
       if(hadSnapshot()) restoreMt5();
-      else $("mt5Out").innerHTML='<p class="note">Live link not reachable, and no saved copy on this device yet.</p>';
+      else { mt5Current.data=null; mt5Current.source="none"; window._mt5j=null; $("mt5Out").innerHTML='<p class="note">Live link not reachable, and no saved copy on this device yet.</p>'; if(typeof updateAgreement==="function") updateAgreement(); }
     } else {
       setLivePill("warn","🟡 LIVE LINK · reconnecting…");
     }
@@ -850,6 +867,105 @@ $("mt5UrlReset").addEventListener("click", function(){
 });
 try{ var savedUrl=localStorage.getItem("sp_scalp_url"); if(savedUrl) $("mt5UrlInput").value=savedUrl; }catch(e){}
 startLiveMt5();
+
+/* ================= Desk + MT5 agreement check =================
+   One final verdict from four inputs: the last web-desk scan (this visit),
+   the MT5 Scalp Panel read currently on screen, the H1 context (panel bias
+   + web H1), and the News Shield. Pure verdict function — unit-tested. */
+function dirName(d){ return d===1? "BUY" : (d===-1? "SELL" : "WAIT"); }
+function mt5Dir(j){
+  if(!j) return 0;
+  if(j.dir===1 || j.signal==="BUY") return 1;
+  if(j.dir===-1 || j.signal==="SELL") return -1;
+  return 0;
+}
+function biasDir(text){
+  if(!text) return null;
+  var s=String(text).toUpperCase();
+  if(s.indexOf("BULLISH")>=0 || /(^|[\s·])UP([\s·]|$)/.test(s)) return 1;
+  if(s.indexOf("BEARISH")>=0 || s.indexOf("DOWN")>=0) return -1;
+  if(s.indexOf("RANGE")>=0 || s.indexOf("MIXED")>=0) return 0;
+  return null;
+}
+function stampAgeMinsAt(updated, now){
+  if(!updated) return -1;
+  var t=Date.parse(String(updated).replace(/\./g,"-").replace(" ","T")+"Z"); /* MT5 server time = UTC */
+  if(isNaN(t)) return -1;
+  return Math.max(0, Math.round((now-t)/60000));
+}
+function deskFreshLimitMins(tf){
+  var mins={"1m":1,"5m":5,"15m":15,"1h":60,"4h":240}[tf]||15;
+  return Math.min(480, Math.max(30, mins*2));
+}
+function panelIsStale(age, source){ if(age<0) return false; return source==="live"? age>3 : age>60; }
+function agreementVerdict(inp){
+  var now=inp.now, desk=inp.desk||null, panel=inp.panel||null;
+  var pDir=mt5Dir(panel);
+  var pBias=panel? biasDir(panel.bias) : null;
+  var sBias=biasDir(inp.siteBias);
+  var deskAge=(desk && desk.time)? Math.max(0, Math.round((now-desk.time)/60000)) : -1;
+  var deskLimit=desk? deskFreshLimitMins(desk.tf||"15m") : 0;
+  var srcTxt=inp.source==="live"? "LIVE link" : (inp.source==="manual"? "just loaded" : (inp.source==="saved"? "saved copy" : "—"));
+  var deskTxt=!desk? "No scan yet this visit" : (dirName(desk.dir)+" · "+(desk.tf||"")+" · scanned "+new Date(desk.time).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})+" ("+(deskAge<=0?"just now":deskAge+" min ago")+")");
+  var panelTxt=!panel? "No panel data" : (dirName(pDir)+" · "+(panel.tf||"M5")+" · "+srcTxt+" · read "+(inp.panelAge<0? "of unknown age" : (inp.panelAge<=0? "just now" : inp.panelAge+" min old")));
+  var h1Txt=panel? ((panel.bias||"—")+(panel.strength? " · "+panel.strength : "")+(inp.siteBias? " · Web H1 "+inp.siteBias : "")) : (inp.siteBias? "Web H1 "+inp.siteBias : "—");
+  var sh=inp.shield, shieldTxt="No events in the loaded calendar";
+  if(sh && sh.ev){
+    if(sh.mode==="hot") shieldTxt="HOT — "+sh.ev.name+" · lifts "+new Date(sh.end).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+    else shieldTxt="Next: "+sh.ev.name+" · "+evWhen(sh.ev.t);
+  }
+  var wk=inp.weekend? " Weekend: the real gold market is closed, so treat any agreement as a preview only — recheck after the Monday open." : "";
+  function out(title, cls, reason){ return {title:title, cls:cls, reason:reason+(title.indexOf("WEEKEND")>=0? "" : wk), deskTxt:deskTxt, panelTxt:panelTxt, h1Txt:h1Txt, shieldTxt:shieldTxt}; }
+  if(!panel) return out("NO MT5 PANEL DATA", "wait", "Connect the live link or load SP_Scalp_Signal.json above — the check needs your real Exness panel read, not just the web feed.");
+  if(sh && sh.mode==="hot") return out("🛑 NEWS BLOCK", "sell", sh.ev.name+" is inside your shield window (30 min before → 60 min after). Your rule is NO TRADE, whatever both systems say."+(panelIsStale(inp.panelAge, inp.source)? " The panel read is also stale." : ""));
+  if(inp.panelAge<0) return out("CHECK PANEL TIME", "wait", "This panel read has no readable update time, so the site cannot prove it is fresh. Reload the live link or a fresh file before trusting it.");
+  if(panelIsStale(inp.panelAge, inp.source)) return out("PANEL STALE", "sell", inp.source==="live"
+    ? "The live link answers, but the indicator's newest read is "+inp.panelAge+" min old — check MT5 is running on the VPS and the endpoint window is open. Do not trade on an old read."
+    : "This saved panel read is "+inp.panelAge+" min old. Load a fresh SP_Scalp_Signal.json from the VPS before trusting it.");
+  if(!desk) return out("RUN A DESK SCAN", "wait", "Your MT5 panel is ready, but the web desk has not scanned in this visit yet. Go to Terminal and press “Run a scan” — then this check can compare the two.");
+  if(deskAge>deskLimit) return out("SCAN AGAIN", "wait", "Your last desk scan ("+(desk.tf||"")+") is "+deskAge+" min old — past its freshness limit of "+deskLimit+" min for that timeframe. Run a fresh scan on the Terminal.");
+  if(desk.dir===0 && pDir===0) return out("BOTH WAIT", "wait", "Neither system has a setup right now. That is a clear answer: stay flat and let the next closed candle decide.");
+  if(desk.dir===0 || pDir===0) return out("NO AGREEMENT — WAIT", "wait", desk.dir!==0
+    ? "The web desk has a "+dirName(desk.dir)+" setup, but your MT5 panel is on WAIT — it is not confirming. Your rule: no agreement, no trade."
+    : "Your MT5 panel has a "+dirName(pDir)+" setup, but the web desk is on WAIT — it is not confirming. Your rule: no agreement, no trade.");
+  if(desk.dir!==pDir) return out("CONFLICT — WAIT", "sell", "The web desk says "+dirName(desk.dir)+" while your MT5 panel says "+dirName(pDir)+". Two systems fighting is information, not a trade — stand aside until they agree.");
+  var dir=desk.dir;
+  var against=[];
+  if(pBias!==null && pBias!==0 && pBias!==dir) against.push("the MT5 H1 bias ("+(panel.bias||"")+")");
+  if(sBias!==null && sBias!==0 && sBias!==dir) against.push("the web H1 bias ("+(inp.siteBias||"")+")");
+  if(against.length) return out("CAUTION — H1 AGAINST", "wait", "Both signal panels say "+dirName(dir)+", but "+against.join(" and ")+" point the other way. This is not a clean aligned setup — your safe read is WAIT, or the smallest size if you act against this check.");
+  var h1Strong=(pBias===dir && (sBias===dir || sBias===null)) || (sBias===dir && pBias===null);
+  if(!h1Strong) return out("AGREE — H1 NOT CLEAR", "wait", "The web desk and the MT5 panel agree on "+dirName(dir)+", but the H1 context is range / mixed rather than trending with it. A weaker class of setup — treat it as range trading, not trend confirmation.");
+  var soonNote=(sh && sh.mode==="soon" && sh.ev)? " Next event "+sh.ev.name+" starts its shield in "+fmtDur(sh.ev.t-1800000-now)+" — finish before it or stay out." : "";
+  if(inp.weekend) return out("AGREEMENT — WEEKEND PREVIEW", "wait", "The web desk ("+(desk.tf||"")+") and your MT5 panel agree on "+dirName(dir)+", and H1 supports it — but the real market is closed, so this is a preview, not a trade.");
+  var savedNote=(inp.source!=="live" && inp.panelAge>10)? " Note: the panel read is a saved copy "+inp.panelAge+" min old." : "";
+  return out("ALIGNED "+dirName(dir), dir===1? "buy" : "sell", "The web desk ("+(desk.tf||"")+") and your Exness MT5 panel both say "+dirName(dir)+", and the H1 context supports it. Still confirm the entry on your Exness chart and keep the stop — agreement improves the read, it does not guarantee the trade."+soonNote+savedNote);
+}
+function agreementInput(now){
+  return {
+    now: now,
+    desk: lastSignal,
+    panel: mt5Current.data,
+    source: mt5Current.source,
+    panelAge: mt5Current.data? stampAgeMinsAt(mt5Current.data.updated, now) : -1,
+    siteBias: window._h1bias||null,
+    shield: (typeof shieldState==="function")? shieldState(now) : null,
+    weekend: (typeof isWeekendPP==="function")? isWeekendPP() : false
+  };
+}
+var _agreeSig="";
+function updateAgreement(){
+  var el=$("agreeVerdict"); if(!el) return;
+  var v=agreementVerdict(agreementInput(Date.now()));
+  var sig=v.title+"|"+v.reason+"|"+v.deskTxt+"|"+v.panelTxt+"|"+v.h1Txt+"|"+v.shieldTxt;
+  if(sig===_agreeSig) return; _agreeSig=sig;
+  el.textContent=v.title; el.className="sigdir "+v.cls;
+  $("agreeReason").textContent=v.reason;
+  $("agreeDesk").textContent=v.deskTxt;
+  $("agreePanel").textContent=v.panelTxt;
+  $("agreeH1").textContent=v.h1Txt;
+  $("agreeShield").textContent=v.shieldTxt;
+}
 /* ================= nav, timeframe, beep, countdown ================= */
 document.querySelectorAll(".nav button").forEach(function(b){
   b.addEventListener("click", function(){
@@ -1745,6 +1861,7 @@ function updateShield(){
     $("shieldSub").textContent="The calendar refreshes each morning. Check the Gold News section for today's reports — and still be careful around 20:30 (US data time).";
     $("shieldCount").textContent="—";
   }
+  if(typeof updateAgreement==="function") updateAgreement();
 }
 function renderBlackout(st){
   var el=$("sigDir"); el.textContent="NO TRADE"; el.className="sigdir sell";

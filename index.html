@@ -435,6 +435,17 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <h3>If the dashboard won't show</h3>
         <p class="note">1) Tailscale must be ON and signed in on this device. 2) The Smart Grid Hunter server must be running on the VPS, as usual. 3) The one-time Tailscale Serve setup on the VPS must be done — Muse has the command in chat. Once set, Serve survives reboots; the server itself still needs its window open on the VPS.</p>
       </div>
+      <div class="card">
+        <h3>📥 EA Journal Report — what Smart Grid Hunter really did</h3>
+        <p class="note">Your EA quietly writes every basket it opens and closes into <b>SGH_journal.csv</b> on the VPS. Load that file here and this page turns it into a plain report: how many baskets, what they made or lost, how deep they went underwater, and *why* they closed. The file is read on this device only — nothing is uploaded anywhere.</p>
+        <p class="small" style="line-height:1.7">Get the file: on the VPS open MT5 → <b>File → Open Data Folder → MQL5 → Files → SGH_journal.csv</b>, copy it to this device, then load it here. Money figures are in <b>account cents (¢)</b>, exactly as the EA recorded them.</p>
+        <div class="pillrow mt">
+          <label class="ghostbtn" for="sghFile" style="display:inline-block">Load SGH_journal.csv</label>
+          <input type="file" id="sghFile" accept=".csv,text/csv" style="display:none">
+          <span class="small" id="sghMsg"></span>
+        </div>
+        <div id="sghOut" class="mt"><p class="note">No journal loaded yet on this device.</p></div>
+      </div>
     </section>
 
     <!-- ============ ABOUT ============ -->
@@ -991,6 +1002,112 @@ function loadEaFrames(){
     if(!f.getAttribute("src")) f.setAttribute("src", f.getAttribute("data-easrc"));
   });
 }
+
+/* ================= EA Journal Report (SGH_journal.csv) =================
+   Format is the EA's own (Smart Grid Hunter v1.25+ journal):
+   time,event,direction,regime,confidence,band_low,band_high,atr_pct,
+   lot_scale,layers,lots,worst_dd_pct,profit,reason — parsed on-device. */
+function sghParseTime(s){ var t=Date.parse(String(s||"").replace(/\./g,"-").replace(" ","T")); return isNaN(t)? null : t; }
+function sghDayTxt(t){ return t? new Date(t).toLocaleDateString("en-GB",{day:"2-digit",month:"short"}) : "—"; }
+function parseSghJournal(text){
+  var lines=String(text||"").split(/\r?\n/).filter(function(x){ return x.trim().length; });
+  if(lines.length<2) return null;
+  var head=lines[0].split(",").map(function(x){ return x.trim().toLowerCase(); });
+  function col(n){ return head.indexOf(n); }
+  var ci={time:col("time"), event:col("event"), dir:col("direction"), regime:col("regime"), conf:col("confidence"), layers:col("layers"), lots:col("lots"), dd:col("worst_dd_pct"), profit:col("profit"), reason:col("reason")};
+  if(ci.event<0 || ci.profit<0 || ci.time<0) return null;
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var f=lines[i].split(",");
+    if(f.length<head.length){ while(f.length<head.length) f.push(""); }
+    if(f.length>head.length){ var extra=f.splice(head.length-1); f.push(extra.join(",")); }
+    var g=function(idx){ return idx>=0? (f[idx]||"").trim() : ""; };
+    rows.push({time:sghParseTime(g(ci.time)), timeTxt:g(ci.time), event:g(ci.event), dir:g(ci.dir), regime:g(ci.regime), conf:g(ci.conf),
+      layers:parseFloat(g(ci.layers)), lots:parseFloat(g(ci.lots)), dd:parseFloat(g(ci.dd)), profit:parseFloat(g(ci.profit)), reason:g(ci.reason)});
+  }
+  var opens=rows.filter(function(r){ return r.event==="OPEN"; });
+  var closes=rows.filter(function(r){ return r.event==="CLOSE" && isFinite(r.profit); });
+  var starts=rows.filter(function(r){ return r.event==="EA START"; }).length;
+  var breakouts=rows.filter(function(r){ return r.event.indexOf("BREAKOUT")===0; }).length;
+  var wins=closes.filter(function(r){ return r.profit>0; }), losses=closes.filter(function(r){ return r.profit<0; });
+  var net=closes.reduce(function(a,r){ return a+r.profit; },0);
+  var grossW=wins.reduce(function(a,r){ return a+r.profit; },0);
+  var grossL=losses.reduce(function(a,r){ return a+r.profit; },0);
+  var worstDD=null;
+  closes.forEach(function(r){ if(isFinite(r.dd) && (!worstDD || r.dd>worstDD.dd)) worstDD=r; });
+  var maxLayers=null, maxLots=null;
+  closes.forEach(function(r){ if(isFinite(r.layers) && (maxLayers===null || r.layers>maxLayers)) maxLayers=r.layers; if(isFinite(r.lots) && (maxLots===null || r.lots>maxLots)) maxLots=r.lots; });
+  var biggestW=null, biggestL=null;
+  closes.forEach(function(r){ if(r.profit>0 && (!biggestW || r.profit>biggestW.profit)) biggestW=r; if(r.profit<0 && (!biggestL || r.profit<biggestL.profit)) biggestL=r; });
+  function group(keyFn){
+    var m={};
+    closes.forEach(function(r){ var k=keyFn(r)||"—"; if(!m[k]) m[k]={n:0, net:0, wins:0}; m[k].n++; m[k].net+=r.profit; if(r.profit>0) m[k].wins++; });
+    return Object.keys(m).map(function(k){ return {k:k, n:m[k].n, net:m[k].net, wins:m[k].wins}; }).sort(function(a,b){ return b.net-a.net; });
+  }
+  var byReason=group(function(r){ return r.reason||"TP OR MANUAL"; });
+  var byConf=group(function(r){ return r.conf; });
+  var byRegime=group(function(r){ return r.regime; });
+  var byDir=group(function(r){ return r.dir; });
+  var byDay=group(function(r){ return r.timeTxt.slice(0,10); }).sort(function(a,b){ return a.k<b.k? -1 : 1; });
+  var times=rows.map(function(r){ return r.time; }).filter(function(t){ return t!==null; });
+  var hi=[];
+  var hs=byReason.filter(function(x){ return x.k==="HARD STOP"; })[0];
+  var tp=byReason.filter(function(x){ return x.k==="TAKE PROFIT" || x.k==="TRAILING TP"; });
+  var tpNet=tp.reduce(function(a,x){ return a+x.net; },0), tpN=tp.reduce(function(a,x){ return a+x.n; },0);
+  if(tpN) hi.push("Take-profit closes: "+tpN+(tpN===1? " basket" : " baskets")+" made "+sghMoney(tpNet)+".");
+  if(hs) hi.push("Hard stops: "+hs.n+(hs.n===1? " basket" : " baskets")+" cost "+sghMoney(hs.net)+" — the grid shape in one line: many small wins, a few big losses.");
+  if(worstDD) hi.push("The deepest a basket went underwater was "+worstDD.dd.toFixed(1)+"% ("+sghDayTxt(worstDD.time)+", "+worstDD.dir+", ended "+(worstDD.reason||"—")+"). Your basket-DD freeze is 15%.");
+  if(byDay.length){ var bd=byDay.slice().sort(function(a,b){ return a.net-b.net; })[0]; hi.push("Worst day: "+sghDayTxt(sghParseTime(bd.k))+" at "+sghMoney(bd.net)+" over "+bd.n+(bd.n===1? " basket." : " baskets.")); }
+  return {rows:rows.length, opens:opens.length, closes:closes.length, starts:starts, breakouts:breakouts,
+    first:times.length? Math.min.apply(null,times):null, last:times.length? Math.max.apply(null,times):null,
+    wins:wins.length, losses:losses.length, flat:closes.length-wins.length-losses.length, net:net, grossW:grossW, grossL:grossL,
+    pf:(grossL<0 && grossW>0)? (grossW/Math.abs(grossL)) : null,
+    worstDD:worstDD, maxLayers:maxLayers, maxLots:maxLots, biggestW:biggestW, biggestL:biggestL,
+    byReason:byReason, byConf:byConf, byRegime:byRegime, byDir:byDir, byDay:byDay, hi:hi};
+}
+function sghMoney(x){ if(x===null||x===undefined||!isFinite(x)) return "—"; return (x>0?"+":"") + Number(x).toLocaleString("en-US",{maximumFractionDigits:0}) + "¢"; }
+function sghTable(title, rows, labelHead){
+  if(!rows.length) return "";
+  return '<div class="small mt" style="font-weight:700;color:var(--txt)">'+title+'</div><div style="overflow-x:auto"><table><thead><tr><th>'+labelHead+'</th><th>Baskets</th><th>Win %</th><th>Net</th></tr></thead><tbody>'+
+    rows.map(function(r){ return "<tr><td>"+esc(r.k)+"</td><td>"+r.n+"</td><td>"+(r.n? Math.round(r.wins/r.n*100)+"%":"—")+"</td><td>"+sghMoney(r.net)+"</td></tr>"; }).join("")+
+    "</tbody></table></div>";
+}
+function renderSghReport(rep, fname){
+  var box=$("sghOut"); if(!box || !rep) return;
+  var wr=rep.closes? Math.round(rep.wins/rep.closes*100) : 0;
+  box.innerHTML =
+    '<div class="kv"><span>Journal</span><b>'+esc(fname||"SGH_journal.csv")+' · '+rep.rows+' rows</b></div>'+
+    '<div class="kv"><span>Covers</span><b>'+(rep.first? sghDayTxt(rep.first)+" → "+sghDayTxt(rep.last) : "—")+' · EA starts '+rep.starts+' · breakouts '+rep.breakouts+'</b></div>'+
+    '<div class="kv"><span>Baskets</span><b>'+rep.opens+' opened · '+rep.closes+' closed</b></div>'+
+    '<div class="kv"><span>Results</span><b>'+rep.wins+' wins · '+rep.losses+' losses'+(rep.flat? " · "+rep.flat+" flat":"")+' · win rate '+wr+'%</b></div>'+
+    '<div class="kv"><span>Net profit</span><b style="color:'+(rep.net>=0?"var(--green)":"var(--red)")+'">'+sghMoney(rep.net)+'</b></div>'+
+    '<div class="kv"><span>Gross win / loss</span><b>'+sghMoney(rep.grossW)+' / '+sghMoney(rep.grossL)+(rep.pf? ' · profit factor '+rep.pf.toFixed(2):"")+'</b></div>'+
+    '<div class="kv"><span>Biggest win / loss</span><b>'+(rep.biggestW? sghMoney(rep.biggestW.profit):"—")+' / '+(rep.biggestL? sghMoney(rep.biggestL.profit):"—")+'</b></div>'+
+    '<div class="kv"><span>Deepest basket</span><b>'+(rep.maxLayers!==null? rep.maxLayers+" layers":"—")+' · '+(rep.maxLots!==null? rep.maxLots.toFixed(2)+" lots max":"")+' · worst DD '+(rep.worstDD? rep.worstDD.dd.toFixed(1)+"%":"—")+'</b></div>'+
+    (rep.hi.length? '<div class="sigreason" style="margin-top:12px"><b>What stands out</b><br>'+rep.hi.map(function(h){ return "• "+esc(h); }).join("<br>")+'</div>' : "")+
+    sghTable("Why baskets closed", rep.byReason, "Close reason")+
+    sghTable("By confidence (at close)", rep.byConf, "Confidence")+
+    sghTable("By market regime (at close)", rep.byRegime, "Regime")+
+    sghTable("By direction", rep.byDir, "Direction")+
+    sghTable("By day", rep.byDay.map(function(d){ return {k:sghDayTxt(sghParseTime(d.k)), n:d.n, net:d.net, wins:d.wins}; }), "Day")+
+    '<p class="small mt">Read on this device only — the last report is kept in this browser so it survives a refresh. Regime/confidence are the values the EA recorded on the close row.</p>';
+}
+var SGHKEY="sp_sgh_report_v1";
+$("sghFile").addEventListener("change", function(ev){
+  var f=ev.target.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var rep=parseSghJournal(rd.result);
+      if(!rep){ $("sghMsg").textContent="That file doesn't look like SGH_journal.csv — check you picked the right file."; return; }
+      renderSghReport(rep, f.name);
+      $("sghMsg").textContent="Report built ✓ "+new Date().toLocaleTimeString("en-GB");
+      try{ localStorage.setItem(SGHKEY, JSON.stringify({at:Date.now(), name:f.name, rep:rep})); }catch(e){}
+    }catch(e){ $("sghMsg").textContent="Could not read that file: "+e.message; }
+  };
+  rd.readAsText(f);
+});
+try{ var savedRep=JSON.parse(localStorage.getItem(SGHKEY)||"null"); if(savedRep && savedRep.rep) renderSghReport(savedRep.rep, savedRep.name); }catch(e){}
 
 /* ================= SP Analyst (AI second opinion) ================= */
 var AIKEY="sp_ai_key_v1", AICHAT="sp_ai_chat_v1";

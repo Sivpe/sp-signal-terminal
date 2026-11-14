@@ -99,6 +99,7 @@ td{padding:8px;border-bottom:1px solid #1b2436;font-variant-numeric:tabular-nums
 .infotoggle{background:transparent;border:1px solid #57451d;color:#ecd9a0;border-radius:8px;padding:5px 11px;font-size:12.5px;cursor:pointer;white-space:nowrap}
 .infobody{display:none;margin-top:8px}
 .infobody.open{display:block}
+.card .infotoggle{border-color:var(--line);color:var(--txt)}
 textarea{width:100%;background:#0d1320;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:inherit;font-size:14.5px;min-height:150px}
 input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px 11px;font-size:14px;width:100%}
 .mt{margin-top:14px}.mb{margin-bottom:14px}
@@ -388,8 +389,8 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <!-- ============ MY EA SERVERS ============ -->
     <section class="section" id="sec-easervers">
       <div class="card">
-        <h3>🤖 My EA server — on my VPS</h3>
-        <p class="note">Your Smart Grid Hunter web server, shown live inside this page over the same private Tailscale link as your MT5 Panel. It only loads on <b>your</b> devices with <b>Tailscale ON</b> — this page is public, but the server is not: anyone else who opens this section sees an empty frame, because the lock is your tailnet, not the website. <b>One rule: never turn on Tailscale Funnel for it</b> — Funnel would open it to the whole internet. Serve (what we use) keeps it private.</p>
+        <div class="infohead"><span style="font-size:15.5px"><b>🤖 My EA server — on my VPS</b> <span class="small">· private: loads only on your devices, Tailscale ON</span></span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div>
+        <div class="infobody"><p class="note" style="margin:0">Your Smart Grid Hunter web server, shown live inside this page over the same private Tailscale link as your MT5 Panel. It only loads on <b>your</b> devices with <b>Tailscale ON</b> — this page is public, but the server is not: anyone else who opens this section sees an empty frame, because the lock is your tailnet, not the website. <b>One rule: never turn on Tailscale Funnel for it</b> — Funnel would open it to the whole internet. Serve (what we use) keeps it private.</p></div>
       </div>
       <div class="card">
         <h3>📊 Smart Grid Hunter — dashboard</h3>

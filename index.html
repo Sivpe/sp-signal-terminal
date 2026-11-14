@@ -243,7 +243,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-backtest">
       <div class="card">
         <h3>🧪 Backtest my desk</h3>
-        <p class="note">Four engines: the three signal strategies share one honest simulator (closed candles only, one trade at a time, stop = 1×ATR — custom: your choice — exit at the stop or at your chosen <b>target</b>); <b>Smart Grid Hunter</b> runs as a full money simulation with its own panel below. If one candle touches both, the stop counts first (the worse case). No spread or slippage is charged, and this is the OKX feed, not Exness — treat results as optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
+        <p class="note">Four engines: the three signal strategies share one honest simulator (closed candles only, one trade at a time, stop = 1×ATR — custom: your choice — exit at the stop or at your chosen <b>target</b>); <b>Smart Grid Hunter</b> runs as a full money simulation with its own panel below. If one candle touches both, the stop counts first (the worse case). <b>Spread is charged on every trade</b> at the pips you set above (your live Exness spread is ~24 pips) — slippage is not charged, and this is the OKX feed, not Exness, so results are still a little optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
         <div class="pillrow mt">
           <div class="tfbtns" id="btTfBtns">
             <button data-btf="1m">1m</button><button data-btf="5m">5m</button><button data-btf="15m" class="active">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
@@ -252,6 +252,9 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
             <select id="btBars" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
               <option value="300">300</option><option value="600" selected>600</option><option value="1000">1000</option>
             </select>
+          </label>
+          <label class="small">Spread
+            <input type="number" id="btSpread" value="24" min="0" max="100" step="1" style="width:58px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:6px 7px"> pips
           </label>
           <button class="scanbtn" id="btRun" style="padding:10px 18px;font-size:14.5px">▶ Run backtest</button>
         </div>
@@ -289,7 +292,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
           <p class="note">All ticked conditions must be true on the same closed candle (AND). A signal with no condition ticked is blocked — a strategy needs at least one rule.</p>
         </div>
         <div id="btGrid" class="mt" style="display:none">
-          <p class="note">Your <b>Smart Grid Hunter v1.26</b> as a full basket simulation: the money is real in the model — the balance grows and shrinks trade by trade, lots re-size from the balance, and the EA's own protections (basket freeze, range/trend hard stops, breakout pause, daily profit lock) all fire at your settings. Defaults below are your live settings as recorded — change any of them. The Target selector does not apply (the EA uses its own basket TP + trailing). Runs on <b>1m, 5m or 15m</b>: a grid lives inside the candles, so 1h/4h are too coarse to mean anything. <b>1m is the EA's real execution timeframe</b> and the most faithful choice — but 1,000 candles of 1m is only ~17 hours, so use 1m to inspect a short stretch (a news day, a crash) and judge the EA on 5m/15m. On 1m, pick the 1000-candle setting. Live, the EA executes tick-by-tick on M1 — inside one test candle the order of events is estimated (adds before take-profit), spread is not charged, and the margin guard is not modelled. Treat a survival result as encouraging, not proof.</p>
+          <p class="note">Your <b>Smart Grid Hunter v1.26</b> as a full basket simulation: the money is real in the model — the balance grows and shrinks trade by trade, lots re-size from the balance, and the EA's own protections (basket freeze, range/trend hard stops, breakout pause, daily profit lock) all fire at your settings. Defaults below are your live settings as recorded — change any of them. The Target selector does not apply (the EA uses its own basket TP + trailing). Runs on <b>1m, 5m or 15m</b>: a grid lives inside the candles, so 1h/4h are too coarse to mean anything. <b>1m is the EA's real execution timeframe</b> and the most faithful choice — but 1,000 candles of 1m is only ~17 hours, so use 1m to inspect a short stretch (a news day, a crash) and judge the EA on 5m/15m. On 1m, pick the 1000-candle setting. Live, the EA executes tick-by-tick on M1 — inside one test candle the order of events is estimated (adds before take-profit) and the margin guard is not modelled. <b>Spread is charged per position</b> at the Spread setting above (default 24 pips = your live spread). Treat a survival result as encouraging, not proof.</p>
           <div class="mt small" style="line-height:2.1">
             <label>Start money <input type="number" id="gBal" value="5000" min="500" step="500" style="width:90px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"> cents (¢)</label> ·
             <label>Base lot per 5,000¢ <input type="number" id="gLotPer" value="0.05" min="0.01" max="1" step="0.01" style="width:64px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:4px 6px"></label> ·
@@ -1010,7 +1013,7 @@ function gridSimulate(cs, tf, P, env){
   var freezeUntil={"1":0,"-1":0};
   var breakoutUntil=0, blockedDay=-1, cooldownUntil=0, eqBlocked=false;
   var peakEq=startBal, worstEqDD=0, worstBasketDD=0, maxLayersSeen=0;
-  var closed=[], eqCurve=[], dayReal={}, totalTrades=0;
+  var closed=[], eqCurve=[], dayReal={}, totalTrades=0, totalSpread=0;
   var smoothStep=0, band=null, startLotCache=null;
   function profitAt(b, price){ if(!b) return 0; var s=0; for(var q=0;q<b.pos.length;q++) s+=b.pos[q].lot*(price-b.pos[q].p)*b.dir*10000; return s; }
   function volOf(b){ var s=0; for(var q=0;q<b.pos.length;q++) s+=b.pos[q].lot; return s; }
@@ -1018,6 +1021,7 @@ function gridSimulate(cs, tf, P, env){
   function closeBasket(d, price, t, reason){
     var b=baskets[String(d)]; if(!b) return 0;
     var p=profitAt(b, price);
+    var sc=(P.spreadPips||0)*100*volOf(b); totalSpread+=sc; p-=sc; /* round-trip spread per position: pips x lots x 100 cents */
     bal+=p;
     var day=Math.floor(t/86400000); dayReal[day]=(dayReal[day]||0)+p;
     closed.push({tOpen:b.openedT, tClose:t, dir:d, layers:b.pos.length, profit:p, reason:reason});
@@ -1170,8 +1174,8 @@ function gridSimulate(cs, tf, P, env){
   }
   var openList=[];
   [1,-1].forEach(function(d){ var b=baskets[String(d)]; if(b) openList.push({dir:d, layers:b.pos.length, vol:volOf(b), float:profitAt(b, closes[closes.length-1])}); });
-  var finalEq=bal+openList.reduce(function(s,x){ return s+x.float; },0);
-  return {startBal:startBal, endBal:bal, finalEq:finalEq, closed:closed, eqCurve:eqCurve, totalTrades:totalTrades,
+  var finalEq=bal+openList.reduce(function(s,x){ return s+x.float; },0) - (P.spreadPips||0)*100*openList.reduce(function(s,x){ return s+x.vol; },0);
+  return {startBal:startBal, endBal:bal, finalEq:finalEq, closed:closed, eqCurve:eqCurve, totalTrades:totalTrades, totalSpread:totalSpread,
           worstEqDD:worstEqDD, worstBasketDD:worstBasketDD, maxLayers:maxLayersSeen, open:openList};
 }
 function drawMoneyCurve(pts){
@@ -1213,8 +1217,9 @@ function renderGrid(res, tf, bars, P, meta){
     '<div class="stat"><div class="lab">Worst drawdowns</div><div class="val" style="font-size:16px">Equity '+res.worstEqDD.toFixed(1)+'% · Basket '+res.worstBasketDD.toFixed(1)+'%</div><div class="sub">deepest basket reached '+res.maxLayers+' layers · hard stops: '+hardStops+'</div></div>'+
     '</div>'+
     '<canvas id="btEq" width="860" height="150" style="width:100%;height:150px"></canvas>'+
-    '<p class="note" style="margin:10px 0"><b>Read:</b> '+verdict+'</p>'+ openNote +
-    (rows? '<div style="overflow-x:auto"><table><thead><tr><th>Closed (Phnom Penh)</th><th>Dir</th><th>Layers</th><th>Reason</th><th>Profit</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="small">Last '+Math.min(25,res.closed.length)+' closed baskets, newest first. Simulation notes: candle-granularity port of the EA (it trades tick-by-tick on M1 live); inside one candle, adds are processed before take-profit; no spread or slippage charged; margin guard and the web START/STOP are not modelled; the entry signal is evaluated on the test timeframe (live: M5).</p>' : '<p class="note">No basket closed in this window.</p>');
+    '<p class="note" style="margin:10px 0"><b>Read:</b> '+verdict+'</p>'+
+    ((P.spreadPips>0)? '<p class="note" style="margin:10px 0">💸 Spread paid: <b>'+Math.round(res.totalSpread||0)+'¢</b> at '+P.spreadPips+' pips across '+res.totalTrades+' trades — roughly what the same run would have kept without spread. Every layer pays it, which is why deep baskets cost more than they look.</p>' : '')+ openNote +
+    (rows? '<div style="overflow-x:auto"><table><thead><tr><th>Closed (Phnom Penh)</th><th>Dir</th><th>Layers</th><th>Reason</th><th>Profit</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="small">Last '+Math.min(25,res.closed.length)+' closed baskets, newest first. Simulation notes: candle-granularity port of the EA (it trades tick-by-tick on M1 live); inside one candle, adds are processed before take-profit; spread charged per position at your setting, slippage not charged; margin guard and the web START/STOP are not modelled; the entry signal is evaluated on the test timeframe (live: M5).</p>' : '<p class="note">No basket closed in this window.</p>');
   drawMoneyCurve(res.eqCurve);
 }
 function simulate(cs, tf, opts){
@@ -1258,7 +1263,8 @@ function simulate(cs, tf, opts){
       if(hitTP){ exit=tp; exitT=c.t; exitIdx=j; result="WIN"; rMult=rr; break; }
     }
     if(result===null){ var c2=cs[exitIdx]; exit=c2.c; exitT=c2.t; rMult=dir*(exit-entry)/risk; result="EXPIRED"; }
-    trades.push({t:cs[i].t, dir:dir, entry:entry, exit:exit, exitT:exitT, r:rMult, result:result});
+    var rNet = opts.spreadPips? rMult - (opts.spreadPips*0.01)/risk : rMult; /* round-trip spread charged on every trade */
+    trades.push({t:cs[i].t, dir:dir, entry:entry, exit:exit, exitT:exitT, r:rNet, rg:rMult, result:result});
     i=exitIdx+1;
   }
   return trades;
@@ -1293,7 +1299,8 @@ function renderBacktest(trades, tf, bars, meta){
     '</div>'+
     '<canvas id="btEq" width="860" height="150" style="width:100%;height:150px"></canvas>'+
     '<p class="note" style="margin:10px 0"><b>Read:</b> '+verdict+'</p>'+
-    (rows? '<div style="overflow-x:auto"><table><thead><tr><th>Signal time (Phnom Penh)</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>R</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="small">Last '+Math.min(25,trades.length)+' trades shown, newest first. Expired = neither target nor SL touched within 96 candles; closed at the market price then, scored at its real R.</p>' : '<p class="note">This strategy produced no signals in this window.</p>');
+    ((meta.spreadPips>0 && trades.length)? '<p class="note" style="margin:10px 0">💸 Spread charged: <b>'+meta.spreadPips+' pips on every trade</b> — without it this run would read '+(trades.reduce(function(s,x){ return s+(x.rg||x.r); },0)>=0?"+":"")+trades.reduce(function(s,x){ return s+(x.rg||x.r); },0).toFixed(1)+'R; the spread cost you '+(trades.reduce(function(s,x){ return s+(x.rg||x.r); },0)-netR).toFixed(1)+'R over '+trades.length+' trades. That is the real price of trading this often.</p>' : '')+
+    (rows? '<div style="overflow-x:auto"><table><thead><tr><th>Signal time (Phnom Penh)</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>R</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="small">Last '+Math.min(25,trades.length)+' trades shown, newest first. Expired = neither target nor SL touched within 96 candles; closed at the market price then, scored at its real R. R figures are after spread when a spread is set.</p>' : '<p class="note">This strategy produced no signals in this window.</p>');
   drawEquity(trades);
 }
 function drawEquity(trades){
@@ -1332,12 +1339,13 @@ function readCustom(){
   p.any = p.trend||p.rsi||p.emaPos||p.brk||p.adx;
   return p;
 }
+function btSpreadPips(){ var v=parseFloat($("btSpread").value); if(!isFinite(v)) v=24; return Math.min(100, Math.max(0, v)); }
 function readGrid(){
   function num(id, def, lo, hi){ var v=parseFloat($(id).value); if(!isFinite(v)) v=def; return Math.min(hi, Math.max(lo, v)); }
   return { startBal:num("gBal",5000,100,1000000), lotPer:num("gLotPer",0.05,0.01,2), mult:num("gMult",1.4,1,3),
     maxLayers:Math.round(num("gMaxLayers",10,1,20)), maxLots:num("gMaxLots",4,0.1,50),
     freeze:num("gFreeze",15,1,95), rangeStop:num("gRangeStop",10,0,95), trendStop:num("gTrendStop",25,0,95),
-    dailyLock:$("gDailyLock").checked, eqProt:$("gEqProt").checked, breakoutMin:90 };
+    dailyLock:$("gDailyLock").checked, eqProt:$("gEqProt").checked, breakoutMin:90, spreadPips:btSpreadPips() };
 }
 $("btRun").addEventListener("click", function(){
   var btn=this; btn.disabled=true; btn.textContent="Running…"; $("btErr").textContent="";
@@ -1361,13 +1369,13 @@ $("btRun").addEventListener("click", function(){
       renderGrid(gres, btTF, cs.length, P);
       return;
     }
-    var opts={strategy:btStrat, rr:rr, custom:custom};
+    var opts={strategy:btStrat, rr:rr, custom:custom, spreadPips:btSpreadPips()};
     if(btStrat==="scalp"){
       if(btTF==="1h"){ opts.h1arr=h1BiasArr(cs); }
       else { var h1b=res[1]; if(!h1b || h1b.length<80) throw new Error("not enough H1 history for the bias ("+(h1b?h1b.length:0)+")"); opts.h1cs=h1b; opts.h1arr=h1BiasArr(h1b); }
     }
     var trades=simulate(cs, btTF, opts);
-    renderBacktest(trades, btTF, cs.length, {label:STRAT_LABELS[btStrat], rr:rr});
+    renderBacktest(trades, btTF, cs.length, {label:STRAT_LABELS[btStrat], rr:rr, spreadPips:opts.spreadPips});
   }).catch(function(e){ $("btErr").textContent="Backtest failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="▶ Run backtest"; });
 });

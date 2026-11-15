@@ -179,7 +179,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 
     <!-- ============ TERMINAL ============ -->
     <section class="section active" id="sec-terminal">
-    <div class="warn"><div class="infohead"><span>ℹ️ <b>About this feed</b> — OKX's XAU gold contract (not Exness XAUUSDc)</span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">Real gold market: candles are <b>OKX's XAU gold contract</b> — a real exchange-traded gold market that tracks spot XAU/USD trade by trade (no token). The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div></div>
+    <div class="warn"><div class="infohead"><span>ℹ️ <b>About this feed</b> — a real exchange XAU gold contract (not Exness XAUUSDc)</span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">Real gold market: candles are a <b>real exchange-traded XAU gold contract</b> that tracks spot XAU/USD trade by trade (no token) — OKX first, with Gate.io and Bitget stepping in automatically if one exchange can't be reached from your phone. The label under the chart always names the exchange you're actually seeing. The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div></div>
 
     <div class="warn" id="wkndBar" style="display:none"><div class="infohead"><span>🏖️ <b>Weekend — the real gold market is closed</b></span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div></div>
       <div class="shield ok" id="shield">
@@ -508,6 +508,11 @@ function feedList(){
   }
   feeds.push({name:"OKX · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
   feeds.push({name:"OKX · XAU gold market (history)", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
+  /* Backups (added 2026-11-15): OKX became unreachable from Steven's phone (requests
+     timed out while every other service worked) — Gate.io and Bitget carry the same
+     kind of real exchange XAU gold contract and answer browsers directly. */
+  feeds.push({name:"Gate.io · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1h","4h":"4h"}[tf];return "https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+bar+"&limit=200";}, parse:function(j){ if(!Array.isArray(j)) throw new Error("Gate.io error"); return j.map(function(k){return {t:+k.t*1000,o:+k.o,h:+k.h,l:+k.l,c:+k.c};}).sort(function(a,b){return a.t-b.t;}); }});
+  feeds.push({name:"Bitget · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+bar+"&productType=USDT-FUTURES&limit=200";}, parse:function(j){ if(!j.data) throw new Error(j.msg||"Bitget error"); return j.data.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).sort(function(a,b){return a.t-b.t;}); }});
   return feeds;
 }
 var candles = [];       // ascending, includes the still-forming last candle
@@ -1001,15 +1006,17 @@ function updateAgreement(){
 var PF_VPS_DUE="2026-12-02"; /* Steven's MassiveGRID VPS renewal date — move it when he renews */
 var PF_EA_URL="https://win-54huck5cs86.tail0db2c5.ts.net:8443/";
 function pfWorst(checks){ var w="ok"; checks.forEach(function(c){ if(c.st==="bad") w="bad"; else if(c.st==="warn" && w==="ok") w="warn"; }); return w; }
+function pfAgeTxt(age){ if(age<60) return age+" min"; if(age<1440) return Math.floor(age/60)+"h "+(age%60)+"m"; return Math.floor(age/1440)+"d "+Math.floor((age%1440)/60)+"h"; }
 function pfPanelStatus(source, age){
   if(age<0 || !source || source==="none") return {st:"bad", txt:"No panel read on screen — connect the live link or load the JSON on the MT5 Panel page."};
   if(source==="live"){
     if(age<=3) return {st:"ok", txt:"Panel read is fresh ("+(age<=0? "just now" : age+" min old")+")."};
-    return {st:"bad", txt:"Panel read is "+age+" min old — MT5 or the endpoint window on the VPS may have stopped. Do not trust an old read."};
+    if(typeof isWeekendPP==="function" && isWeekendPP()) return {st:"warn", txt:"Panel read is "+pfAgeTxt(age)+" old — normal on the weekend: the market is closed, so MT5 writes nothing new until Monday ~05:00."};
+    return {st:"bad", txt:"Panel read is "+pfAgeTxt(age)+" old — MT5 or the endpoint window on the VPS may have stopped. Do not trust an old read."};
   }
   if(age<=10) return {st:"warn", txt:"Using a saved copy ("+age+" min old) — the live link is not feeding this device."};
   if(age<=60) return {st:"warn", txt:"Saved copy is "+age+" min old — load a fresh file or fix the live link before trusting it."};
-  return {st:"bad", txt:"Saved copy is "+Math.floor(age/60)+"h "+(age%60)+"m old — STALE. Load a fresh SP_Scalp_Signal.json."};
+  return {st:"bad", txt:"Saved copy is "+pfAgeTxt(age)+" old — STALE. Load a fresh SP_Scalp_Signal.json."};
 }
 function pfDaysLeft(now){
   var pp=new Date(new Date(now).toLocaleString("en-US",{timeZone:"Asia/Phnom_Penh"}));

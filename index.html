@@ -531,11 +531,21 @@ function adxApprox(cs, n){ n=n||14; if(cs.length<3*n) return null; var pdm=[],md
   var tail=dx.slice(-n), sum=0; tail.forEach(function(x){sum+=x;}); return sum/n; }
 
 /* ================= data ================= */
+/* fetch with a hard timeout: a hung request (bad mobile network, VPN/DNS stall)
+   must FAIL and let the next source try — a plain fetch() can hang forever and
+   take the whole page (and the Pre-flight Check) down with it. */
+function fetchT(url, ms){
+  ms = ms || 10000;
+  if(typeof AbortController==="undefined") return fetch(url);
+  var ctl=new AbortController();
+  var to=setTimeout(function(){ try{ ctl.abort(); }catch(e){} }, ms);
+  return fetch(url, {signal:ctl.signal}).then(function(r){ clearTimeout(to); return r; }, function(e){ clearTimeout(to); if(e && e.name==="AbortError") throw new Error("timed out after "+Math.round(ms/1000)+"s"); throw e; });
+}
 function fetchCandles(tf){
   var chain = Promise.reject(new Error("start"));
   feedList().forEach(function(f){
     chain = chain.catch(function(){
-      return fetch(f.url(tf)).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+      return fetchT(f.url(tf), 10000).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
         .then(function(j){ var cs=f.parse(j); if(!cs || cs.length<60) throw new Error("short data"); $("feedName").textContent=f.name; return cs; });
     });
   });
@@ -1030,7 +1040,7 @@ var pfRunning=false;
 function runPreflight(){
   if(pfRunning) return; pfRunning=true;
   var btn=$("pfRun"); if(btn){ btn.disabled=true; btn.textContent="Checking…"; }
-  var feedP=fetchCandles(TF).then(function(cs){
+  var feedInner=fetchCandles(TF).then(function(cs){
     if(!cs || !cs.length) return {st:"bad", label:"Price feed", txt:"The feed returned no candles — check this device's internet."};
     var last=cs[cs.length-1];
     var ageMin=Math.max(0, Math.round((Date.now()-last.t)/60000));
@@ -1038,6 +1048,7 @@ function runPreflight(){
     if(ageMin<=lim) return {st:"ok", label:"Price feed", txt:"Live — newest "+TF+" candle started "+ageMin+" min ago, price "+fmt(last.c)+"."};
     return {st:"warn", label:"Price feed", txt:"Newest candle is "+ageMin+" min old — the feed looks slow, or the market is very quiet."};
   }).catch(function(e){ return {st:"bad", label:"Price feed", txt:"Feed failed ("+e.message+") — check this device's internet."}; });
+  var feedP=Promise.race([feedInner, new Promise(function(res){ setTimeout(function(){ res({st:"bad", label:"Price feed", txt:"The feed request hung and timed out — check this device's internet (or any VPN / Tailscale DNS), then run the check again."}); }, 24000); })]);
   var eaP=new Promise(function(res){
     var done=false;
     var to=setTimeout(function(){ if(!done){ done=true; res({st:"bad", label:"EA server", txt:"No answer in 6 seconds — Tailscale may be off on this device, or the Smart Grid Hunter server window is closed on the VPS."}); } }, 6000);

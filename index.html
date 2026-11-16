@@ -240,14 +240,14 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       </div>
       <div class="card mt">
         <h3>🤖 SP Analyst — AI market read</h3>
-        <p class="note">A second opinion from an AI analyst (Muse or Gemini) reading the <b>same live numbers</b> as the desk: price, EMA/RSI/ATR/MACD, H1 bias, the news shield and your MT5 panel. It gives a call <b>with reasons</b> — and its BUY/SELL calls are logged to your Signals &amp; Record (marked 🤖) and graded like the desk's, so you can judge whether it earns its place. It can be wrong; it never trades.</p>
+        <p class="note">A second opinion from an AI analyst (Muse, Gemini or OpenRouter) reading the <b>same live numbers</b> as the desk: price, EMA/RSI/ATR/MACD, H1 bias, the news shield and your MT5 panel. It gives a call <b>with reasons</b> — and its BUY/SELL calls are logged to your Signals &amp; Record (marked 🤖) and graded like the desk's, so you can judge whether it earns its place. It can be wrong; it never trades.</p>
         <div class="pillrow mt">
-          <input type="password" id="aiKeyInput" placeholder="AI API key (Gemini free key or Muse key)" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:250px;max-width:70vw">
+          <input type="password" id="aiKeyInput" placeholder="AI API key (OpenRouter, Gemini or Muse)" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:250px;max-width:70vw">
           <button class="ghostbtn" id="aiKeySave">Save key</button>
           <button class="ghostbtn" id="aiKeyClear">Remove</button>
           <span class="small" id="aiKeyMsg"></span>
         </div>
-        <p class="small">The key is saved <b>only in this browser on this device</b> — never in the website code. No key yet? A Gemini key is free (2 minutes, no card): the steps are in <b>How it works → SP Analyst</b>.</p>
+        <p class="small">The key is saved <b>only in this browser on this device</b> — never in the website code. No key yet? OpenRouter and Gemini keys are free (2 minutes, no card): the steps are in <b>How it works → SP Analyst</b>.</p>
         <button class="bigbtn" id="aiAnalyze">🔍 Analyze the market now</button>
         <div class="ailog" id="aiLog"></div>
         <div class="pillrow mt">
@@ -489,7 +489,8 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         3. Copy the key it shows.<br>
         4. Back here: <b>Terminal → 🤖 SP Analyst</b>, paste the key in the box, tap <b>Save key</b>.<br>
         5. Tap <b>🔍 Analyze the market now</b>.<br>
-        Prefer real Muse instead? Get a key at <b>console.anthropic.com</b> (needs a small paid credit balance) — paste a key starting <b>sk-ant-</b> and the Analyst uses Muse automatically; any other key is treated as Gemini. Either way the key lives only in this device's browser, and calls go straight from your device to the AI — nothing passes through this website.</p>
+        Or use <b>OpenRouter</b> (also free): go to <b>openrouter.ai</b>, sign up, open <b>Keys</b>, create a key — it starts <b>sk-or-</b> — and paste it the same way. The Analyst then runs on OpenRouter's free models (it tries a strong free model first and steps to the next if one is rate-limited, so a busy minute just means: try again shortly).<br>
+        Prefer real Muse instead? Get a key at <b>console.anthropic.com</b> (needs a small paid credit balance) — paste a key starting <b>sk-ant-</b> and the Analyst uses Muse automatically; <b>sk-or-</b> means OpenRouter, and any other key is treated as Gemini. Either way the key lives only in this device's browser, and calls go straight from your device to the AI — nothing passes through this website.</p>
       </div>
     </section>
   </main>
@@ -1233,7 +1234,7 @@ try{ var savedRep=JSON.parse(localStorage.getItem(SGHKEY)||"null"); if(savedRep 
 var AIKEY="sp_ai_key_v1", AICHAT="sp_ai_chat_v1";
 var AI_SYS="You are SP Analyst, the AI gold analyst inside Steven's SP Gold Trading terminal. Steven trades XAUUSD (gold) on Exness MT5 (a cent account), semi-manually, alongside his Smart Grid Hunter EA. Your job: read the market brief the terminal gives you and give a clear trading read with reasons.\n\nRules:\n- Use ONLY the numbers in the brief. Never invent prices, news, or indicator values.\n- Always take a position: CALL: BUY, CALL: SELL, or CALL: WAIT. WAIT is a real call when the setup is weak, the desk and the MT5 panel disagree, the news shield is hot, or it is the weekend.\n- For BUY/SELL add a LEVELS line: LEVELS: <entry> <stop loss> <take profit 1> <take profit 2> — entry at the last close, stop about 1x ATR away, TP1 = 1R, TP2 = 1.8R, unless the brief gives a strong reason to differ.\n- Keep the main answer short: 2-4 reasons tied to specific numbers in the brief, then the main risk, then the CALL line, then the LEVELS line if BUY/SELL. Plain language. No hype, no profit promises.\n- You are a second opinion next to his rule-based desk and his MT5 Scalp Panel. When you disagree with them, say so and say why.\n- Never advise bigger lots, revenge trading, or trading through a news blackout.\n- For follow-up questions without a fresh brief request, answer from the brief in the conversation and say if the brief may be stale.";
 function aiKey(){ try{ return localStorage.getItem(AIKEY)||""; }catch(e){ return ""; } }
-function aiProvider(k){ k=k||aiKey(); return k.indexOf("sk-ant-")===0? "anthropic" : "gemini"; }
+function aiProvider(k){ k=k||aiKey(); return k.indexOf("sk-ant-")===0? "anthropic" : (k.indexOf("sk-or-")===0? "openrouter" : "gemini"); }
 function aiBrief(){
   var cs=closedOnly(candles); if(cs.length<30) return null;
   var cl=cs.map(function(c){ return c.c; });
@@ -1258,7 +1259,27 @@ function aiBrief(){
 }
 function aiCall(messages){
   var k=aiKey();
-  if(!k) return Promise.reject(new Error("No AI key saved yet — paste one in the SP Analyst card above (free Gemini steps: How it works → SP Analyst)."));
+  if(!k) return Promise.reject(new Error("No AI key saved yet — paste one in the SP Analyst card above (free key steps: How it works → SP Analyst)."));
+  if(aiProvider(k)==="openrouter"){
+    var orMsgs=[{role:"system", content:AI_SYS}].concat(messages.map(function(m){ return {role:(m.role==="assistant"?"assistant":"user"), content:m.text}; }));
+    var orModels=["nvidia/nemotron-3-ultra-550b-a55b:free","google/gemma-4-31b-it:free","openrouter/free"];
+    var orTry=function(i, lastErr){
+      if(i>=orModels.length) return Promise.reject(new Error("OpenRouter's free models are all busy right now ("+(lastErr||"no answer")+") — free models have rate limits; wait a minute and try again."));
+      return fetch("https://openrouter.ai/api/v1/chat/completions", {method:"POST", headers:{"content-type":"application/json", "Authorization":"Bearer "+k, "HTTP-Referer":"https://sivpe.github.io/sp-signal-terminal/", "X-Title":"SP Gold Trading"},
+        body:JSON.stringify({model:orModels[i], max_tokens:800, messages:orMsgs})})
+        .then(function(r){ return r.json().then(function(j){
+          if(!r.ok) throw new Error((j.error&&j.error.message)||("OpenRouter HTTP "+r.status));
+          var c=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+          if(!c || !c.trim()) throw new Error("empty answer");
+          return c.trim();
+        }); })
+        .catch(function(e){
+          if(/401|auth|unauthor/i.test(e.message||"")) throw new Error("OpenRouter rejected the key — check you pasted the whole sk-or- key, then Save key again.");
+          return orTry(i+1, e.message);
+        });
+    };
+    return orTry(0, "");
+  }
   if(aiProvider(k)==="anthropic"){
     return fetch("https://api.anthropic.com/v1/messages", {method:"POST", headers:{"content-type":"application/json", "x-api-key":k, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true"},
       body:JSON.stringify({model:"claude-sonnet-4-5", max_tokens:800, system:AI_SYS, messages:messages.map(function(m){ return {role:(m.role==="assistant"?"assistant":"user"), content:m.text}; })})})
@@ -1312,7 +1333,7 @@ function aiUserTurn(showText, wireText){
 }
 function aiKeyStatus(){
   var k=aiKey(), msg=$("aiKeyMsg"); if(!msg) return;
-  msg.textContent = k? ("Key saved on this device ✓ — using "+(aiProvider(k)==="anthropic"?"Muse":"Gemini")+".") : "No key saved on this device yet.";
+  msg.textContent = k? ("Key saved on this device ✓ — using "+(aiProvider(k)==="anthropic"?"Muse":(aiProvider(k)==="openrouter"?"OpenRouter (free models)":"Gemini"))+".") : "No key saved on this device yet.";
   var inp=$("aiKeyInput"); if(inp && k) inp.value="";
 }
 $("aiKeySave").addEventListener("click", function(){ var v=$("aiKeyInput").value.trim(); if(!v){ $("aiKeyMsg").textContent="Paste a key first."; return; } try{ localStorage.setItem(AIKEY, v); }catch(e){} aiKeyStatus(); });

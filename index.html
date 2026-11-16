@@ -1623,7 +1623,7 @@ function histProviders(tf){
     var byT={};
     function page(after){
       var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+okxBar+"&limit=300"+(after?("&after="+after):"");
-      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
+      return fetchT(u, 10000).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
         .then(function(j){
           var rows=j.data||[];
           rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
@@ -1641,7 +1641,7 @@ function histProviders(tf){
     function chunk(){
       var from=end-1000*stepS;
       var u="https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+tf+"&from="+from+"&to="+end;
-      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Gate.io HTTP "+r.status); return r.json(); })
+      return fetchT(u, 10000).then(function(r){ if(!r.ok) throw new Error("Gate.io HTTP "+r.status); return r.json(); })
         .then(function(j){
           if(!Array.isArray(j)) throw new Error("Gate.io error");
           j.forEach(function(k){ byT[+k.t*1000]={t:+k.t*1000, o:+k.o, h:+k.h, l:+k.l, c:+k.c, v:+k.v||0}; });
@@ -1657,7 +1657,7 @@ function histProviders(tf){
     function chunk(){
       var start=end-1000*stepMs;
       var u="https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+tf+"&productType=USDT-FUTURES&startTime="+start+"&endTime="+end+"&limit=1000";
-      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Bitget HTTP "+r.status); return r.json(); })
+      return fetchT(u, 10000).then(function(r){ if(!r.ok) throw new Error("Bitget HTTP "+r.status); return r.json(); })
         .then(function(j){
           if(!j.data) throw new Error(j.msg||"Bitget error");
           j.data.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
@@ -2221,7 +2221,7 @@ function fetchWindow(tf, fromMs, toMs){
     var byT={};
     function page(after){
       var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300&after="+after;
-      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
+      return fetchT(u, 10000).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
         .then(function(j){
           var rows=j.data||[];
           rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
@@ -2238,7 +2238,7 @@ function fetchWindow(tf, fromMs, toMs){
     function chunk(){
       var from=Math.max(fromS, endS-1000*stepS);
       var u="https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+tf+"&from="+from+"&to="+endS;
-      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Gate.io HTTP "+r.status); return r.json(); })
+      return fetchT(u, 10000).then(function(r){ if(!r.ok) throw new Error("Gate.io HTTP "+r.status); return r.json(); })
         .then(function(j){
           if(!Array.isArray(j)) throw new Error("Gate.io error");
           j.forEach(function(k){ byT[+k.t*1000]={t:+k.t*1000, o:+k.o, h:+k.h, l:+k.l, c:+k.c, v:+k.v||0}; });
@@ -2253,7 +2253,7 @@ function fetchWindow(tf, fromMs, toMs){
     function chunk(){
       var start=Math.max(fromMs, end-1000*stepMs);
       var u="https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+tf+"&productType=USDT-FUTURES&startTime="+start+"&endTime="+end+"&limit=1000";
-      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Bitget HTTP "+r.status); return r.json(); })
+      return fetchT(u, 10000).then(function(r){ if(!r.ok) throw new Error("Bitget HTTP "+r.status); return r.json(); })
         .then(function(j){
           if(!j.data) throw new Error(j.msg||"Bitget error");
           j.data.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });

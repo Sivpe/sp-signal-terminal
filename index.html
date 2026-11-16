@@ -183,7 +183,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 
     <div class="warn" id="wkndBar" style="display:none"><div class="infohead"><span>🏖️ <b>Weekend — the real gold market is closed</b></span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div></div>
       <div class="shield ok" id="shield">
-        <div class="smain"><div class="sicon" id="shieldIcon">🛡️</div><div><div class="stitle" id="shieldTitle">News shield: checking the calendar…</div><div class="small" id="shieldSub">Shield window: 30 min before → 60 min after each gold release · Phnom Penh time</div></div></div>
+        <div class="smain"><div class="sicon" id="shieldIcon">🛡️</div><div><div class="stitle" id="shieldTitle">News shield: checking the calendar…</div><div class="small" id="shieldSub">Shield window: 30 min before → 60 min after each gold release · Phnom Penh time · 🔴 high & 🟠 medium impact only</div></div></div>
         <div class="scount" id="shieldCount">—</div>
       </div>
       <div class="card" id="pfCard" style="margin-bottom:14px">
@@ -756,6 +756,94 @@ function renderOrderflow(res){
     return '<div class="pfrow"><span class="vote '+cls+'" style="min-width:54px;text-align:center">'+txt+'</span><div><b>'+r.who+'</b><div class="small">'+esc(r.why)+'</div></div></div>';
   }).join("");
   $("ofConv").textContent= res.dir===0? "" : ("Conviction ~"+res.conviction+"% · score "+(res.score>0?"+":"")+res.score+" of 4 reads");
+}
+/* ============ BBMA signal (same rules as the Backtest engine and the 2026-11-16 test) ============
+   BB(20,2) + LWMA 5/10 (High & Low) + EMA50. CSM = close outside the band with EMA50 agreeing.
+   The entry is the REENTRY: price retests the MA5/10 zone and closes back in the setup direction.
+   Setup dies on a close back through Mid-BB or after 12 candles. SL 1xATR for record grading. */
+function lwmaSeries(vals, n){ var out=new Array(vals.length).fill(null), ws=n*(n+1)/2;
+  for(var i=n-1;i<vals.length;i++){ var s=0; for(var j=0;j<n;j++) s+=vals[i-j]*(n-j); out[i]=s/ws; } return out; }
+function bbmaWalk(cs){
+  var closes=cs.map(function(c){return c.c;}), highs=cs.map(function(c){return c.h;}), lows=cs.map(function(c){return c.l;});
+  var mid=sma(closes,20), sdA=new Array(cs.length).fill(null);
+  for(var i=19;i<cs.length;i++){ var s2=0; for(var j=0;j<20;j++){ var d=closes[i-j]-mid[i]; s2+=d*d; } sdA[i]=Math.sqrt(s2/20); }
+  var ma5L=lwmaSeries(lows,5), ma10L=lwmaSeries(lows,10), ma5H=lwmaSeries(highs,5), ma10H=lwmaSeries(highs,10);
+  var e50=ema(closes,50), atS=atrSeries(cs,14);
+  var sigAt={}, lastCsm=null, i=50;
+  while(i<cs.length){
+    if(mid[i]===null || sdA[i]===null || e50[i]===null){ i++; continue; }
+    var top=mid[i]+2*sdA[i], bot=mid[i]-2*sdA[i], dir=0;
+    if(closes[i]>top && closes[i]>e50[i]) dir=1; else if(closes[i]<bot && closes[i]<e50[i]) dir=-1;
+    if(!dir){ i++; continue; }
+    lastCsm={dir:dir, idx:i};
+    var entered=false;
+    for(var j=i+1;j<=Math.min(i+12, cs.length-1);j++){
+      if(dir===1 && closes[j]<mid[j]) break;
+      if(dir===-1 && closes[j]>mid[j]) break;
+      var fire = dir===1 ? (lows[j]<=ma5L[j] && closes[j]>ma5L[j]) : (highs[j]>=ma5H[j] && closes[j]<ma5H[j]);
+      if(fire){ if(atS[j]) sigAt[j]={dir:dir, entry:closes[j], sl:closes[j]-dir*atS[j]}; i=j+1; entered=true; break; }
+    }
+    if(!entered) i++;
+  }
+  return {sigAt:sigAt, mid:mid, sd:sdA, ma5L:ma5L, ma10L:ma10L, ma5H:ma5H, ma10H:ma10H, e50:e50, lastCsm:lastCsm};
+}
+function bbmaSignal(cs){
+  var n=cs.length, last=n-1, L=cs[last];
+  var base={dir:0, entry:null, sl:null, tp1:null, tp2:null, atr:0, score:0, reads:[], why:[], setup:null, zone:null, mid:null, e50:null, extreme:0};
+  if(n<70){ base.why.push("Not enough candles yet for BBMA (needs 70+)."); return base; }
+  var W=bbmaWalk(cs);
+  var mid=W.mid[last], sd=W.sd[last], top=mid+2*sd, bot=mid-2*sd, e50=W.e50[last];
+  base.mid=mid; base.e50=e50;
+  var atrV=atrSeries(cs,14)[last]||0; base.atr=atrV;
+  /* structure read */
+  var upSide = L.c>mid && L.c>e50, dnSide = L.c<mid && L.c<e50;
+  base.reads.push({name:"Structure (Mid-BB + EMA50)", v: upSide?1:(dnSide?-1:0), why: upSide? "price is above Mid-BB and EMA50 — buyer's side" : dnSide? "price is below Mid-BB and EMA50 — seller's side" : "price is split between Mid-BB and EMA50 — no clean side"});
+  /* momentum read: the live setup, if any */
+  var setup=null;
+  if(W.lastCsm){
+    var age=last-W.lastCsm.idx, d=W.lastCsm.dir, alive=true;
+    if(age>12) alive=false;
+    for(var j=W.lastCsm.idx+1;j<=last && alive;j++){ if(d===1 && cs[j].c<W.mid[j]) alive=false; if(d===-1 && cs[j].c>W.mid[j]) alive=false; if(W.sigAt[j]) alive=false; }
+    if(alive && age>=1) setup={dir:d, age:age};
+  }
+  base.setup=setup;
+  base.reads.push({name:"Momentum (CSM)", v: setup? setup.dir : 0, why: setup? ((setup.dir===1?"CSM buy":"CSM sell")+" "+setup.age+" candle(s) ago — candle closed "+(setup.dir===1?"above the top":"below the low")+" band with EMA50 agreeing") : (W.lastCsm? "last CSM is finished or too old — no live setup" : "no CSM yet — no candle has closed outside the band with EMA50 agreeing")});
+  /* reentry read */
+  var fired=W.sigAt[last]||null;
+  if(setup) base.zone = setup.dir===1 ? [Math.min(W.ma10L[last],W.ma5L[last]), Math.max(W.ma10L[last],W.ma5L[last])] : [Math.min(W.ma10H[last],W.ma5H[last]), Math.max(W.ma10H[last],W.ma5H[last])];
+  base.reads.push({name:"Reentry at MA5/10", v: fired? fired.dir : 0, why: fired? "price retested the MA5/10 zone and closed back "+(fired.dir===1?"up":"down")+" on the last candle — the BBMA entry" : setup? "waiting — price must pull back to the zone "+fmt(base.zone[0])+"–"+fmt(base.zone[1])+" and close back "+(setup.dir===1?"above MA5 Low":"below MA5 High") : "no setup to reenter"});
+  /* extreme read */
+  var ext = W.ma5H[last]>top ? 1 : (W.ma5L[last]<bot ? -1 : 0);
+  base.extreme=ext;
+  base.reads.push({name:"Extreme check", v: ext? -ext : 0, why: ext===1? "MA5 High has escaped above the top band — price is extreme; chasing buys here is the trap BBMA warns about" : ext===-1? "MA5 Low has escaped below the low band — price is extreme; chasing sells here is the trap BBMA warns about" : "MA5/10 are inside the bands — nothing extreme"});
+  base.score=base.reads.reduce(function(s,r){ return s+r.v; },0);
+  if(fired){
+    base.dir=fired.dir; base.entry=fired.entry; base.sl=fired.sl;
+    var risk=Math.abs(base.entry-base.sl);
+    base.tp1=base.entry+fired.dir*risk; base.tp2=base.entry+fired.dir*1.8*risk;
+    base.why.push((fired.dir===1?"CSM buy":"CSM sell")+" setup, then the reentry fired on the last closed candle — that is the full BBMA entry, not a chase.");
+  } else if(setup){
+    base.why.push("Setup is live but BBMA does not chase: no signal until the reentry retest fires. Zone to watch: "+fmt(base.zone[0])+"–"+fmt(base.zone[1])+".");
+  } else {
+    base.why.push("No live BBMA setup on the last closed candle — either no CSM, or the last setup already fired, broke, or expired.");
+  }
+  if(atrV && L.c && atrV/L.c>0.0055) base.why.push("ATR is very large versus price — wild market; BBMA retests can run far past the zone.");
+  return base;
+}
+function renderBBMA(res){
+  var dEl=$("bbDir");
+  dEl.textContent = res.dir===1? "🎗️ BBMA: BUY" : res.dir===-1? "🎗️ BBMA: SELL" : "🎗️ BBMA: WAIT";
+  dEl.style.color = res.dir===1? "var(--green)" : res.dir===-1? "var(--red)" : "var(--yellow)";
+  $("bbReason").textContent = res.why.join(" ");
+  $("bbReads").innerHTML = res.reads.map(function(r){
+    return '<div class="pfrow"><span class="pfdot">'+(r.v>0?"🟢":(r.v<0?"🔴":"⚪"))+'</span><span><b>'+r.name+':</b> '+(r.v>0?"buy side":(r.v<0?"sell side":"neutral"))+' — '+r.why+'</span></div>';
+  }).join("");
+  function kv(el, v){ $(el).textContent = (v===null||v===undefined)? "—" : fmt(v); }
+  kv("bbEntry", res.entry); kv("bbSL", res.sl); kv("bbTP1", res.tp1); kv("bbTP2", res.tp2);
+  $("bbSetup").textContent = res.setup? ((res.setup.dir===1?"CSM buy":"CSM sell")+" · "+res.setup.age+" candle(s) old · waiting for the reentry") : (res.dir!==0? "reentry fired on the last candle" : "no live setup");
+  $("bbZone").textContent = res.zone? (fmt(res.zone[0])+" – "+fmt(res.zone[1])) : "—";
+  $("bbMid").textContent = res.mid? fmt(res.mid) : "—";
+  $("bbE50").textContent = res.e50? fmt(res.e50) : "—";
 }
 function runScan(){
   var st=(typeof shieldState==="function")? shieldState(Date.now()) : null;
@@ -2186,7 +2274,7 @@ var SHIELD_PRE=30*60000, SHIELD_POST=60*60000, shieldEvents=[];
 function loadEvents(){
   fetch("news-events.json?ts="+Date.now()).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
   .then(function(list){
-    shieldEvents=(list||[]).map(function(e){ return {name:e.event||e.name||"Gold event", t:Date.parse(e.time)}; }).filter(function(e){ return !isNaN(e.t); }).sort(function(a,b){ return a.t-b.t; });
+    shieldEvents=(list||[]).map(function(e){ return {name:e.event||e.name||"Gold event", t:Date.parse(e.time), impact:String(e.impact||"").toLowerCase()}; }).filter(function(e){ return !isNaN(e.t) && (e.impact==="high" || e.impact==="medium"); }).sort(function(a,b){ return a.t-b.t; });
     updateShield();
   }).catch(function(){ /* keep whatever we have; updateShield shows the none state if empty */ updateShield(); });
 }
@@ -2213,19 +2301,20 @@ function evWhen(t){
   var tom=new Date(today.getTime()+86400000).toDateString()===d.toDateString();
   return (sameDay?"today":(tom?"tomorrow":d.toLocaleDateString("en-GB",{day:"2-digit",month:"short"})))+" "+d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
 }
+function impSym(impact){ return impact==="high" ? "🔴" : "🟠"; }
 function updateShield(){
   var box=$("shield"); if(!box) return;
   var st=shieldState(Date.now());
   box.className="shield "+st.mode;
   if(st.mode==="hot"){
     $("shieldIcon").textContent="🛑";
-    $("shieldTitle").textContent="NEWS BLACKOUT — NO TRADE · "+st.ev.name;
+    $("shieldTitle").textContent="NEWS BLACKOUT — NO TRADE · "+impSym(st.ev.impact)+" "+st.ev.name;
     $("shieldSub").textContent="Released "+evWhen(st.ev.t)+" · your rule: no scalps inside the shield · Phnom Penh time";
     $("shieldCount").textContent="lifts in "+fmtDur(st.end-Date.now());
   } else if(st.mode==="soon" || st.mode==="ok"){
     $("shieldIcon").textContent= st.mode==="soon" ? "⚠️" : "🛡️";
-    $("shieldTitle").textContent="Next gold event: "+st.ev.name+" · "+evWhen(st.ev.t);
-    $("shieldSub").textContent="Shield window: 30 min before → 60 min after the release · Phnom Penh time · calendar refreshes each morning";
+    $("shieldTitle").textContent="Next gold event: "+impSym(st.ev.impact)+" "+st.ev.name+" · "+evWhen(st.ev.t);
+    $("shieldSub").textContent="Shield window: 30 min before → 60 min after the release · Phnom Penh time · 🔴 high & 🟠 medium impact only — 🟡 low is skipped · calendar refreshes each morning";
     $("shieldCount").textContent="in "+fmtDur(st.ev.t-Date.now());
   } else {
     $("shieldIcon").textContent="🛡️";

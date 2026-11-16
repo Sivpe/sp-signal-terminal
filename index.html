@@ -229,6 +229,23 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         </div>
       </div>
       <div class="card mt">
+        <h3>🌊 Orderflow signal <span class="small" style="text-transform:none;letter-spacing:0">· volume-model read, next to the desk</span></h3>
+        <div class="sigdir wait" id="ofDir">WAIT</div>
+        <div class="sigreason" id="ofReason">Waiting for candle data — the orderflow read updates with the feed, and its calls are logged when you run a scan.</div>
+        <div id="ofReads"></div>
+        <div class="kv"><span>Entry</span><b id="ofEntry">—</b></div>
+        <div class="kv"><span>Stop loss</span><b class="sl" id="ofSL">—</b></div>
+        <div class="kv"><span>Take profit 1 (1.0R)</span><b class="tp" id="ofTP1">—</b></div>
+        <div class="kv"><span>Take profit 2 (1.8R)</span><b class="tp" id="ofTP2">—</b></div>
+        <div class="kv"><span>Estimated delta (last 10 candles)</span><b id="ofDelta">—</b></div>
+        <div class="kv"><span>POC — most-traded price</span><b id="ofPOC">—</b></div>
+        <div class="kv"><span>Value area (70% of volume)</span><b id="ofVA">—</b></div>
+        <div class="kv"><span>VWAP (loaded window)</span><b id="ofVWAP">—</b></div>
+        <div class="kv"><span>Last candle volume</span><b id="ofVol">—</b></div>
+        <div class="small mt" id="ofConv"></div>
+        <p class="note mt">Read this honestly: the feed gives <b>real volume per candle</b> from the exchange — but not tick-by-tick footprint data. The buy/sell split (“delta”) is <b>estimated</b> from where each candle closed inside its own range, and the profile spreads each candle's volume across the prices it covered. True footprint order flow needs CME gold futures tick data (ATAS / Bookmap class tools). So treat this as a volume-model second read and judge it by its record: its scan calls are logged (marked 🌊) and graded exactly like the desk's.</p>
+      </div>
+      <div class="card mt">
         <h3>🔔 Price-level alerts <button class="ghostbtn" id="paToggle">Price beeps: OFF</button></h3>
         <p class="note">Set a gold price. While this page is open on screen, crossing that price beeps and buzzes — up-cross rising tones, down-cross falling tones (same as your signal beeps). Each level fires <b>once</b>, then marks itself HIT. Foreground only: a closed or backgrounded tab cannot beep — that limit is the browser's, and your MT5 notifier stays the tool for away-from-phone alerts.</p>
         <div class="pillrow mt">
@@ -505,15 +522,15 @@ function feedList(){
   var feeds=[];
   var key=tdKey();
   if(key){
-    feeds.push({name:"Twelve Data · XAU/USD spot", url:function(tf){var iv={"5m":"5min","15m":"15min","1h":"1h","4h":"4h"}[tf];return "https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize=200&apikey="+encodeURIComponent(key);}, parse:function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){return {t:Date.parse(v.datetime.replace(" ","T")+"Z"),o:+v.open,h:+v.high,l:+v.low,c:+v.close};}).reverse(); }});
+    feeds.push({name:"Twelve Data · XAU/USD spot", url:function(tf){var iv={"5m":"5min","15m":"15min","1h":"1h","4h":"4h"}[tf];return "https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize=200&apikey="+encodeURIComponent(key);}, parse:function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){return {t:Date.parse(v.datetime.replace(" ","T")+"Z"),o:+v.open,h:+v.high,l:+v.low,c:+v.close,v:parseFloat(v.volume)||0};}).reverse(); }});
   }
-  feeds.push({name:"OKX · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
-  feeds.push({name:"OKX · XAU gold market (history)", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).reverse();}});
+  feeds.push({name:"OKX · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]||0};}).reverse();}});
+  feeds.push({name:"OKX · XAU gold market (history)", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=200";}, parse:function(j){return (j.data||[]).map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]||0};}).reverse();}});
   /* Backups (added 2026-11-15): OKX became unreachable from Steven's phone (requests
      timed out while every other service worked) — Gate.io and Bitget carry the same
      kind of real exchange XAU gold contract and answer browsers directly. */
-  feeds.push({name:"Gate.io · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1h","4h":"4h"}[tf];return "https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+bar+"&limit=200";}, parse:function(j){ if(!Array.isArray(j)) throw new Error("Gate.io error"); return j.map(function(k){return {t:+k.t*1000,o:+k.o,h:+k.h,l:+k.l,c:+k.c};}).sort(function(a,b){return a.t-b.t;}); }});
-  feeds.push({name:"Bitget · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+bar+"&productType=USDT-FUTURES&limit=200";}, parse:function(j){ if(!j.data) throw new Error(j.msg||"Bitget error"); return j.data.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).sort(function(a,b){return a.t-b.t;}); }});
+  feeds.push({name:"Gate.io · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1h","4h":"4h"}[tf];return "https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+bar+"&limit=200";}, parse:function(j){ if(!Array.isArray(j)) throw new Error("Gate.io error"); return j.map(function(k){return {t:+k.t*1000,o:+k.o,h:+k.h,l:+k.l,c:+k.c,v:+k.v||0};}).sort(function(a,b){return a.t-b.t;}); }});
+  feeds.push({name:"Bitget · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+bar+"&productType=USDT-FUTURES&limit=200";}, parse:function(j){ if(!j.data) throw new Error(j.msg||"Bitget error"); return j.data.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]||0};}).sort(function(a,b){return a.t-b.t;}); }});
   /* Remember which exchange actually answered THIS device last time and try it
      first — otherwise a phone that can't reach OKX waits out two 10s timeouts
      on every single page load before the backup even gets a chance. */
@@ -647,6 +664,99 @@ function councilAt(cs, bias){
   if(dir!==0 && a){ var risk=a*1.0; sl=entry-dir*risk; tp1=entry+dir*risk*1.0; tp2=entry+dir*risk*1.8; tp3=entry+dir*risk*2.6; }
   return {dir:dir, conviction:conviction, entry:entry, sl:sl, tp1:tp1, tp2:tp2, tp3:tp3, atr:a, votes:votes, biasNote:biasNote};
 }
+/* ================= Orderflow (candle-volume model) =================
+   Order-flow STYLE read built from the exchange feed's candle volume.
+   Honest limits: the feed gives volume per candle, not tick-by-tick
+   footprint data — the buy/sell split ("delta") is ESTIMATED from where
+   each candle closed inside its own range, and the volume profile is
+   built by spreading each candle's volume across the prices it covered.
+   True footprint order flow needs CME GC tick data (ATAS/Bookmap etc.). */
+function ofDelta(c){ var rng=Math.max(c.h-c.l, 0.0000001); var ratio=(c.c-c.l)/rng; if(ratio<0) ratio=0; if(ratio>1) ratio=1; return (c.v||0)*(2*ratio-1); }
+function ofSignal(cs){
+  if(!cs || cs.length<60) return {dir:0, note:"Not enough candles yet for an orderflow read (needs 60+).", reads:[], metrics:null};
+  var vols=cs.map(function(c){ return c.v||0; });
+  var vSum=vols.reduce(function(a,b){return a+b;},0);
+  if(vSum<=0) return {dir:0, noVol:true, note:"This feed gives no candle volume, so orderflow can't read it. The exchange feeds (OKX / Gate.io / Bitget) carry volume; the Twelve Data spot feed does not.", reads:[], metrics:null};
+  var last=cs.length-1, price=cs[last].c;
+  var a=atr(cs);
+  var deltas=cs.map(ofDelta);
+  var cum=[], run=0; deltas.forEach(function(d){ run+=d; cum.push(run); });
+  var win=Math.min(96, cs.length);
+  var seg=cs.slice(-win), segV=seg.reduce(function(s,c){return s+(c.v||0);},0);
+  var vwap= segV>0 ? seg.reduce(function(s,c){ return s+((c.h+c.l+c.c)/3)*(c.v||0); },0)/segV : null;
+  var prof=cs.slice(-60);
+  var hi=-Infinity, lo=Infinity, totV=0;
+  prof.forEach(function(c){ if(c.h>hi)hi=c.h; if(c.l<lo)lo=c.l; totV+=c.v||0; });
+  var bins=24, bw=Math.max((hi-lo)/bins, 0.0000001), binV=[]; for(var bi=0; bi<bins; bi++) binV.push(0);
+  prof.forEach(function(c){ var v=c.v||0; if(v<=0) return; var b0=Math.max(0, Math.min(bins-1, Math.floor((c.l-lo)/bw))), b1=Math.max(0, Math.min(bins-1, Math.floor((c.h-lo)/bw))); var share=v/(b1-b0+1); for(var b=b0;b<=b1;b++) binV[b]+=share; });
+  var pocI=0; binV.forEach(function(v,i){ if(v>binV[pocI]) pocI=i; });
+  var poc=lo+(pocI+0.5)*bw;
+  var acc=binV[pocI], upI=pocI, dnI=pocI, target=totV*0.7, guard=0;
+  while(acc<target && (upI<bins-1 || dnI>0) && guard++<60){ var nvU= upI<bins-1? binV[upI+1] : -1, nvD= dnI>0? binV[dnI-1] : -1; if(nvU>=nvD && nvU>=0){ upI++; acc+=nvU; } else if(nvD>=0){ dnI--; acc+=nvD; } else break; }
+  var vah=lo+(upI+1)*bw, val=lo+dnI*bw;
+  var dNet=deltas.slice(-10).reduce(function(s,x){return s+x;},0);
+  var dVol=vols.slice(-10).reduce(function(s,x){return s+x;},0);
+  var dRatio= dVol>0? dNet/dVol : 0;
+  var avgVol20= vols.slice(-21,-1).reduce(function(s,x){return s+x;},0)/20;
+  var relVol= avgVol20>0? vols[last]/avgVol20 : 0;
+  var divVote=0, divNote="";
+  var pHi=-Infinity, pHiI=-1, pLo=Infinity, pLoI=-1, i2, j2;
+  for(i2=last-9;i2<=last;i2++){ if(cs[i2].h>pHi){pHi=cs[i2].h;pHiI=i2;} if(cs[i2].l<pLo){pLo=cs[i2].l;pLoI=i2;} }
+  var prevHi=-Infinity, prevHiCum=0, prevLo=Infinity, prevLoCum=0;
+  for(j2=Math.max(0,last-29); j2<last-9; j2++){ if(cs[j2].h>prevHi){prevHi=cs[j2].h;prevHiCum=cum[j2];} if(cs[j2].l<prevLo){prevLo=cs[j2].l;prevLoCum=cum[j2];} }
+  if(pHiI===last && prevHi>-Infinity && pHi>=prevHi && cum[last]<prevHiCum){ divVote=-1; divNote="Bearish delta divergence: price matched the earlier high but cumulative delta is lower — buyers are weaker than on the first push."; }
+  else if(pLoI===last && prevLo<Infinity && pLo<=prevLo && cum[last]>prevLoCum){ divVote=1; divNote="Bullish delta divergence: price matched the earlier low but cumulative delta is higher — sellers are weaker than on the first push."; }
+  var c0=cs[last], rng=Math.max(c0.h-c0.l, 0.0000001);
+  var upWick=(c0.h-Math.max(c0.o,c0.c))/rng, dnWick=(Math.min(c0.o,c0.c)-c0.l)/rng;
+  var evVote=divVote, evNote=divNote;
+  if(relVol>=1.6 && dnWick>=0.5){ evVote=1; evNote="Absorption: "+relVol.toFixed(1)+"× normal volume with a long lower wick — sellers pushed, buyers absorbed it and closed the candle up off its low."; }
+  else if(relVol>=1.6 && upWick>=0.5){ evVote=-1; evNote="Absorption: "+relVol.toFixed(1)+"× normal volume with a long upper wick — buyers pushed, sellers absorbed it and closed the candle down off its high."; }
+  if(!evNote) evNote="No absorption or delta-divergence event on the last closed candle.";
+  var reads=[];
+  var dVote= dRatio>0.08? 1 : (dRatio<-0.08? -1 : 0);
+  reads.push({who:"Delta flow (est.)", v:dVote, why:"Estimated buy/sell delta over the last 10 closed candles is "+(dRatio>=0?"+":"")+(dRatio*100).toFixed(0)+"% of their volume — "+(dVote===1?"aggressive buyers ahead.":(dVote===-1?"aggressive sellers ahead.":"flow is balanced."))});
+  var pVote= price>poc? 1 : (price<poc? -1 : 0);
+  reads.push({who:"Volume profile", v:pVote, why:"Price is "+(price>poc?"above":"below")+" the POC ("+fmt(poc)+"), the most-traded price of the last 60 candles — "+(price>poc?"a long bias while it holds.":"a short bias while it holds.")+" Value area "+fmt(val)+" – "+fmt(vah)+"."});
+  var wVote= (vwap!==null)? (price>vwap? 1 : (price<vwap? -1 : 0)) : 0;
+  reads.push({who:"VWAP", v:wVote, why: vwap===null? "VWAP unavailable." : ("Price is "+(price>vwap?"above":"below")+" the window VWAP ("+fmt(vwap)+") — "+(price>vwap?"buyers hold the average price.":"sellers hold the average price."))});
+  reads.push({who:"Events", v:evVote, why:evNote});
+  var score=reads.reduce(function(s,r){ return s+r.v; },0);
+  var atrPct=a? a/price*100 : null;
+  var wild= atrPct!==null && atrPct>0.55;
+  var dir=0;
+  if(!wild && dVote!==0 && score>=2) dir=1;
+  else if(!wild && dVote!==0 && score<=-2) dir=-1;
+  var conviction= dir===0? 0 : Math.min(92, 44+Math.abs(score)*11+(relVol>=1.6?6:0));
+  var entry=price, sl=null, tp1=null, tp2=null;
+  if(dir!==0 && a){ sl=entry-dir*a; tp1=entry+dir*a; tp2=entry+dir*a*1.8; }
+  var note;
+  if(wild) note="ATR is "+atrPct.toFixed(2)+"% of price — too wild to trust a flow read. WAIT.";
+  else if(dir!==0) note="Orderflow "+(dir===1?"BUY":"SELL")+" — score "+(score>0?"+":"")+score+" across the 4 reads, led by the estimated delta. Entry from the last close; stop = 1×ATR ("+fmt(a)+").";
+  else note="No orderflow setup: the reads don't line up (a call needs the delta read plus a score of ±2). Balanced flow is a result, not an error.";
+  return {dir:dir, score:score, conviction:conviction, entry:entry, sl:sl, tp1:tp1, tp2:tp2, atr:a, reads:reads, note:note,
+    metrics:{poc:poc, vah:vah, val:val, vwap:vwap, dRatio:dRatio, relVol:relVol, price:price}};
+}
+function renderOrderflow(res){
+  if(!$("ofDir") || !res) return;
+  var el=$("ofDir");
+  el.textContent= res.dir===1? "BUY" : (res.dir===-1? "SELL" : "WAIT");
+  el.className="sigdir "+(res.dir===1?"buy":(res.dir===-1?"sell":"wait"));
+  $("ofReason").textContent=res.note;
+  $("ofEntry").textContent=fmt(res.entry); $("ofSL").textContent=fmt(res.sl);
+  $("ofTP1").textContent=fmt(res.tp1); $("ofTP2").textContent=fmt(res.tp2);
+  var m=res.metrics;
+  $("ofDelta").textContent= m? ((m.dRatio>=0?"+":"")+(m.dRatio*100).toFixed(0)+"% of last-10 volume") : "—";
+  $("ofPOC").textContent= m? fmt(m.poc) : "—";
+  $("ofVA").textContent= m? (fmt(m.val)+" – "+fmt(m.vah)) : "—";
+  $("ofVWAP").textContent= m? fmt(m.vwap) : "—";
+  $("ofVol").textContent= m? (m.relVol.toFixed(1)+"× the 20-candle average") : "—";
+  $("ofReads").innerHTML= (res.reads||[]).map(function(r){
+    var cls=r.v===1?"buy":(r.v===-1?"sell":"wait");
+    var txt=r.v===1?"BUY":(r.v===-1?"SELL":"FLAT");
+    return '<div class="pfrow"><span class="vote '+cls+'" style="min-width:54px;text-align:center">'+txt+'</span><div><b>'+r.who+'</b><div class="small">'+esc(r.why)+'</div></div></div>';
+  }).join("");
+  $("ofConv").textContent= res.dir===0? "" : ("Conviction ~"+res.conviction+"% · score "+(res.score>0?"+":"")+res.score+" of 4 reads");
+}
 function runScan(){
   var st=(typeof shieldState==="function")? shieldState(Date.now()) : null;
   var inBlackout = !!(st && st.mode==="hot");
@@ -668,6 +778,9 @@ function runScan(){
     renderCouncil(res.votes);
     if(typeof updateAgreement==="function") updateAgreement();
     if(lastSignal.dir!==0){ saveSignal(lastSignal); maybeBeep(lastSignal.dir); }
+    var ofRes=ofSignal(cs);
+    renderOrderflow(ofRes);
+    if(ofRes.dir!==0){ saveSignal({time:when.getTime(), tf:TF, dir:ofRes.dir, entry:ofRes.entry, sl:ofRes.sl, tp1:ofRes.tp1, src:"Orderflow"}); }
   }).catch(function(e){ $("feedErr").textContent="Scan failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="↯ Run a scan"; });
 }
@@ -713,6 +826,7 @@ function renderMarket(){
   $("stAtr").textContent=fmt(a);
   $("stAtrSub").textContent=a? ((a/price*100).toFixed(2)+"% of price · "+TF+" bars") : "—";
   drawChart(cs.slice(-90));
+  if(cs.length>=60 && typeof ofSignal==="function") renderOrderflow(ofSignal(cs));
   if(typeof checkPriceAlerts==="function") checkPriceAlerts(price);
 }
 function drawChart(cs){
@@ -773,7 +887,7 @@ function renderHistory(){
   $("histBody").innerHTML=h.slice(0,40).map(function(s){
     var tag=s.dir===1?'<span class="tag buy">BUY</span>':'<span class="tag sell">SELL</span>';
     var rt=s.result==="WIN"?'<span class="tag win">WIN · TP1</span>':(s.result==="LOSS"?'<span class="tag loss">LOSS · SL</span>':'<span class="tag open">OPEN</span>');
-    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+(s.src?"🤖 ":"")+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
+    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+(s.src?(s.src==="Orderflow"?"🌊 ":"🤖 "):"")+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
   }).join("");
 }
 $("clearHist").addEventListener("click", function(){ if(confirm("Clear all saved signals and the record? This cannot be undone.")){ localStorage.removeItem(HKEY); renderHistory(); $("histBody").innerHTML='<tr><td colspan="8" class="note">History cleared.</td></tr>'; } });

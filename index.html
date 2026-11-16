@@ -179,7 +179,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 
     <!-- ============ TERMINAL ============ -->
     <section class="section active" id="sec-terminal">
-    <div class="warn"><div class="infohead"><span>ℹ️ <b>About this feed</b> — a real exchange XAU gold contract (not Exness XAUUSDc)</span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">Real gold market: candles are a <b>real exchange-traded XAU gold contract</b> that tracks spot XAU/USD trade by trade (no token) — OKX first, with Gate.io and Bitget stepping in automatically if one exchange can't be reached from your phone. The label under the chart always names the exchange you're actually seeing. The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div></div>
+    <div class="warn"><div class="infohead"><span>ℹ️ <b>About this feed</b> — a real exchange XAU gold contract (not Exness XAUUSDc)</span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">Real gold market: candles are a <b>real exchange-traded XAU gold contract</b> that tracks spot XAU/USD trade by trade (no token) — OKX first, with Gate.io and Bitget stepping in automatically if one exchange can't be reached from your phone. The price box always names the exchange you're actually seeing. The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div></div>
 
     <div class="warn" id="wkndBar" style="display:none"><div class="infohead"><span>🏖️ <b>Weekend — the real gold market is closed</b></span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div></div>
       <div class="shield ok" id="shield">
@@ -192,7 +192,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <p class="small" id="pfWhen"></p>
       </div>
       <div class="stats">
-        <div class="stat"><div class="k">Gold — XAU market</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div><div class="s" id="spotRef">Spot XAU/USD: …</div></div>
+        <div class="stat"><div class="k">Gold — XAU market</div><div class="v" id="stPrice">—</div><div class="s" id="stChange">—</div><div class="s" id="spotRef">Spot XAU/USD: …</div><div class="s" id="feedLine">Feed: connecting…</div></div>
         <div class="stat"><div class="k">H1 Bias</div><div class="v" id="stBias">—</div><div class="s" id="stBiasSub">EMA 21 / 55 + ADX</div></div>
         <div class="stat"><div class="k">RSI 14</div><div class="v" id="stRsi">—</div><div class="s" id="stRsiSub">—</div></div>
         <div class="stat"><div class="k">ATR 14</div><div class="v" id="stAtr">—</div><div class="s" id="stAtrSub">volatility</div></div>
@@ -513,9 +513,17 @@ function feedList(){
      kind of real exchange XAU gold contract and answer browsers directly. */
   feeds.push({name:"Gate.io · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1h","4h":"4h"}[tf];return "https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+bar+"&limit=200";}, parse:function(j){ if(!Array.isArray(j)) throw new Error("Gate.io error"); return j.map(function(k){return {t:+k.t*1000,o:+k.o,h:+k.h,l:+k.l,c:+k.c};}).sort(function(a,b){return a.t-b.t;}); }});
   feeds.push({name:"Bitget · XAU gold market", url:function(tf){var bar={"5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];return "https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+bar+"&productType=USDT-FUTURES&limit=200";}, parse:function(j){ if(!j.data) throw new Error(j.msg||"Bitget error"); return j.data.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]};}).sort(function(a,b){return a.t-b.t;}); }});
+  /* Remember which exchange actually answered THIS device last time and try it
+     first — otherwise a phone that can't reach OKX waits out two 10s timeouts
+     on every single page load before the backup even gets a chance. */
+  try{
+    var pref=localStorage.getItem("sp_feed_pref");
+    if(pref){ for(var i=0;i<feeds.length;i++){ if(feeds[i].name===pref && i>0){ var f0=feeds.splice(i,1)[0]; feeds.splice(key?1:0,0,f0); break; } } }
+  }catch(e){}
   return feeds;
 }
 var candles = [];       // ascending, includes the still-forming last candle
+var feedUsed = "";      // name of the exchange that served the last successful fetch
 var lastSignal = null;  // last scan result
 var beepOn = false, audioCtx = null;
 var $ = function(id){return document.getElementById(id);};
@@ -551,7 +559,7 @@ function fetchCandles(tf){
   feedList().forEach(function(f){
     chain = chain.catch(function(){
       return fetchT(f.url(tf), 10000).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
-        .then(function(j){ var cs=f.parse(j); if(!cs || cs.length<60) throw new Error("short data"); $("feedName").textContent=f.name; return cs; });
+        .then(function(j){ var cs=f.parse(j); if(!cs || cs.length<60) throw new Error("short data"); $("feedName").textContent=f.name; feedUsed=f.name; var fl=$("feedLine"); if(fl) fl.innerHTML="Feed: <b>"+f.name+"</b>"; try{ localStorage.setItem("sp_feed_pref", f.name); }catch(e){} return cs; });
     });
   });
   return chain;
@@ -1052,7 +1060,7 @@ function runPreflight(){
     var last=cs[cs.length-1];
     var ageMin=Math.max(0, Math.round((Date.now()-last.t)/60000));
     var lim=Math.max(10, (tfMs(TF)/60000)*2);
-    if(ageMin<=lim) return {st:"ok", label:"Price feed", txt:"Live — newest "+TF+" candle started "+ageMin+" min ago, price "+fmt(last.c)+"."};
+    if(ageMin<=lim) return {st:"ok", label:"Price feed", txt:"Live — newest "+TF+" candle started "+ageMin+" min ago, price "+fmt(last.c)+(feedUsed? " · via "+feedUsed : "")+"."};
     return {st:"warn", label:"Price feed", txt:"Newest candle is "+ageMin+" min old — the feed looks slow, or the market is very quiet."};
   }).catch(function(e){ return {st:"bad", label:"Price feed", txt:"Feed failed ("+e.message+") — check this device's internet."}; });
   var feedP=Promise.race([feedInner, new Promise(function(res){ setTimeout(function(){ res({st:"bad", label:"Price feed", txt:"The feed request hung and timed out — check this device's internet (or any VPN / Tailscale DNS), then run the check again."}); }, 24000); })]);

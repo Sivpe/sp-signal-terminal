@@ -246,6 +246,21 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <p class="note mt">Read this honestly: the feed gives <b>real volume per candle</b> from the exchange — but not tick-by-tick footprint data. The buy/sell split (“delta”) is <b>estimated</b> from where each candle closed inside its own range, and the profile spreads each candle's volume across the prices it covered. True footprint order flow needs CME gold futures tick data (ATAS / Bookmap class tools). So treat this as a volume-model second read and judge it by its record: its scan calls are logged (marked 🌊) and graded exactly like the desk's.</p>
       </div>
       <div class="card mt">
+        <h3>🎗️ BBMA signal</h3>
+        <div id="bbDir" class="sigdir">🎗️ BBMA: WAIT</div>
+        <p id="bbReason" class="small">Waiting for market data…</p>
+        <div id="bbReads"></div>
+        <div class="kv"><span>Entry</span><b id="bbEntry">—</b></div>
+        <div class="kv"><span>Stop loss (1×ATR)</span><b class="sl" id="bbSL">—</b></div>
+        <div class="kv"><span>Take profit 1 (1.0R)</span><b class="tp" id="bbTP1">—</b></div>
+        <div class="kv"><span>Take profit 2 (1.8R)</span><b class="tp" id="bbTP2">—</b></div>
+        <div class="kv"><span>Setup</span><b id="bbSetup">—</b></div>
+        <div class="kv"><span>Reentry zone (MA5/10)</span><b id="bbZone">—</b></div>
+        <div class="kv"><span>Mid Bollinger Band</span><b id="bbMid">—</b></div>
+        <div class="kv"><span>EMA 50</span><b id="bbE50">—</b></div>
+        <p class="note mt">The BBMA system from your PDF (Brocamkh): Bollinger Band 20/2 + LWMA 5/10 on High and Low + EMA50. It never chases a breakout — a signal appears only when a CSM (a close outside the band) is followed by the <b>reentry</b>: price pulls back to the MA5/10 zone and closes back in the setup direction, within 12 candles and without closing back through the Mid-BB. These are exactly the rules measured in the 2026-11-16 test (skeleton ≈ break-even on 1H, negative on 15m after spread) and in the Backtest tab's 🎗️ BBMA engine — the discretionary part, picking only clean structures on the bigger timeframes, stays with you. Updates with the feed; on <b>Run a scan</b> a BUY/SELL is logged to Signals &amp; Record (marked 🎗️) and graded like the desk's.</p>
+      </div>
+      <div class="card mt">
         <h3>🔔 Price-level alerts <button class="ghostbtn" id="paToggle">Price beeps: OFF</button></h3>
         <p class="note">Set a gold price. While this page is open on screen, crossing that price beeps and buzzes — up-cross rising tones, down-cross falling tones (same as your signal beeps). Each level fires <b>once</b>, then marks itself HIT. Foreground only: a closed or backgrounded tab cannot beep — that limit is the browser's, and your MT5 notifier stays the tool for away-from-phone alerts.</p>
         <div class="pillrow mt">
@@ -297,7 +312,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     <section class="section" id="sec-backtest">
       <div class="card">
         <h3>🧪 Backtest my desk</h3>
-        <p class="note">Four engines: the three signal strategies share one honest simulator (closed candles only, one trade at a time, stop = 1×ATR — custom: your choice — exit at the stop or at your chosen <b>target</b>); <b>Smart Grid Hunter</b> runs as a full money simulation with its own panel below. If one candle touches both, the stop counts first (the worse case). <b>Spread is charged on every trade</b> at the pips you set above (your live Exness spread is ~24 pips) — slippage is not charged, and this is the OKX feed, not Exness, so results are still a little optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset.</p>
+        <p class="note">Six engines: the five signal strategies share one honest simulator (closed candles only, one trade at a time, stop = 1×ATR — custom: your choice — exit at the stop or at your chosen <b>target</b>); <b>Smart Grid Hunter</b> runs as a full money simulation with its own panel below. If one candle touches both, the stop counts first (the worse case). <b>Spread is charged on every trade</b> at the pips you set above (your live Exness spread is ~24 pips) — slippage is not charged, and history comes from the exchange feeds (OKX / Gate.io / Bitget, whichever answers this device), not Exness, so results are still a little optimistic. <b>Desk</b> = the site's live council rules (bias from the tested timeframe; live 15m scans use the H1 bias). <b>Scalp Panel</b> = your MT5 indicator's exact rules — H1 bias (EMA 21/55 + ADX 22, with +DI/−DI) over signal-timeframe triggers (EMA 9/21 pullback zone, 20-bar breakout, range edges); its spread/session/news filters can't be rebuilt from candles, so they are not in the test. <b>Custom</b> = build your own from the blocks below, or start from a Muse preset — and if you describe a strategy to Muse in chat, it can be added here as a preset. <b>Orderflow</b> = the Terminal card's exact volume-model rules (estimated delta + profile + VWAP + events) run bar by bar — it needs candle volume, so a volume-less feed gives it nothing to say. <b>BBMA</b> = the mechanical core of the BBMA system: CSM close outside the Bollinger Band with EMA50 agreeing, entry only on the reentry retest of the MA5/10 zone within 12 candles, setup cancelled by a close back through the Mid-BB — the discretionary multi-timeframe selection a human BBMA trader adds is not in the machine, and the 2026-11-16 measurement of these rules was ≈ break-even on 1H and negative on 15m after spread.</p>
         <div class="pillrow mt">
           <div class="tfbtns" id="btTfBtns">
             <button data-btf="1m">1m</button><button data-btf="5m">5m</button><button data-btf="15m" class="active">15m</button><button data-btf="1h">1h</button><button data-btf="4h">4h</button>
@@ -315,7 +330,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
         <div class="pillrow mt">
           <span class="small">Strategy</span>
           <div class="tfbtns" id="btStratBtns">
-            <button data-bstrat="desk" class="active">🖥️ Desk council</button><button data-bstrat="scalp">⚡ Scalp Panel</button><button data-bstrat="custom">🧩 Custom builder</button><button data-bstrat="grid">🤖 Smart Grid Hunter</button>
+            <button data-bstrat="desk" class="active">🖥️ Desk council</button><button data-bstrat="scalp">⚡ Scalp Panel</button><button data-bstrat="custom">🧩 Custom builder</button><button data-bstrat="grid">🤖 Smart Grid Hunter</button><button data-bstrat="orderflow">🌊 Orderflow</button><button data-bstrat="bbma">🎗️ BBMA</button>
           </div>
           <label class="small">Target (reward vs 1 risk)
             <select id="btRR" style="background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px">
@@ -869,6 +884,9 @@ function runScan(){
     var ofRes=ofSignal(cs);
     renderOrderflow(ofRes);
     if(ofRes.dir!==0){ saveSignal({time:when.getTime(), tf:TF, dir:ofRes.dir, entry:ofRes.entry, sl:ofRes.sl, tp1:ofRes.tp1, src:"Orderflow"}); }
+    var bbRes=bbmaSignal(cs);
+    renderBBMA(bbRes);
+    if(bbRes.dir!==0){ saveSignal({time:when.getTime(), tf:TF, dir:bbRes.dir, entry:bbRes.entry, sl:bbRes.sl, tp1:bbRes.tp1, tp2:bbRes.tp2, src:"BBMA"}); }
   }).catch(function(e){ $("feedErr").textContent="Scan failed: "+e.message; })
   .finally(function(){ btn.disabled=false; btn.textContent="↯ Run a scan"; });
 }
@@ -915,6 +933,7 @@ function renderMarket(){
   $("stAtrSub").textContent=a? ((a/price*100).toFixed(2)+"% of price · "+TF+" bars") : "—";
   drawChart(cs.slice(-90));
   if(cs.length>=60 && typeof ofSignal==="function") renderOrderflow(ofSignal(cs));
+  if(cs.length>=70 && typeof bbmaSignal==="function") renderBBMA(bbmaSignal(cs));
   if(typeof checkPriceAlerts==="function") checkPriceAlerts(price);
 }
 function drawChart(cs){
@@ -975,7 +994,7 @@ function renderHistory(){
   $("histBody").innerHTML=h.slice(0,40).map(function(s){
     var tag=s.dir===1?'<span class="tag buy">BUY</span>':'<span class="tag sell">SELL</span>';
     var rt=s.result==="WIN"?'<span class="tag win">WIN · TP1</span>':(s.result==="LOSS"?'<span class="tag loss">LOSS · SL</span>':'<span class="tag open">OPEN</span>');
-    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+(s.src?(s.src==="Orderflow"?"🌊 ":"🤖 "):"")+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
+    return "<tr><td>"+new Date(s.time).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+"</td><td>"+(s.src?(s.src==="Orderflow"?"🌊 ":(s.src==="BBMA"?"🎗️ ":"🤖 ")):"")+s.tf+"</td><td>"+tag+"</td><td>"+fmt(s.entry)+"</td><td>"+fmt(s.sl)+"</td><td>"+fmt(s.tp1)+"</td><td>"+rt+"</td><td>"+(s.r===null?"—":((s.r>0?"+":"")+s.r))+"</td></tr>";
   }).join("");
 }
 $("clearHist").addEventListener("click", function(){ if(confirm("Clear all saved signals and the record? This cannot be undone.")){ localStorage.removeItem(HKEY); renderHistory(); $("histBody").innerHTML='<tr><td colspan="8" class="note">History cleared.</td></tr>'; } });
@@ -1594,30 +1613,82 @@ setInterval(function(){ refresh(); fetchBias(); }, 60000);
 /* ================= backtest ================= */
 var btTF="15m";
 $("btTfBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-btf]"); if(!b) return; btTF=b.getAttribute("data-btf"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b); });
+function histProviders(tf){
+  /* Backtest history from the same exchanges as the live feed, with volume.
+     The exchange that last answered this device (sp_feed_pref) goes first,
+     so a phone that cannot reach OKX starts with Gate.io instead of timing out. */
+  var stepMs=tfMs(tf), stepS=stepMs/1000;
+  var okxBar={"1m":"1m","5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];
+  var okx={name:"OKX", get:function(total){
+    var byT={};
+    function page(after){
+      var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+okxBar+"&limit=300"+(after?("&after="+after):"");
+      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
+        .then(function(j){
+          var rows=j.data||[];
+          rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
+          if(rows.length===300 && Object.keys(byT).length<total){
+            var oldest=Math.min.apply(null, rows.map(function(k){ return +k[0]; }));
+            return page(oldest);
+          }
+          return Object.keys(byT).map(function(k){ return byT[k]; }).sort(function(a,b){ return a.t-b.t; }).slice(-total);
+        });
+    }
+    return page(null);
+  }};
+  var gate={name:"Gate.io", get:function(total){
+    var byT={}, end=Math.floor(Date.now()/1000);
+    function chunk(){
+      var from=end-1000*stepS;
+      var u="https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+tf+"&from="+from+"&to="+end;
+      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Gate.io HTTP "+r.status); return r.json(); })
+        .then(function(j){
+          if(!Array.isArray(j)) throw new Error("Gate.io error");
+          j.forEach(function(k){ byT[+k.t*1000]={t:+k.t*1000, o:+k.o, h:+k.h, l:+k.l, c:+k.c, v:+k.v||0}; });
+          var got=Object.keys(byT).length;
+          if(j.length>=100 && got<total){ end=from-stepS; return chunk(); }
+          return Object.keys(byT).map(function(k){ return byT[k]; }).sort(function(a,b){ return a.t-b.t; }).slice(-total);
+        });
+    }
+    return chunk();
+  }};
+  var bitget={name:"Bitget", get:function(total){
+    var byT={}, end=Date.now();
+    function chunk(){
+      var start=end-1000*stepMs;
+      var u="https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+tf+"&productType=USDT-FUTURES&startTime="+start+"&endTime="+end+"&limit=1000";
+      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Bitget HTTP "+r.status); return r.json(); })
+        .then(function(j){
+          if(!j.data) throw new Error(j.msg||"Bitget error");
+          j.data.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
+          var got=Object.keys(byT).length;
+          if(j.data.length>=100 && got<total){ end=start-stepMs; return chunk(); }
+          return Object.keys(byT).map(function(k){ return byT[k]; }).sort(function(a,b){ return a.t-b.t; }).slice(-total);
+        });
+    }
+    return chunk();
+  }};
+  var list=[okx, gate, bitget];
+  var pref=""; try{ pref=localStorage.getItem("sp_feed_pref")||""; }catch(e){}
+  list.sort(function(a,b){ return (pref.indexOf(a.name)===0? 0:1) - (pref.indexOf(b.name)===0? 0:1); });
+  return list;
+}
 function fetchHistory(tf, total){
   var key=tdKey();
   if(key){
     var iv={"1m":"1min","5m":"5min","15m":"15min","1h":"1h","4h":"4h"}[tf];
     return fetch("https://api.twelvedata.com/time_series?symbol=XAU/USD&interval="+iv+"&outputsize="+total+"&apikey="+encodeURIComponent(key))
       .then(function(r){ return r.json(); })
-      .then(function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){ return {t:Date.parse(v.datetime.replace(" ","T")+"Z"), o:+v.open, h:+v.high, l:+v.low, c:+v.close}; }).reverse(); });
+      .then(function(j){ if(!j.values) throw new Error(j.message||"Twelve Data error"); return j.values.map(function(v){ return {t:Date.parse(v.datetime.replace(" ","T")+"Z"), o:+v.open, h:+v.high, l:+v.low, c:+v.close, v:parseFloat(v.volume)||0}; }).reverse(); });
   }
-  var bar={"1m":"1m","5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];
-  var byT={};
-  function page(after){
-    var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300"+(after?("&after="+after):"");
-    return fetch(u).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
-      .then(function(j){
-        var rows=j.data||[];
-        rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4]}; });
-        if(rows.length===300 && Object.keys(byT).length<total){
-          var oldest=Math.min.apply(null, rows.map(function(k){ return +k[0]; }));
-          return page(oldest);
-        }
-        return Object.keys(byT).map(function(k){ return byT[k]; }).sort(function(a,b){ return a.t-b.t; }).slice(-total);
-      });
+  var provs=histProviders(tf);
+  function attempt(idx){
+    return provs[idx].get(total).then(function(cs){
+      if(!cs || cs.length<Math.min(120, total)) throw new Error(provs[idx].name+" returned too little history");
+      return cs;
+    }).catch(function(e){ if(idx+1<provs.length) return attempt(idx+1); throw e; });
   }
-  return page(null);
+  return attempt(0);
 }
 /* ---- per-bar indicator series (Wilder), for the Scalp + Custom engines ---- */
 function rsiSeries(closes, n){ n=n||14; var out=new Array(closes.length).fill(null); if(closes.length<n+1) return out;
@@ -1988,6 +2059,9 @@ function simulate(cs, tf, opts){
     var A=adxSeries(cs,14);
     S={e21:e21, e55:e55, rsi:rsiSeries(closes,14), atr:atrSeries(cs,14), adx:A.adx};
   }
+  if(strat==="bbma"){
+    S={bbmaSig:bbmaWalk(cs).sigAt};
+  }
   while(i<cs.length){
     var sig=null;
     if(strat==="desk"){
@@ -1997,8 +2071,13 @@ function simulate(cs, tf, opts){
     } else if(strat==="scalp"){
       var b=biasAtClose(h1b.cs, h1b.arr, cs[i].t+ms, h1b.same);
       sig=scalpSignal(cs, i, S, b);
-    } else {
+    } else if(strat==="custom"){
       sig=customSignal(cs, i, S, opts.custom);
+    } else if(strat==="orderflow"){
+      var ofr=ofSignal(cs.slice(0,i+1));
+      if(ofr.dir!==0 && ofr.sl) sig={dir:ofr.dir, entry:ofr.entry, sl:ofr.sl};
+    } else if(strat==="bbma"){
+      sig=S.bbmaSig[i]||null;
     }
     if(!sig){ i++; continue; }
     var dir=sig.dir, entry=sig.entry, risk=Math.abs(entry-sig.sl), sl=sig.sl;
@@ -2066,7 +2145,7 @@ function drawEquity(trades){
   ctx.fillStyle="#9aa4b0"; ctx.font="11px sans-serif"; ctx.fillText("Equity curve · cumulative R · ends "+(s>=0?"+":"")+s.toFixed(1)+"R", pad, 14);
 }
 var btStrat="desk";
-var STRAT_LABELS={desk:"🖥️ Desk council", scalp:"⚡ Scalp Panel", custom:"🧩 Custom builder", grid:"🤖 Smart Grid Hunter"};
+var STRAT_LABELS={desk:"🖥️ Desk council", scalp:"⚡ Scalp Panel", custom:"🧩 Custom builder", grid:"🤖 Smart Grid Hunter", orderflow:"🌊 Orderflow", bbma:"🎗️ BBMA"};
 $("btStratBtns").addEventListener("click", function(e){ var b=e.target.closest("[data-bstrat]"); if(!b) return; btStrat=b.getAttribute("data-bstrat"); var bs=this.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b); $("btCustom").style.display = btStrat==="custom"? "block":"none"; $("btGrid").style.display = btStrat==="grid"? "block":"none"; });
 function setCustomUI(p){
   $("cuDir").value=p.dirMode; $("cuTrend").checked=p.trend; $("cuRsi").checked=p.rsi; $("cuRsiX").value=p.rsiX;
@@ -2132,25 +2211,68 @@ $("btRun").addEventListener("click", function(){
 /* ---- chosen-stretch fetch: OKX history bounded to [fromMs, toMs) ---- */
 function fetchWindow(tf, fromMs, toMs){
   var bar={"1m":"1m","5m":"5m","15m":"15m","1h":"1H","4h":"4H"}[tf];
-  var byT={};
-  function done(){
+  var stepMs=tfMs(tf), stepS=stepMs/1000;
+  function fin(byT){
     return Object.keys(byT).map(function(k){ return byT[k]; })
       .filter(function(c){ return c.t>=fromMs && c.t<toMs; })
       .sort(function(a,b){ return a.t-b.t; });
   }
-  function page(after){
-    var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300&after="+after;
-    return fetch(u).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
-      .then(function(j){
-        var rows=j.data||[];
-        rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4]}; });
-        if(!rows.length) return done();
-        var oldest=Math.min.apply(null, rows.map(function(k){ return +k[0]; }));
-        if(oldest>fromMs && rows.length===300) return page(oldest);
-        return done();
-      });
+  function okxWin(){
+    var byT={};
+    function page(after){
+      var u="https://www.okx.com/api/v5/market/history-candles?instId=XAU-USDT-SWAP&bar="+bar+"&limit=300&after="+after;
+      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("OKX HTTP "+r.status); return r.json(); })
+        .then(function(j){
+          var rows=j.data||[];
+          rows.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
+          if(!rows.length) return fin(byT);
+          var oldest=Math.min.apply(null, rows.map(function(k){ return +k[0]; }));
+          if(oldest>fromMs && rows.length===300) return page(oldest);
+          return fin(byT);
+        });
+    }
+    return page(toMs);
   }
-  return page(toMs);
+  function gateWin(){
+    var byT={}, endS=Math.floor(toMs/1000), fromS=Math.floor(fromMs/1000);
+    function chunk(){
+      var from=Math.max(fromS, endS-1000*stepS);
+      var u="https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=XAU_USDT&interval="+tf+"&from="+from+"&to="+endS;
+      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Gate.io HTTP "+r.status); return r.json(); })
+        .then(function(j){
+          if(!Array.isArray(j)) throw new Error("Gate.io error");
+          j.forEach(function(k){ byT[+k.t*1000]={t:+k.t*1000, o:+k.o, h:+k.h, l:+k.l, c:+k.c, v:+k.v||0}; });
+          if(from>fromS && j.length){ endS=from-stepS; return chunk(); }
+          return fin(byT);
+        });
+    }
+    return chunk();
+  }
+  function bitgetWin(){
+    var byT={}, end=toMs;
+    function chunk(){
+      var start=Math.max(fromMs, end-1000*stepMs);
+      var u="https://api.bitget.com/api/v2/mix/market/candles?symbol=XAUUSDT&granularity="+tf+"&productType=USDT-FUTURES&startTime="+start+"&endTime="+end+"&limit=1000";
+      return fetchT(u, {}, 10000).then(function(r){ if(!r.ok) throw new Error("Bitget HTTP "+r.status); return r.json(); })
+        .then(function(j){
+          if(!j.data) throw new Error(j.msg||"Bitget error");
+          j.data.forEach(function(k){ byT[+k[0]]={t:+k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]||0}; });
+          if(start>fromMs && j.data.length){ end=start-stepMs; return chunk(); }
+          return fin(byT);
+        });
+    }
+    return chunk();
+  }
+  var provs=[{name:"OKX", get:okxWin}, {name:"Gate.io", get:gateWin}, {name:"Bitget", get:bitgetWin}];
+  var pref=""; try{ pref=localStorage.getItem("sp_feed_pref")||""; }catch(e){}
+  provs.sort(function(a,b){ return (pref.indexOf(a.name)===0? 0:1) - (pref.indexOf(b.name)===0? 0:1); });
+  function attempt(idx){
+    return provs[idx].get().then(function(cs){
+      if(!cs || !cs.length) throw new Error(provs[idx].name+" returned no candles in the window");
+      return cs;
+    }).catch(function(e){ if(idx+1<provs.length) return attempt(idx+1); throw e; });
+  }
+  return attempt(0);
 }
 /* ---- EA nonstop stretch test: one chosen day (or 5) on 1m ---- */
 (function(){

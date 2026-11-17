@@ -199,9 +199,9 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       </div>
       <div class="grid">
         <div class="card">
-          <h3>Live chart — <span id="chartTf" style="color:var(--txt)">15m</span> <span class="live">● LIVE</span></h3>
+          <h3>Live chart — <span id="chartTf" style="color:var(--txt)">15m</span> <span class="live" id="livePill">● LIVE</span> <span class="small" id="cdNext" style="text-transform:none;letter-spacing:0"></span> <button class="ghostbtn" id="liveToggle">Pause live</button></h3>
           <canvas id="chart"></canvas>
-          <div class="small mt">Gold line = EMA 21 · grey line = EMA 55 · shaded band = last signal entry zone. Chart uses the last <b>closed</b> candle for all readings — no repainting.</div>
+          <div class="small mt">Gold line = EMA 21 · grey line = EMA 55 · shaded band = last signal entry zone. The last candle is <b>still forming</b>: it moves with the live price (checked every 2 seconds from the same feed that served the chart) and is outlined in white, with a dashed line at the live price. It is never used for readings — the desk, Orderflow and BBMA read the last <b>closed</b> candle only, no repainting.</div>
           <div class="card mt" style="background:var(--panel2)">
             <h3>Analyst council — how the desk voted</h3>
             <div class="council" id="council">
@@ -616,6 +616,57 @@ function refresh(){
     $("feedErr").textContent="Feed error: "+e.message+" — check your connection and press Run a scan to retry.";
   });
 }
+/* ================= live chart ticks =================
+   Every 2s, pull the last price from the SAME exchange that served the
+   candles and move the still-forming candle with it (TradingView-style).
+   Readings stay on closed candles: closedOnly() never includes the
+   forming candle, so the desk / Orderflow / BBMA cannot repaint. */
+var liveOn=true, livePrice=null;
+function tickSource(){
+  if(feedUsed.indexOf("OKX")===0) return {u:"https://www.okx.com/api/v5/market/ticker?instId=XAU-USDT-SWAP", p:function(j){ var d=(j.data||[])[0]||{}; return +d.last; }};
+  if(feedUsed.indexOf("Gate")===0) return {u:"https://api.gateio.ws/api/v4/futures/usdt/tickers?contract=XAU_USDT", p:function(j){ var d=(j||[])[0]||{}; return +d.last; }};
+  if(feedUsed.indexOf("Bitget")===0) return {u:"https://api.bitget.com/api/v2/mix/market/ticker?symbol=XAUUSDT&productType=USDT-FUTURES", p:function(j){ var d=((j.data||[])[0]||{}); return +d.lastPr; }};
+  return null; /* Twelve Data spot: no tick feed — the chart updates on the 60s refresh */
+}
+function drawLive(){
+  if(!candles.length) return;
+  var cs=closedOnly(candles);
+  if(cs.length<30) return;
+  var disp=cs.slice(-89);
+  var last=candles[candles.length-1];
+  if(last && last.t+tfMs(TF)>Date.now()) disp.push(last);
+  drawChart(disp, true);
+}
+function liveTick(){
+  var ms=tfMs(TF), now=Date.now(), start=Math.floor(now/ms)*ms;
+  var cd=$("cdNext");
+  if(cd){ var rem=Math.max(0, start+ms-now), s=Math.ceil(rem/1000);
+    cd.textContent = liveOn? ("· candle closes in "+Math.floor(s/60)+":"+String(s%60).padStart(2,"0")) : ""; }
+  if(!liveOn || document.hidden || !candles.length) return;
+  var src=tickSource(); if(!src) return;
+  fetchT(src.u, 4000).then(function(r){ if(!r.ok) throw new Error("tick HTTP "+r.status); return r.json(); })
+    .then(function(j){
+      var price=src.p(j);
+      if(!isFinite(price) || price<=0) return;
+      var last=candles[candles.length-1]; if(!last) return;
+      if(last.t===start){ last.c=price; if(price>last.h) last.h=price; if(price<last.l) last.l=price; }
+      else if(last.t===start-ms){ candles.push({t:start, o:last.c, h:Math.max(last.c,price), l:Math.min(last.c,price), c:price, v:0}); }
+      else return; /* series is stale (e.g. weekend gap) — wait for the 60s refresh */
+      var el=$("stPrice");
+      if(el){ el.textContent=fmt(price); if(livePrice!==null && price!==livePrice) el.style.color= price>livePrice? "var(--green)" : "var(--red)"; }
+      livePrice=price;
+      drawLive();
+      if(typeof checkPriceAlerts==="function") checkPriceAlerts(price);
+    }).catch(function(){});
+}
+setInterval(liveTick, 2000);
+$("liveToggle").addEventListener("click", function(){
+  liveOn=!liveOn;
+  this.textContent= liveOn? "Pause live" : "Resume live";
+  var pill=$("livePill");
+  if(pill){ pill.textContent= liveOn? "● LIVE" : "○ PAUSED"; pill.style.opacity= liveOn? "1" : "0.45"; }
+  if(liveOn) liveTick(); else { var cd=$("cdNext"); if(cd) cd.textContent=""; if(candles.length) renderMarket(); }
+});
 function fetchBias(){
   fetchCandles("1h").then(function(cs){
     var cl=closedOnly(cs).map(function(c){return c.c;});
@@ -936,7 +987,7 @@ function renderMarket(){
   if(cs.length>=70 && typeof bbmaSignal==="function") renderBBMA(bbmaSignal(cs));
   if(typeof checkPriceAlerts==="function") checkPriceAlerts(price);
 }
-function drawChart(cs){
+function drawChart(cs, liveMode){
   var cv=$("chart"), dpr=window.devicePixelRatio||1;
   var W=cv.clientWidth, H=cv.clientHeight;
   cv.width=W*dpr; cv.height=H*dpr;
@@ -958,6 +1009,11 @@ function drawChart(cs){
     ctx.fillRect(X(i)-bw/2, Y(Math.max(c.o,c.c)), bw, Math.max(1, Math.abs(Y(c.o)-Y(c.c)))); });
   function line(arr,color){ ctx.strokeStyle=color; ctx.lineWidth=1.6; ctx.beginPath(); arr.forEach(function(p,i){ if(p===null)return; if(i===0)ctx.moveTo(X(i),Y(p)); else ctx.lineTo(X(i),Y(p)); }); ctx.stroke(); ctx.lineWidth=1; }
   line(e21,"#e8b64c"); line(e55,"#8b96ab");
+  if(liveMode && cs.length){ var lc=cs[cs.length-1], li=cs.length-1;
+    ctx.strokeStyle="rgba(255,255,255,0.9)"; ctx.lineWidth=1.2;
+    ctx.strokeRect(X(li)-bw/2, Y(Math.max(lc.o,lc.c)), bw, Math.max(1, Math.abs(Y(lc.o)-Y(lc.c))));
+    ctx.strokeStyle= lc.c>=lc.o? "#2fbf71" : "#f04b5d"; ctx.setLineDash([3,3]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,Y(lc.c)); ctx.lineTo(W-56,Y(lc.c)); ctx.stroke(); ctx.setLineDash([]); }
   if(lastSignal && lastSignal.dir!==0){ ctx.strokeStyle= lastSignal.dir===1?"#2fbf71":"#f04b5d"; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(0,Y(lastSignal.entry)); ctx.lineTo(W-56,Y(lastSignal.entry)); ctx.stroke(); ctx.setLineDash([]); }
 }
 window.addEventListener("resize", function(){ if(candles.length) renderMarket(); });

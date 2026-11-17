@@ -150,5 +150,39 @@
       "Flip: beat of +0.5%+ with a strong control group -> SELL lean, $3,800 next; miss at 0.0% or below, or a falling control group -> BUY lean, $3,900-3,920 next.",
       "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
     ]
+  },
+  {
+    "ts": "2026-11-17T20:40:00+07:00",
+    "kind": "post",
+    "event": "ADP Employment Change (4-week average)",
+    "impact": "medium",
+    "time_label": "Tue 17 Nov · 20:15 Phnom Penh",
+    "call": "NO TRADE",
+    "headline": "ADP jobs pulse beat the last print (24K vs 20K) — small, lagged, no trade",
+    "body": [
+      "Actual: 24K average weekly gain vs previous 20K (last print 19.75K for the window ending 24 Oct). No forecast was published for this weekly pulse.",
+      "Verdict: a modest beat vs the previous window — private hiring picked up slightly, but this is a lagged 4-week moving average, not a fresh payroll count.",
+      "What it means for gold: slightly stronger jobs is a small dollar-positive, gold-negative nudge — but too small and too stale to move the market on its own.",
+      "Gold's reaction: no specific move reported on this print — gold was holding ~$3,855-3,865 around the release, just above the key $3,850 support (Monday's low $3,832.70).",
+      "Levels: support $3,850, then $3,832; resistance $3,880, then $3,895-3,900. The real test came 15 minutes later: US Retail Sales at 20:30 Phnom Penh.",
+      "Call: NO TRADE — a lagged average with no consensus is not a trading signal."
+    ]
+  },
+  {
+    "ts": "2026-11-17T20:40:00+07:00",
+    "kind": "post",
+    "event": "US Retail Sales (MoM, Oct)",
+    "impact": "high",
+    "time_label": "Tue 17 Nov · 20:30 Phnom Penh",
+    "call": "NO TRADE",
+    "headline": "Retail Sales in line on the headline, but the core beat — consumer still spending, no relief for gold",
+    "body": [
+      "Actual: headline +0.2% MoM vs +0.2% forecast, previous +0.8%. Ex-autos +0.6% vs +0.4% forecast (beat). Control group +0.60% vs +0.10% previous — a strong beat. YoY +6.8% vs +6.3%.",
+      "Verdict: headline in line, core and control group beat — the US consumer is still spending, and spending is what feeds the December hike case.",
+      "What it means for gold: no relief — a resilient consumer keeps the December 25bp hike ~95-96% priced, the dollar near a 19-month high and the 10-year yield above 5%.",
+      "Gold's reaction: no specific post-print move reported yet in the wires — gold was ~$3,855-3,865 around the release, hugging the key $3,850 support after Monday's low of $3,832.70.",
+      "Levels: support $3,850, then $3,832, then $3,800. Resistance $3,880, then $3,895-3,900, then $3,920. A break below $3,832 opens $3,800; a reclaim of $3,900 would ease the pressure.",
+      "Call: NO TRADE — the headline was exactly in line, so there is no new edge to chase at a 14-month low. Caution: the first minutes after the print are spike territory — no manual scalps, per the standing rule."
+    ]
   }
 ]

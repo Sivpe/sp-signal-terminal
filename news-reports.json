@@ -132,5 +132,23 @@
       "Flip: a jump in the average above ~25K would back the dollar and push gold toward $3,845 support; a drop below ~15K would ease dollar pressure and open $3,880.",
       "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
     ]
+  },
+  {
+    "ts": "2026-11-17T20:20:00+07:00",
+    "kind": "pre",
+    "event": "US Retail Sales (MoM, Oct)",
+    "impact": "high",
+    "time_label": "Tue 17 Nov · 20:30 Phnom Penh",
+    "call": "NO TRADE",
+    "headline": "US Retail Sales in ~10 min — soft consensus already priced, gold pinned on $3,850 support",
+    "body": [
+      "Forecast vs previous: headline +0.2% vs +0.8% in September; ex-autos +0.4% vs +0.9%; control group +0.4% vs +0.1%.",
+      "Gold ~$3,865, holding just above key $3,850 support (Monday's low $3,832.70). Resistance $3,880-3,890, then $3,900-3,920.",
+      "The consensus is already a sharp slowdown, so an in-line print is mostly priced in and changes little on its own.",
+      "A beat (+0.5% or more) would lift the dollar — already at a 19-month high near 103.6 — and December hike bets (~96-100% priced for 25bp) and push gold down; a miss (near 0% or a weak control group) would ease hike bets and let gold bounce.",
+      "Trend stays down: gold -6.5% in 20 days, below all major moving averages, 10-year yield above 5%. No edge in guessing long or short before the number.",
+      "Flip: beat of +0.5%+ with a strong control group -> SELL lean, $3,800 next; miss at 0.0% or below, or a falling control group -> BUY lean, $3,900-3,920 next.",
+      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
+    ]
   }
 ]

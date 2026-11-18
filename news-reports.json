@@ -270,5 +270,22 @@
       "Call: NO TRADE — mixed data gives the dollar no clear direction, and a housing print won't turn gold's rate-driven slide below $3,800.",
       "Levels to watch: support $3,757 (today's low), then $3,750; resistance $3,800, then $3,835–$3,860. Next event: FOMC minutes Thu 02:00 Phnom Penh."
     ]
+  },
+  {
+    "ts": "2026-11-18T21:49:00+07:00",
+    "kind": "pre",
+    "event": "Pending Home Sales MoM (Oct)",
+    "impact": "medium",
+    "time_label": "Wed 18 Nov · 22:00 Phnom Penh",
+    "call": "NO TRADE",
+    "headline": "Pending home sales due in ~10 min — forecast a smaller fall (−2.1% vs −7.3%); gold at a 13-month low, Fed story dominates",
+    "body": [
+      "Forecast vs previous: −2.1% MoM expected (consensus around −2.0%) vs −7.3% in September — a smaller fall, but sales are still at their slowest pace since 2010, with 30-year mortgage rates above 7%.",
+      "Gold is ~$3,763–3,779, down ~2% today at a fresh 13-month low below $3,800 (day low ~$3,757). Support $3,757, then $3,750; resistance $3,800, then $3,810–$3,835.",
+      "The driver is the Fed, not housing: DXY at 19-month highs (~103.8), the 10-year ~5.10%, and a December 25bp hike ~95% priced. Pending home sales is second-tier data that almost never moves gold on its own.",
+      "A beat (a smaller fall, or a rise) would slightly soften the dollar and could lift gold a touch; a miss would deepen the weak-housing story — either way the move, if any, is small and fades fast.",
+      "Flip: a big surprise either way (a rise, or a fall worse than −5%) together with gold breaking $3,800 or losing $3,750 — even then, wait for the move to settle rather than chase it.",
+      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule. The real event tonight is the FOMC minutes, Thu 02:00 Phnom Penh."
+    ]
   }
 ]

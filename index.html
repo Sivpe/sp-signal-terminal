@@ -47,6 +47,9 @@ button{font-family:inherit;cursor:pointer}
 .tfbtns{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .tfbtns button{background:none;border:0;color:var(--dim);padding:7px 14px;font-size:13.5px}
 .tfbtns button.active{background:var(--gold);color:#171106;font-weight:700}
+#btStratBtns{flex-wrap:wrap;overflow:visible;background:none;border:0;gap:8px;width:100%}
+#btStratBtns button{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 10px;flex:1 1 30%;white-space:normal;line-height:1.25}
+#btStratBtns button.active{background:var(--gold);color:#171106;font-weight:700}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
 .mnav{display:none}
 @media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}

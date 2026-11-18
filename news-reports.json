@@ -235,5 +235,23 @@
       "Levels to watch: support $3,760, then the $3,700s; resistance $3,800 (now overhead) and $3,880.",
       "Next up: Bailey speaks again at 22:00 Phnom Penh (high impact) — his first chance to react to today's UK inflation numbers — and Lagarde at 21:25."
     ]
+  },
+  {
+    "ts": "2026-11-18T20:17:34+07:00",
+    "kind": "pre",
+    "event": "US Housing Starts & Building Permits (Oct)",
+    "impact": "medium",
+    "time_label": "Wed 18 Nov · 20:30 Phnom Penh",
+    "call": "NO TRADE",
+    "headline": "Housing data due in ~13 min — forecasts point to a small starts rebound (1.25M) and softer permits (1.38M); gold already down ~2.6% to near one-year lows on the Fed/dollar story",
+    "body": [
+      "Forecast vs previous: Housing Starts 1.25M expected (WSJ median, +2.4% MoM) vs 1.221M in September; Building Permits 1.38M expected (-1.4%) vs 1.40M.",
+      "Gold is around $3,750, down about 2.6% today and near its session low ($3,746) — its lowest in over a year — with support near $3,717 and resistance at $3,810–$3,835.",
+      "The driver is the Fed/dollar story, not housing: the dollar is at 19-month highs (~103.6), the 10-year is near 5.1%, and a December 25bp Fed hike is about 96% priced.",
+      "Housing starts and permits are medium-impact, second-tier data that rarely moves gold — and the real event tonight is the FOMC minutes at 02:00 Phnom Penh.",
+      "Call: NO TRADE — a beat would firm the dollar and yields slightly (bearish gold), a miss would soften them slightly (bullish), but the effect is small and symmetric, with no edge into the print.",
+      "What would flip it: a big surprise — starts well above 1.30M or below 1.15M — plus a clear dollar move. Otherwise wait for the FOMC minutes.",
+      "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
+    ]
   }
 ]

@@ -632,6 +632,9 @@ function refresh(){
    Readings stay on closed candles: closedOnly() never includes the
    forming candle, so the desk / Orderflow / BBMA cannot repaint. */
 var liveOn=true, livePrice=null;
+/* The pause choice is remembered on this device: if Steven paused, a page
+   refresh must NOT silently go live again — it stays paused until Resume. */
+try{ liveOn = localStorage.getItem("sp_live_on")!=="0"; }catch(e){}
 function tickSource(){
   if(feedUsed.indexOf("OKX")===0) return {u:"https://www.okx.com/api/v5/market/ticker?instId=XAU-USDT-SWAP", p:function(j){ var d=(j.data||[])[0]||{}; return +d.last; }};
   if(feedUsed.indexOf("Gate")===0) return {u:"https://api.gateio.ws/api/v4/futures/usdt/tickers?contract=XAU_USDT", p:function(j){ var d=(j||[])[0]||{}; return +d.last; }};
@@ -672,11 +675,16 @@ function liveTick(){
 setInterval(liveTick, 2000);
 $("liveToggle").addEventListener("click", function(){
   liveOn=!liveOn;
+  try{ localStorage.setItem("sp_live_on", liveOn? "1" : "0"); }catch(e){}
   this.textContent= liveOn? "Pause live" : "Resume live";
   var pill=$("livePill");
   if(pill){ pill.textContent= liveOn? "● LIVE" : "○ PAUSED"; pill.style.opacity= liveOn? "1" : "0.45"; }
   if(liveOn) liveTick(); else { var cd=$("cdNext"); if(cd) cd.textContent=""; if(candles.length) renderMarket(); }
 });
+if(!liveOn){ /* persisted pause: paint it before the first tick would run */
+  var lt0=$("liveToggle"); if(lt0) lt0.textContent="Resume live";
+  var lp0=$("livePill"); if(lp0){ lp0.textContent="○ PAUSED"; lp0.style.opacity="0.45"; }
+}
 function fetchBias(){
   fetchCandles("1h").then(function(cs){
     var cl=closedOnly(cs).map(function(c){return c.c;});

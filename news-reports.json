@@ -388,5 +388,21 @@
       "This is a medium-impact sentiment survey — it rarely reverses a macro move this big on its own, and the inflation-expectations figures are forecast flat. Flip: 1-yr expectations above 4.5% -> SELL on a break of $3,515; below 4.0% -> buy the bounce only above $3,590.",
       "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
     ]
+  },
+  {
+    "ts": "2026-11-20T22:28:00+07:00",
+    "kind": "post",
+    "event": "Revised UoM Consumer Sentiment & Inflation Expectations (Nov, final)",
+    "impact": "medium",
+    "time_label": "Fri 20 Nov · 22:00 Phnom Penh",
+    "call": "NO TRADE",
+    "headline": "UoM final: sentiment 51.5 in line, but 1-yr inflation expectations fell sharply to 3.7% — gold ~$3,571, NO TRADE",
+    "body": [
+      "Actual vs forecast vs previous: Consumer Sentiment 51.5 (forecast 51.5-51.7, prelim 51.0) — in line. 1-yr Inflation Expectations 3.7% (forecast 4.3%, Oct 4.7%) — a big drop. 5-yr Inflation Expectations 3.3% (forecast 3.4%). Consumer Expectations 52.9 (forecast 50.9) — a beat.",
+      "Verdict: headline in line; the dovish surprise is the 1-yr inflation-expectations fall, which slightly softens the Fed hike case.",
+      "What it means for gold: mildly supportive — households expect much less inflation — but one survey does not change the hawkish regime: a December hike is ~99% priced and the 10-year is near 5%.",
+      "Gold around $3,570-$3,576 at release time, after bouncing off today’s low near $3,515. Still below $3,600 and down ~7-8% this week, its worst week since March.",
+      "Call: NO TRADE — the print is too small and mixed to fight the downtrend. A break and hold above $3,590, then $3,625, would change the picture; a drop back under $3,515 opens $3,449 next."
+    ]
   }
 ]

@@ -51,6 +51,15 @@ button{font-family:inherit;cursor:pointer}
 #btStratBtns button{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 10px;flex:1 1 30%;white-space:normal;line-height:1.25}
 #btStratBtns button.active{background:var(--gold);color:#171106;font-weight:700}
 .fmbtn.on{background:var(--gold);color:#171106;border-color:var(--gold);font-weight:700}
+.limpanel{background:#0a1019;border:1px solid #32506e;border-radius:10px;padding:14px 16px;font-family:Consolas,'Courier New',monospace;font-size:13.5px;color:#dfe9f5;line-height:1.55;overflow-x:auto}
+.limpanel .lt{color:#39c2d7;font-size:16px;font-weight:700}
+.limpanel .dim{color:#8fa8bf}
+.limpanel .gold{color:#f5c542}
+.limpanel .up{color:#3ddc84}
+.limpanel .dn{color:#ff6b5e}
+.limpanel .sep{color:#32506e}
+.limbar{height:5px;background:#2d3b4a;border-radius:3px;overflow:hidden;vertical-align:middle;display:inline-block;width:170px;margin-left:8px}
+.limbar i{display:block;height:100%;background:#39c2d7}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
 .mnav{display:none}
 @media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}
@@ -149,6 +158,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
       <button data-sec="journal"><span class="ic">✎</span> Journal</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
+      <button data-sec="limit"><span class="ic">⚡</span> SP Limit Quick Scalp</button>
       <button data-sec="easervers"><span class="ic">🤖</span> My EA Servers</button>
       <button data-sec="about"><span class="ic">?</span> How it works</button>
     </nav>
@@ -163,6 +173,7 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <button data-sec="news"><span class="ic">🗞</span> Gold News</button>
       <button data-sec="journal"><span class="ic">✎</span> Journal</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
+      <button data-sec="limit"><span class="ic">⚡</span> SP Limit Quick Scalp</button>
       <button data-sec="easervers"><span class="ic">🤖</span> My EA Servers</button>
       <button data-sec="about"><span class="ic">?</span> How it works</button>
     </nav>
@@ -460,6 +471,18 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
       <div class="card">
         <h3>Running both systems — the rule</h3>
         <p class="note">This terminal is <b>signal-only</b>, like your indicator: it never places a trade. Smart Grid Hunter stays on its M1 chart, the Scalp Panel on M5. If this desk and your MT5 panel disagree, the safe read is WAIT — two systems fighting is information, not a trade.</p>
+      </div>
+    </section>
+
+    <!-- ============ SP LIMIT QUICK SCALP ============ -->
+    <section class="section" id="sec-limit">
+      <div class="card mb">
+        <h3>⚡ SP Limit Quick Scalp — live mirror</h3>
+        <p class="note">A read-only mirror of your Quick Scalp EA panel (v2) on the VPS, updated every 15 seconds over your private Tailscale link — the same numbers as the panel on your MT5 chart. It only loads on <b>your</b> devices with <b>Tailscale ON</b>. The website can look, never touch: it sends nothing back to the EA.</p>
+        <div class="pillrow mt">
+          <span class="pill" id="limPill" style="display:none"></span><span class="small" id="limMsg"></span>
+        </div>
+        <div id="limOut" class="mt"><p class="note">Connecting to your VPS…</p></div>
       </div>
     </section>
 
@@ -1205,6 +1228,72 @@ $("mt5UrlReset").addEventListener("click", function(){
 });
 try{ var savedUrl=localStorage.getItem("sp_scalp_url"); if(savedUrl) $("mt5UrlInput").value=savedUrl; }catch(e){}
 startLiveMt5();
+
+/* ================= SP Limit Quick Scalp live mirror =================
+   Read-only: the EA (v2) writes SP_Limit_Scalp.json on the VPS; a tiny
+   endpoint serves it at the private Tailscale path /limit.json. Display
+   rules (Steven, 2026-11-21): the web panel is titled "SP Limit Quick
+   Scalp", shows version "v2", and carries no BTech Cambodia word and no
+   license line — those stay on the MT5 chart panel only. */
+var LIM_URL="https://win-54huck5cs86.tail0db2c5.ts.net/limit.json";
+var LIMKEY="sp_limit_state_v1";
+var limLive={fails:0, data:null};
+function limMoney(x, cur){ if(x===null||x===undefined||!isFinite(x)) return "—"; return (x<0? "-" : "+") + Math.abs(x).toFixed(2) + " " + (cur||""); }
+function limPrice(x){ return (!x || !isFinite(x) || x===0)? "--" : Number(x).toFixed(3); }
+function limAgeSec(j){ if(!j || !j.ts) return -1; return Math.max(0, Math.round(Date.now()/1000 - (+j.ts))); }
+function setLimPill(mode, txt){ var p=$("limPill"); if(!p) return; if(!mode){ p.style.display="none"; $("limMsg").textContent=""; return; } p.style.display=""; p.innerHTML=txt; p.style.borderColor= mode==="ok"? "var(--green)" : "var(--amber)"; }
+function renderLimit(j){
+  var cur=j.currency||"USC";
+  function side(name, s){
+    s=s||{}; var net=+s.net||0;
+    var cls= net>0? "up" : (net<0? "dn" : "");
+    return '<div style="margin-top:6px"><span class="'+cls+'"><b>'+name+' &nbsp;'+(s.count||0)+' active | '+Number(s.lots||0).toFixed(2)+' lots | '+limMoney(net,cur)+'</b></span>'
+      +'<br><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Avg '+limPrice(s.avg)+' | BE '+limPrice(s.be)+' | TP '+limPrice(s.tp)+' | SL '+limPrice(s.sl)+'</span></div>';
+  }
+  var prog=Math.max(0, Math.min(1, +j.tp_progress||0));
+  var fl=+j.floating||0, pt=+j.profit_today||0;
+  $("limOut").innerHTML='<div class="limpanel">'
+    +'<div class="lt">SP Limit Quick Scalp</div>'
+    +'<div class="dim">v2 | '+esc(j.symbol||"")+'</div>'
+    +'<div class="'+(j.positions>0? "up":"gold")+'" style="margin-top:6px"><b>'+esc(j.status||"")+'</b></div>'
+    +'<div style="margin-top:6px">TP &nbsp;&nbsp;<span class="up">'+esc(j.tp_desc||"—")+' | AUTO '+(j.tp_auto? "ON":"OFF")+'</span><br>SL &nbsp;&nbsp;<span class="up">'+esc(j.sl_desc||"—")+' | AUTO '+(j.sl_auto? "ON":"OFF")+'</span></div>'
+    +'<div class="dim" style="margin-top:6px">Filter &nbsp;'+esc(j.filter||"—")+'</div>'
+    +'<div style="margin-top:6px">Balance &nbsp;'+Number(j.balance||0).toFixed(2)+' '+esc(cur)+'<br>Equity &nbsp;&nbsp;'+Number(j.equity||0).toFixed(2)+' '+esc(cur)+'</div>'
+    +'<div style="margin-top:6px">Profit today: <span class="'+(pt>=0?"up":"dn")+'"><b>'+limMoney(pt,cur)+'</b></span></div>'
+    +'<div>Trend market: <span class="'+(j.trend==="BUY ONLY"? "up" : (j.trend==="SELL ONLY"? "dn" : "gold"))+'"><b>'+esc(j.trend||"—")+'</b></span></div>'
+    +'<div class="dim">TP progress: '+Math.round(prog*100)+'%<span class="limbar"><i style="width:'+Math.round(prog*100)+'%"></i></span></div>'
+    +'<div class="sep">------------------------------------------------</div>'
+    + side("BUY", j.buy) + side("SELL", j.sell)
+    +'<div class="sep">------------------------------------------------</div>'
+    +'<div>TOTAL FLOATING: <span class="'+(fl>=0?"up":"dn")+'"><b>'+limMoney(fl,cur)+'</b></span></div>'
+    +'<div class="dim">ATR('+(j.atr_period||14)+'): '+limPrice(j.atr)+' | Commission est: '+limMoney(-(+j.commission_est||0),cur)+'</div>'
+    +'<div class="dim">Grid: '+(j.grid_limits||0)+' limits open | '+esc(j.grid_action||"—")+'</div>'
+    +'<div style="margin-top:6px"><span class="up">Est TP profit: BUY '+limMoney((j.buy||{}).est_tp,cur)+' | SELL '+limMoney((j.sell||{}).est_tp,cur)+'</span><br><span class="dn">Est SL loss: &nbsp;BUY '+limMoney((j.buy||{}).est_sl,cur)+' | SELL '+limMoney((j.sell||{}).est_sl,cur)+'</span></div>'
+    +'</div>';
+}
+function fetchLimit(){
+  fetch(LIM_URL, {cache:"no-store"}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(function(j){
+    if(!j || typeof j.status!=="string") throw new Error("unexpected data");
+    limLive.fails=0; limLive.data=j;
+    try{ localStorage.setItem(LIMKEY, JSON.stringify(j)); }catch(e){}
+    renderLimit(j);
+    var age=limAgeSec(j);
+    if(age>180){ setLimPill("warn","🟡 LIVE LINK OK · data "+Math.round(age/60)+" min old"); $("limMsg").textContent="The link works, but the EA file is not fresh — is MT5 running on the VPS with the v2 EA attached?"; }
+    else { setLimPill("ok","🟢 LIVE · updates every 15s"); $("limMsg").textContent="EA time "+new Date(j.ts*1000).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",second:"2-digit"})+" (GMT) · received just now · private link — only your own devices can open it"; }
+  })
+  .catch(function(){
+    limLive.fails++;
+    if(limLive.fails>=2){
+      setLimPill("warn","⚪ LIVE LINK NOT REACHABLE");
+      var saved=null; try{ saved=JSON.parse(localStorage.getItem(LIMKEY)||"null"); }catch(e){}
+      if(saved && typeof saved.status==="string"){ renderLimit(saved); var age=limAgeSec(saved); $("limMsg").textContent="Showing the last copy saved on this device"+(age>=0? " ("+Math.round(age/60)+" min old)":"")+". Usual causes: Tailscale is off on this device, the limit endpoint is not running on the VPS, or the Serve path is not set."; }
+      else { $("limMsg").textContent="Usual causes: Tailscale is off on this device, the limit endpoint is not running on the VPS, or the Serve path is not set."; $("limOut").innerHTML='<p class="note">No data yet. Once the v2 EA is attached in MT5 and the endpoint is running on the VPS, this tab shows the panel live.</p>'; }
+    } else setLimPill("warn","🟡 LIVE LINK · reconnecting…");
+  });
+}
+fetchLimit();
+setInterval(fetchLimit, 15000);
 
 /* ================= Desk + MT5 agreement check =================
    One final verdict from four inputs: the last web-desk scan (this visit),

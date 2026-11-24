@@ -1,497 +1,503 @@
 [
-  {
-    "body": [
-      "Actual: +0.3% MoM vs +0.4% forecast (previous +1.4%, revised); +6.5% YoY vs +6.6% forecast. Core +0.3% MoM, in line.",
-      "What it means: the monthly number cooled, but the yearly number is still hot — +6.5% YoY is the biggest annual rise since November 2022, and core is +4.9% YoY. With a December Fed hike still priced and Treasury yields above 5%, the pressure on gold has paused, not lifted.",
-      "Gold's reaction (Kitco): spot caught a modest bid to about $3,897.90, +0.57% on the day, testing resistance at $3,900 — a bounce off Thursday's 52-week low near $3,852 after a three-session fall of about 6%.",
-      "Levels: a firm hold above $3,900 opens $3,930, then $3,950–$3,970 and $4,000. If the bounce fails, $3,870 and then the $3,852 low are exposed again.",
-      "Call: NO TRADE into the bounce — the desk's standing rule held (no manual scalps 20:15–21:30 Phnom Penh on release night). Reassess once gold either holds above $3,900 or loses $3,870."
-    ],
-    "call": "NO TRADE",
-    "event": "US PPI (Oct)",
-    "headline": "PPI cooler than expected — a relief bounce for gold, not a trend change",
-    "kind": "post",
-    "time_label": "Fri 13 Nov · released 20:30 Phnom Penh",
-    "ts": "2026-11-13T20:45:00+07:00",
-    "impact": "high"
-  },
-  {
-    "ts": "2026-11-13T21:30:00+07:00",
-    "kind": "pre",
-    "event": "Fed's Logan Speaks",
-    "time_label": "Fri 13 Nov · 21:40 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Logan speaks in ~10 min — hawkish stance already priced in, no trade into the speech",
-    "body": [
-      "No forecast — a speech, not data. Dallas Fed President Lorie Logan (2026 FOMC voter) gives opening remarks at the 2026 Bank Funding Conference.",
-      "Her stance is already known and priced in: on Tuesday she said the FOMC needs 'at least two more 25bp hikes' and the rate is ~50bp below modestly restrictive. Gold has already fallen 4%+ this week on this hawkish repricing, with the dollar at a 19-month high.",
-      "Gold ~$3,890, just under $3,900, day range ~$3,873–3,923, just above its 52-week low near $3,853. A hawkish repeat keeps it capped under $3,900.",
-      "Tonight's PPI came in a touch softer than forecast (0.3% vs 0.4% MoM) and gave gold a small bounce — but core stayed sticky, so the Fed's hawkish line hasn't cracked.",
-      "Flip: a dovish softening (pause talk) would turn it BUY toward $3,900–3,923; a 50bp December hike endorsement would turn it SELL, watch $3,873 then $3,853.",
-      "Caution: the first minutes after any headline are spike territory — no manual scalps into the speech, per the standing rule."
-    ],
-    "impact": "low"
-  },
-  {
-    "ts": "2026-11-13T22:08:00+07:00",
-    "kind": "post",
-    "event": "Fed's Logan Speaks",
-    "time_label": "Fri 13 Nov · 21:40 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Logan's speech was technical — no new rate signal, hawkish backdrop unchanged",
-    "body": [
-      "What she said: at the Dallas Fed's Bank Funding Conference, Logan said the US Treasury market is functioning 'very well' and the Fed should strengthen its support tools, including extending discount-window operations to weekends and holidays.",
-      "No new rate-path signal: her Tuesday stance (at least two more 25bp hikes) stands unchanged. The hawkish backdrop is intact — December hike ~89–91% priced, dollar near a 19-month high, 10-year yield ~5.13%.",
-      "Gold ~$3,890–3,910, recovering modestly from Thursday's 13-month low (~$3,874) but still under the $3,900–3,910 pivot and on track for a >4% weekly loss. No source reports a specific gold move on the speech.",
-      "Levels: resistance $3,925 / $3,937 above; support $3,884 / $3,875 / $3,860 below. A break of $3,937 would change the picture.",
-      "Call: NO TRADE — nothing tradable in a technical speech, and Bowman speaks at 22:50 Phnom Penh with Daly at 00:00. No manual scalps into those prints, per the standing rule."
-    ],
-    "impact": "low"
-  },
-  {
-    "ts": "2026-11-13T22:37:00+07:00",
-    "kind": "pre",
-    "event": "Fed's Bowman Speaks",
-    "time_label": "Fri 13 Nov · 22:50 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Bowman speaks in ~13 min — same hawkish message as Tuesday, low surprise value",
-    "body": [
-      "No forecast — a speech, not data. Fed Vice Chair for Supervision Michelle Bowman speaks at 22:50 Phnom Penh.",
-      "Her last remarks were Tuesday (10 Nov) at the Council on Foreign Relations: inflation 'has persisted longer than hoped', 'still work to do' to reach 2%, core PCE ~3.3% — a hawkish lean, but she stopped short of endorsing a December hike. Tonight likely echoes that.",
-      "Gold ~$3,888–3,891, recovering slightly after Thursday's ~3% slide to a 13-month low, but still down ~4% this week. Support $3,853–3,870, resistance $3,937.",
-      "Backdrop stays hawkish: a December 25bp hike is ~85–89% priced and the dollar is near a 19-month high; today's PPI came in a touch soft (MoM 0.3% vs 0.4% forecast), giving gold only a small lift.",
-      "Flip: an explicit December hike or 50bp endorsement would turn it SELL (dollar up, gold down); a softening — hikes off the table or inflation easing — would turn it BUY.",
-      "Caution: the first minutes after a Fed speech headline are spike territory — no manual scalps into the print, per the standing rule."
-    ],
-    "impact": "low"
-  },
-  {
-    "ts": "2026-11-13T22:58:00+07:00",
-    "kind": "post",
-    "event": "Fed's Bowman Speaks",
-    "time_label": "Fri 13 Nov · 22:50 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Bowman's speech was on supervision and regulation — no new rate signal, hawkish backdrop unchanged",
-    "body": [
-      "What she said: tonight's speech was on supervision and regulation (per the Fed schedule), not the economy or rates — in line with her role as Vice Chair for Supervision. No new rate-path remarks have been reported in the wires.",
-      "Her stance is unchanged from Tuesday (10 Nov): inflation 'has persisted longer than hoped', 'still work to do' to reach 2%, core PCE ~3.3% — a hawkish lean, but she stopped short of endorsing a December hike.",
-      "What it means for gold: nothing changes. The hawkish backdrop is intact — a December 25bp hike is ~88% priced, the 10-year yield is ~5.13%, and the dollar is near a 19-month high. No source reports a gold move on the speech.",
-      "Gold ~$3,878, drifting just under $3,900 after today's small PPI bounce, still down ~4% on the week after Thursday's slide to a 13-month low near $3,853.",
-      "Levels: resistance $3,900 / $3,937 above; support $3,870 / $3,853 below. Next up: Fed's Daly speaks at 00:00 Phnom Penh — no manual scalps into that print, per the standing rule.",
-      "Call: NO TRADE — a supervision speech with no policy content is not tradable for gold."
-    ],
-    "impact": "low"
-  },
-  {
-    "ts": "2026-11-16T23:49:00+07:00",
-    "kind": "pre",
-    "event": "Fed Chair Warsh Opening Remarks (AI forum, San Francisco)",
-    "impact": "high",
-    "time_label": "Mon 16 Nov · 00:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Warsh speaks in ~10 min — themed AI remarks, little direct policy signal expected",
-    "body": [
-      "No forecast — a speech, not data. Fed Chair Kevin Warsh opens the Fed's Productivity and Jobs Task Force conference in San Francisco, on whether AI will lower inflation, raise prices, or displace workers.",
-      "Opening remarks at a themed conference usually carry little direct policy guidance — and Warsh has said he doesn't prejudge meetings and avoids forward guidance.",
-      "Gold ~$3,863, down ~0.6% today, pinned just above $3,850 support after a ~4.5% drop last week to a 13-month low ($3,832 overnight). Resistance $3,925. Two-way risk at the print.",
-      "Backdrop: the market is ~94% priced for a 25bp Dec hike, yields past 5%, and the Fed chorus this week (Schmid, Collins, Jefferson) has been hawkish. Warsh's known line — AI productivity can ease inflation — is the one dovish surprise that could lift gold.",
-      "Flip: if Warsh says AI disinflation is real and a Dec hike isn't a done deal, lean BUY; if he backs further tightening or keeps 50bp talk alive, SELL pressure — watch $3,850 then $3,832.",
-      "Caution: the first minutes after the remarks are spike territory — no manual scalps into the print, per the standing rule."
-    ]
-  },
-  {
-    "ts": "2026-11-17T00:20:00+07:00",
-    "kind": "post",
-    "event": "Fed Chair Warsh Opening Remarks (AI forum, San Francisco)",
-    "impact": "high",
-    "time_label": "Tue 17 Nov · 00:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Warsh gave no rate signal — AI remarks were neutral for gold",
-    "body": [
-      "No numbers — a speech, not data. Warsh said AI will have a 'significant impact' on the economy, from rising growth with broadly shared gains to higher unemployment and a slowdown if investment returns disappoint. The Fed is modelling the scenarios — illustrative, not predictions. His line: the Fed's role is 'neither advocacy nor opposition'.",
-      "Verdict: in line — no policy signal. He said nothing about the near-term outlook for rates or the economy, exactly as expected from opening remarks at a themed conference.",
-      "What it means for gold: neutral. No new reason to reprice the December hike — markets still ~92–94% priced for 25bp, 10-year yield above 5%. The hawkish backdrop (hot CPI, Waller/Schmid/Collins/Jefferson) is unchanged.",
-      "Gold's reaction: no clear move reported yet — gold was around $3,860–3,890 into the remarks (overnight low $3,832).",
-      "Levels: support $3,850, then $3,832; resistance $3,923, then $4,000. Next real triggers: US Retail Sales Tue 20:30 Phnom Penh, FOMC minutes Wed.",
-      "Call: NO TRADE — no rate signal, no fresh trigger; a trade here would be guessing, not trading the news."
-    ]
-  },
-  {
-    "ts": "2026-11-17T20:10:00+07:00",
-    "kind": "pre",
-    "event": "ADP Employment Change (4-week average)",
-    "impact": "medium",
-    "time_label": "Tue 17 Nov · 20:15 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "ADP weekly pulse in ~10 min — lagged average, no consensus, no trade into it",
-    "body": [
-      "No forecast published — no consensus exists for this weekly pulse. Previous: 19.75K (4-week average, week ending 24 Oct).",
-      "This is a lagged 4-week moving average (data ~2 weeks old), not a fresh payroll count — it rarely moves gold on its own.",
-      "Gold ~$3,865, hovering near a 14-month low; day range $3,843–$3,887. Support $3,840–$3,845, resistance $3,880. A firm dollar and Fed-tightening bets keep it pinned.",
-      "The real mover tonight is US Retail Sales at 20:30 Phnom Penh (high impact) — just 15 minutes later. ADP is the warm-up, not the trade.",
-      "Flip: a jump in the average above ~25K would back the dollar and push gold toward $3,845 support; a drop below ~15K would ease dollar pressure and open $3,880.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
-    ]
-  },
-  {
-    "ts": "2026-11-17T20:20:00+07:00",
-    "kind": "pre",
-    "event": "US Retail Sales (MoM, Oct)",
-    "impact": "high",
-    "time_label": "Tue 17 Nov · 20:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "US Retail Sales in ~10 min — soft consensus already priced, gold pinned on $3,850 support",
-    "body": [
-      "Forecast vs previous: headline +0.2% vs +0.8% in September; ex-autos +0.4% vs +0.9%; control group +0.4% vs +0.1%.",
-      "Gold ~$3,865, holding just above key $3,850 support (Monday's low $3,832.70). Resistance $3,880-3,890, then $3,900-3,920.",
-      "The consensus is already a sharp slowdown, so an in-line print is mostly priced in and changes little on its own.",
-      "A beat (+0.5% or more) would lift the dollar — already at a 19-month high near 103.6 — and December hike bets (~96-100% priced for 25bp) and push gold down; a miss (near 0% or a weak control group) would ease hike bets and let gold bounce.",
-      "Trend stays down: gold -6.5% in 20 days, below all major moving averages, 10-year yield above 5%. No edge in guessing long or short before the number.",
-      "Flip: beat of +0.5%+ with a strong control group -> SELL lean, $3,800 next; miss at 0.0% or below, or a falling control group -> BUY lean, $3,900-3,920 next.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
-    ]
-  },
-  {
-    "ts": "2026-11-17T20:40:00+07:00",
-    "kind": "post",
-    "event": "ADP Employment Change (4-week average)",
-    "impact": "medium",
-    "time_label": "Tue 17 Nov · 20:15 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "ADP jobs pulse beat the last print (24K vs 20K) — small, lagged, no trade",
-    "body": [
-      "Actual: 24K average weekly gain vs previous 20K (last print 19.75K for the window ending 24 Oct). No forecast was published for this weekly pulse.",
-      "Verdict: a modest beat vs the previous window — private hiring picked up slightly, but this is a lagged 4-week moving average, not a fresh payroll count.",
-      "What it means for gold: slightly stronger jobs is a small dollar-positive, gold-negative nudge — but too small and too stale to move the market on its own.",
-      "Gold's reaction: no specific move reported on this print — gold was holding ~$3,855-3,865 around the release, just above the key $3,850 support (Monday's low $3,832.70).",
-      "Levels: support $3,850, then $3,832; resistance $3,880, then $3,895-3,900. The real test came 15 minutes later: US Retail Sales at 20:30 Phnom Penh.",
-      "Call: NO TRADE — a lagged average with no consensus is not a trading signal."
-    ]
-  },
-  {
-    "ts": "2026-11-17T20:40:00+07:00",
-    "kind": "post",
-    "event": "US Retail Sales (MoM, Oct)",
-    "impact": "high",
-    "time_label": "Tue 17 Nov · 20:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Retail Sales in line on the headline, but the core beat — consumer still spending, no relief for gold",
-    "body": [
-      "Actual: headline +0.2% MoM vs +0.2% forecast, previous +0.8%. Ex-autos +0.6% vs +0.4% forecast (beat). Control group +0.60% vs +0.10% previous — a strong beat. YoY +6.8% vs +6.3%.",
-      "Verdict: headline in line, core and control group beat — the US consumer is still spending, and spending is what feeds the December hike case.",
-      "What it means for gold: no relief — a resilient consumer keeps the December 25bp hike ~95-96% priced, the dollar near a 19-month high and the 10-year yield above 5%.",
-      "Gold's reaction: no specific post-print move reported yet in the wires — gold was ~$3,855-3,865 around the release, hugging the key $3,850 support after Monday's low of $3,832.70.",
-      "Levels: support $3,850, then $3,832, then $3,800. Resistance $3,880, then $3,895-3,900, then $3,920. A break below $3,832 opens $3,800; a reclaim of $3,900 would ease the pressure.",
-      "Call: NO TRADE — the headline was exactly in line, so there is no new edge to chase at a 14-month low. Caution: the first minutes after the print are spike territory — no manual scalps, per the standing rule."
-    ]
-  },
-  {
-    "ts": "2026-11-18T01:49:00+07:00",
-    "kind": "pre",
-    "event": "FOMC Meeting Minutes (Oct 27–28 meeting)",
-    "impact": "high",
-    "time_label": "Thu 19 Nov · 02:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "FOMC minutes in ~10 min — December hike ~96% priced, no trade into a 3-week-old text",
-    "body": [
-      "No forecast — minutes, not data. The Oct 27–28 meeting held rates at 3.75–4.00% (10–2 vote; Cook and Hammack dissented, wanting a hike). Markets read the minutes for how many officials backed a December hike.",
-      "A December 25bp hike is already ~96% priced (CME FedWatch), with ~70% odds of another in January — the hawkish lean is largely in the price, so a hawkish text has limited downside room.",
-      "Minutes are a 3-week-old text record, not a number to beat or miss. Moves come from headline wording ('many' vs 'a few' on December) and are usually smaller and choppier than a data print.",
-      "Gold ~$3,865, pinned near 13-month lows (Monday's low $3,832), below all major moving averages with RSI ~38; the dollar is at 19-month highs above 103.5 and the 10-year yield is ~5.13%. Trend is down, but price is sitting on support — chasing either way into the print is poor risk.",
-      "Flip: minutes showing 'many' officials opposed a December hike, or worried about the labour market, turn it BUY toward $3,900; broad support for a December hike plus openness to more hikes in early 2027 turns it SELL — watch $3,850, then $3,832 and $3,820.",
-      "Caution: the first minutes after the release are spike territory — no manual scalps into the print, per the standing rule."
-    ]
-  },
-  {
-    "ts": "2026-11-18T14:20:00+07:00",
-    "kind": "pre",
-    "event": "BoE Governor Bailey Speaks",
-    "impact": "medium",
-    "time_label": "Wed 18 Nov · 14:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Bailey speaks in ~10 min — gold below $3,800 at a one-year low, Fed story dominates",
-    "body": [
-      "No forecast or previous — a speech, not a number.",
-      "Gold is sliding hard — about $3,790, down ~1.7% today, below $3,800 for the first time since September 2025 (a one-year low). The dollar is near 19-month highs and the US 10-year is around 5.1%. Support ~$3,760, resistance ~$3,880.",
-      "Gold's driver today is the Fed, not the BoE — markets price a ~96% chance of a December Fed hike, with the FOMC minutes due tonight (02:00 Phnom Penh). A BoE speech rarely moves gold directly.",
-      "Bailey just hiked to 4% on 5 Nov and warned another hike is likely unless the Middle East conflict is resolved. Hawkish tone firms sterling and eases the dollar a touch — mild gold support at best; cautious tone does the opposite. Either way it is second-order next to the Fed story.",
-      "Flip: a clear surprise from Bailey plus gold reclaiming $3,800 turns it a short-term BUY lean; a dovish turn pushing the dollar higher with gold breaking $3,760 support turns it SELL. Either setup forms after the print, not into it.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
-    ]
-  },
-  {
-    "ts": "2026-11-18T14:40:09+07:00",
-    "kind": "post",
-    "event": "BoE Governor Bailey Speaks",
-    "impact": "medium",
-    "time_label": "Wed 18 Nov · 14:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Bailey's morning slot was a pre-recorded fireside chat in Seoul — no new rate signal; gold still sliding under $3,800 on the Fed/dollar story",
-    "body": [
-      "Result: no new signal. Bailey's 14:30 appearance was a pre-recorded fireside chat at the accountants' congress in Seoul, not a policy speech — no new rate guidance in the wires, and the pound was steady near $1.32.",
-      "Gold's slide is the Fed/dollar story, not Bailey: spot around $3,770–$3,790, below $3,800 for the first time since September 2025 and down about 2% today.",
-      "The dollar is near 19-month highs (~103.6) and the 10-year is above 5%, with a December Fed hike about 95% priced.",
-      "Call: NO TRADE — no new information to trade on, and gold is sliding into tonight's FOMC minutes (Thu 02:00 Phnom Penh), the real event. Don't chase shorts at one-year lows into that print.",
-      "Levels to watch: support $3,760, then the $3,700s; resistance $3,800 (now overhead) and $3,880.",
-      "Next up: Bailey speaks again at 22:00 Phnom Penh (high impact) — his first chance to react to today's UK inflation numbers — and Lagarde at 21:25."
-    ]
-  },
-  {
-    "ts": "2026-11-18T20:17:34+07:00",
-    "kind": "pre",
-    "event": "US Housing Starts & Building Permits (Oct)",
-    "impact": "medium",
-    "time_label": "Wed 18 Nov · 20:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Housing data due in ~13 min — forecasts point to a small starts rebound (1.25M) and softer permits (1.38M); gold already down ~2.6% to near one-year lows on the Fed/dollar story",
-    "body": [
-      "Forecast vs previous: Housing Starts 1.25M expected (WSJ median, +2.4% MoM) vs 1.221M in September; Building Permits 1.38M expected (-1.4%) vs 1.40M.",
-      "Gold is around $3,750, down about 2.6% today and near its session low ($3,746) — its lowest in over a year — with support near $3,717 and resistance at $3,810–$3,835.",
-      "The driver is the Fed/dollar story, not housing: the dollar is at 19-month highs (~103.6), the 10-year is near 5.1%, and a December 25bp Fed hike is about 96% priced.",
-      "Housing starts and permits are medium-impact, second-tier data that rarely moves gold — and the real event tonight is the FOMC minutes at 02:00 Phnom Penh.",
-      "Call: NO TRADE — a beat would firm the dollar and yields slightly (bearish gold), a miss would soften them slightly (bullish), but the effect is small and symmetric, with no edge into the print.",
-      "What would flip it: a big surprise — starts well above 1.30M or below 1.15M — plus a clear dollar move. Otherwise wait for the FOMC minutes.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
-    ]
-  },
-  {
-    "ts": "2026-11-18T20:47:34+07:00",
-    "kind": "post",
-    "event": "Housing Starts & Building Permits (Oct)",
-    "impact": "medium",
-    "time_label": "Wed 18 Nov · 20:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Mixed print: starts beat big (+9.9%), permits missed big (−7.4%) — no edge for gold.",
-    "body": [
-      "Housing Starts: +9.9% MoM (1.31M annual rate) vs +2.4% forecast (1.25M); previous revised to −7.0% — a clear beat.",
-      "Building Permits: −7.4% MoM (1.29M) vs −1.7% forecast (1.38M); single-family permits −8.7%, weakest since COVID — a clear miss.",
-      "Verdict: mixed — the two halves cancel each other out, and permits (the forward-looking one) still show a weak pipeline.",
-      "Gold was ~$3,763 into the print near its 13-month low; no source tied a move to this release. The driver stays the Fed: Dec 25bp hike ~96% priced, DXY at 19-month highs, 10Y ~5.10%.",
-      "Call: NO TRADE — mixed data gives the dollar no clear direction, and a housing print won't turn gold's rate-driven slide below $3,800.",
-      "Levels to watch: support $3,757 (today's low), then $3,750; resistance $3,800, then $3,835–$3,860. Next event: FOMC minutes Thu 02:00 Phnom Penh."
-    ]
-  },
-  {
-    "ts": "2026-11-18T21:49:00+07:00",
-    "kind": "pre",
-    "event": "Pending Home Sales MoM (Oct)",
-    "impact": "medium",
-    "time_label": "Wed 18 Nov · 22:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Pending home sales due in ~10 min — forecast a smaller fall (−2.1% vs −7.3%); gold at a 13-month low, Fed story dominates",
-    "body": [
-      "Forecast vs previous: −2.1% MoM expected (consensus around −2.0%) vs −7.3% in September — a smaller fall, but sales are still at their slowest pace since 2010, with 30-year mortgage rates above 7%.",
-      "Gold is ~$3,763–3,779, down ~2% today at a fresh 13-month low below $3,800 (day low ~$3,757). Support $3,757, then $3,750; resistance $3,800, then $3,810–$3,835.",
-      "The driver is the Fed, not housing: DXY at 19-month highs (~103.8), the 10-year ~5.10%, and a December 25bp hike ~95% priced. Pending home sales is second-tier data that almost never moves gold on its own.",
-      "A beat (a smaller fall, or a rise) would slightly soften the dollar and could lift gold a touch; a miss would deepen the weak-housing story — either way the move, if any, is small and fades fast.",
-      "Flip: a big surprise either way (a rise, or a fall worse than −5%) together with gold breaking $3,800 or losing $3,750 — even then, wait for the move to settle rather than chase it.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule. The real event tonight is the FOMC minutes, Thu 02:00 Phnom Penh."
-    ]
-  },
-  {
-    "ts": "2026-11-18T22:09:00+07:00",
-    "kind": "post",
-    "event": "Pending Home Sales MoM (Oct)",
-    "impact": "medium",
-    "time_label": "Wed 18 Nov · 22:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Pending home sales fell 4.7% MoM — a miss vs the -2.1% forecast, but a smaller fall than September's -7.3%.",
-    "body": [
-      "Actual -4.7% MoM vs forecast -2.1% and previous -7.3%; year-on-year -16.7% (NAR, confirmed by WSJ).",
-      "Verdict: MISS — a bigger fall than expected, and a second straight record low for the index, though a smaller fall than September.",
-      "NAR's chief economist said October 'could mark the low point' as mortgage rates 'appear to have topped out' (30-year rates peaked near 7.4% in October).",
-      "Gold stayed ~$3,770-3,785 around the release, still ~2% down today at a 13-month low below $3,800; no source tied any gold move to the print.",
-      "Call NO TRADE: the print cuts both ways and housing rarely moves gold — today's slide is a rates/DXY story, with a Dec 25bp hike ~96% priced.",
-      "Levels to watch: support $3,757 / $3,750, then $3,715; resistance $3,800, then $3,832. Next: FOMC minutes, Thu 02:00 Phnom Penh."
-    ]
-  },
-  {
-    "ts": "2026-11-19T01:49:00+07:00",
-    "kind": "pre",
-    "event": "FOMC Meeting Minutes (Oct 27–28 meeting)",
-    "impact": "high",
-    "time_label": "Thu 19 Nov · 02:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "FOMC minutes due 02:00 Phnom Penh — Dec 25bp hike ~96% priced; gold at 13-month low ~$3,742",
-    "body": [
-      "Minutes of the Fed's Oct 27–28 meeting release at 02:00 Phnom Penh. No forecast/previous — minutes are text, not a number.",
-      "The Fed held at 3.75–4.00% on Oct 28 in a 10–2 vote; Cook and Hammack dissented, wanting an immediate 25bp hike.",
-      "A December 25bp hike is ~96% priced (CME FedWatch), so the hawkish lean is largely in the price already.",
-      "Gold ~$3,742, below $3,800 at a 13-month low, down ~2.8% today; DXY at 19-month highs, 10Y ~5.1%. Support $3,717/$3,700, resistance $3,810–3,835 then $3,865.",
-      "What would flip the call: a dovish surprise (officials pushing back on a December hike) would favour BUY; broad support for a 50bp December hike would favour SELL.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
-    ]
-  },
-  {
-    "ts": "2026-11-19T02:08:00+07:00",
-    "kind": "post",
-    "event": "FOMC Meeting Minutes (Oct 27–28 meeting)",
-    "impact": "high",
-    "time_label": "Thu 19 Nov · 02:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "FOMC minutes hawkish as expected — almost all saw further hikes likely, 50bp December move on the table; gold ~$3,735, flat after the print",
-    "body": [
-      "Minutes are text, not a number: no beat/miss. Verdict HAWKISH, in line with expectations, read from the Fed’s own minutes.",
-      "Almost all participants judged further hikes would likely be appropriate; a couple said a >25bp hike could warrant consideration in December if inflation data were unfavourable.",
-      "Some participants already wanted a 25bp hike in October and a few called the hold a close call. PCE inflation 3.6% in September (core 3.1%), unemployment 4.2%.",
-      "Vote was 10–2 to hold at 3.75–4.00%; Cook and Hammack dissented, wanting a hike now. December 25bp hike stays ~96% priced.",
-      "Gold quoted ~$3,735 just after the release (Orbex, 02:03 Phnom Penh), essentially flat vs ~$3,742 before the print — no sharp reaction in the first minutes.",
-      "Support $3,717 / $3,700 then $3,670; resistance $3,800, then $3,810–3,835 and $3,865."
-    ]
-  },
-  {
-    "ts": "2026-11-19T20:17:00+07:00",
-    "kind": "pre",
-    "event": "Initial Jobless Claims & Philly Fed Manufacturing Index (Nov)",
-    "impact": "medium",
-    "time_label": "Thu 19 Nov · 20:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Claims (f'cst 198K, prev 200K) and Philly Fed (f'cst 20.6, prev 20.9) due in ~10 min — gold ~$3,730 at a 14-month low, NO TRADE into the print",
-    "body": [
-      "Forecast vs previous: Initial Jobless Claims 198K (prev 200K); Philly Fed Manufacturing Index 20.6 (prev 20.9).",
-      "Gold is in a strong downtrend after Wednesday's hawkish FOMC minutes — below all major moving averages, RSI ~30 oversold, at a 14-month low ($3,693 today, now ~$3,730).",
-      "A strong print (claims under 198K / Philly above 20.6) would firm the dollar — DXY near a 19-month high ~103.9, December hike ~90-95% priced — and push gold back toward $3,700 / $3,692 support.",
-      "A weak print (claims over 200K / Philly under 20) could spark a relief bounce toward $3,750-3,768, but dip-buying already faded once today and resistance is heavy.",
-      "This is a medium-impact, routine weekly/monthly print — it rarely reverses a macro move this big on its own. Flip: claims well above ~210K AND Philly clearly below ~15 → buy the bounce only above $3,750; claims well below ~190K with Philly above ~25 → SELL on a break of $3,692 toward $3,650.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
-    ]
-  },
-  {
-    "ts": "2026-11-19T20:39:00+07:00",
-    "kind": "post",
-    "event": "Initial Jobless Claims & Philly Fed Manufacturing Index (Nov)",
-    "impact": "medium",
-    "time_label": "Thu 19 Nov · 20:30 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Both prints soft — Claims 203K vs 198K f'cst, Philly Fed 6.3 vs 20.6 f'cst — gold ~$3,730 near 14-month low, NO TRADE",
-    "body": [
-      "Initial Jobless Claims: actual 203K vs forecast 198K (previous 200K, revised to 202K) — a small miss.",
-      "Philly Fed Manufacturing Index: actual 6.3 vs forecast 20.6 (previous 20.9) — a big miss, factory activity slowed sharply.",
-      "Verdict: both prints soft. Textbook gold-positive, but one volatile regional survey plus a small claims miss does not reverse the hawkish Fed picture (December hike ~90% priced, dollar near a 19-month high ~103.9).",
-      "Gold was ~$3,730–3,743 into the print, near its 14-month low of $3,693. No post-print price reaction was stated by a source yet.",
-      "Call: NO TRADE — soft data argues against fresh shorts, but not enough to chase a long into the downtrend. A hold above $3,750 opens a relief bounce toward $3,768–3,800; a break below $3,693 opens $3,650.",
-      "Key levels: support $3,700, then $3,693 (14-month low); resistance $3,755, then $3,800."
-    ]
-  },
-  {
-    "ts": "2026-11-20T21:50:00+07:00",
-    "kind": "pre",
-    "event": "Revised UoM Consumer Sentiment & Inflation Expectations (Nov, final)",
-    "impact": "medium",
-    "time_label": "Fri 20 Nov · 22:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "UoM Sentiment final (f'cst 51.5, prev 51.0) due in ~10 min — gold ~$3,572 at a 14-month low in its worst week since March, NO TRADE into the print",
-    "body": [
-      "Forecast vs previous: Consumer Sentiment 51.5 (prev 51.0); 1-yr Inflation Expectations 4.3% (prev 4.3%); 5-yr Inflation Expectations 3.4% (prev 3.4%); Consumer Expectations 50.9 (prev 50.9).",
-      "Gold is in a heavy downtrend — ~$3,572, down ~1.5% today and ~9% this week (worst week since March), after breaking below $3,600 on hawkish Fed minutes. A December hike is ~90-97% priced; support $3,515 (today's low), next $3,449; resistance $3,590, then $3,638.",
-      "A strong print (sentiment well above 51.5, or 1-yr inflation expectations above 4.3%) would firm the dollar and push gold back toward $3,515 support. A weak print could spark a relief bounce toward $3,590, but Fed hike pricing caps any recovery.",
-      "This is a medium-impact sentiment survey — it rarely reverses a macro move this big on its own, and the inflation-expectations figures are forecast flat. Flip: 1-yr expectations above 4.5% -> SELL on a break of $3,515; below 4.0% -> buy the bounce only above $3,590.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
-    ]
-  },
-  {
-    "ts": "2026-11-20T22:28:00+07:00",
-    "kind": "post",
-    "event": "Revised UoM Consumer Sentiment & Inflation Expectations (Nov, final)",
-    "impact": "medium",
-    "time_label": "Fri 20 Nov · 22:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "UoM final: sentiment 51.5 in line, but 1-yr inflation expectations fell sharply to 3.7% — gold ~$3,571, NO TRADE",
-    "body": [
-      "Actual vs forecast vs previous: Consumer Sentiment 51.5 (forecast 51.5-51.7, prelim 51.0) — in line. 1-yr Inflation Expectations 3.7% (forecast 4.3%, Oct 4.7%) — a big drop. 5-yr Inflation Expectations 3.3% (forecast 3.4%). Consumer Expectations 52.9 (forecast 50.9) — a beat.",
-      "Verdict: headline in line; the dovish surprise is the 1-yr inflation-expectations fall, which slightly softens the Fed hike case.",
-      "What it means for gold: mildly supportive — households expect much less inflation — but one survey does not change the hawkish regime: a December hike is ~99% priced and the 10-year is near 5%.",
-      "Gold around $3,570-$3,576 at release time, after bouncing off today’s low near $3,515. Still below $3,600 and down ~7-8% this week, its worst week since March.",
-      "Call: NO TRADE — the print is too small and mixed to fight the downtrend. A break and hold above $3,590, then $3,625, would change the picture; a drop back under $3,515 opens $3,449 next."
-    ]
-  },
-  {
-    "ts": "2026-11-23T21:39:14+07:00",
-    "kind": "pre",
-    "event": "US Flash Manufacturing & Services PMI",
-    "impact": "medium",
-    "time_label": "Mon 23 Nov · 21:45 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Flash PMIs due 21:45 — forecasts show slight cooling, NO TRADE into the print",
-    "body": [
-      "Forecast vs previous: Manufacturing PMI 54.5 vs 54.9; Services PMI 55.6 vs 56.1. Both still well above 50 (expansion) — just cooling slightly.",
-      "Gold rebounding ~+2.7% today near $3,621 after last week's ~9% crash to ~$3,500, but sitting right under resistance at $3,637-$3,650 and the bigger trend is still bearish (below the 20-day average near $3,913).",
-      "A beat would lift the dollar and push gold back down; a miss would do the opposite — and the two PMIs could split, so direction is a coin flip.",
-      "Call: NO TRADE — an in-line print should barely move gold; no edge into the print. Bigger catalyst is Wednesday's PCE (a 25bp December hike is ~94% priced in).",
-      "What would flip the call: a big Services miss (well under 55, toward 50) -> BUY the dip; a strong beat on both (above the previous prints) -> SELL / short bias.",
-      "Caution: first minutes after the print are spike territory — no manual scalps into the release."
-    ]
-  },
-  {
-    "ts": "2026-11-23T22:00:30+07:00",
-    "kind": "post",
-    "event": "US Flash Manufacturing PMI",
-    "impact": "medium",
-    "time_label": "Mon 23 Nov · 21:45 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Manufacturing PMI 54.5 — exactly in line with forecast, no new impulse for gold",
-    "body": [
-      "Actual 54.5 vs forecast 54.5 vs previous 54.9 — in line. Still firmly above 50 (expansion), just a touch slower than October.",
-      "No surprise means no fresh dollar or yields impulse from this print; markets will look past it to Wednesday's PCE.",
-      "Gold holding around $3,670-$3,690, up ~3% today after last week's ~9% crash to ~$3,503. No clear PMI-driven gold move reported yet.",
-      "Call: NO TRADE — an in-line print gives no edge; the bigger catalyst is Wednesday's PCE (a 25bp December hike is ~94% priced in).",
-      "Levels to watch: resistance $3,685-$3,690 (today's high), then $3,700; support $3,625, then $3,585-$3,568.",
-      "Caution: first minutes after a print are spike territory — no manual scalps into the release."
-    ]
-  },
-  {
-    "ts": "2026-11-23T22:00:30+07:00",
-    "kind": "post",
-    "event": "US Flash Services PMI",
-    "impact": "medium",
-    "time_label": "Mon 23 Nov · 21:45 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Services PMI 54.7 — a 0.9-point miss, mildly dollar-negative but not a reason to chase gold",
-    "body": [
-      "Actual 54.7 vs forecast 55.6 vs previous 56.1 — a miss of 0.9 points. Services growth is cooling, but still comfortably above 50 (expansion).",
-      "A softer services print is mildly negative for the dollar and mildly supportive for gold, and it slightly tempers the case for aggressive Fed tightening.",
-      "But gold is already up ~3% today near $3,670-$3,690, right under resistance — chasing higher after the bounce, on a second-tier flash print, is poor risk/reward.",
-      "Call: NO TRADE — the miss leans bullish for gold, but only a pullback toward support ($3,585-$3,600) would make a buy worth taking.",
-      "What would flip the call: a break and hold above $3,700 -> BUY momentum; a drop back under $3,585 -> SELL / short bias.",
-      "Levels to watch: resistance $3,685-$3,690, then $3,700; support $3,625, then $3,585-$3,568, then $3,500.",
-      "Caution: first minutes after a print are spike territory — no manual scalps into the release."
-    ]
-  },
-  {
-    "ts": "2026-11-24T21:50:05+07:00",
-    "kind": "pre",
-    "event": "CB Consumer Confidence",
-    "impact": "medium",
-    "time_label": "Tue 24 Nov · 22:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "CB Consumer Confidence in ~10 min — forecast 92.4 vs previous 91.7; a sentiment survey, unlikely to move gold far",
-    "body": [
-      "Forecast 92.4 vs previous 91.7 (consensus ~92.1–92.4).",
-      "A beat usually firms the dollar and pressures gold; a miss softens the dollar and supports gold — but this is a medium-impact sentiment survey and rarely moves gold more than a few dollars.",
-      "Gold is ~$3,615–3,632, mid-range after bouncing off the 14-month low near $3,515. Support $3,600–$3,580, resistance $3,642–$3,695. The broader structure is still bearish and today's recovery is fading.",
-      "The big ones are still ahead — October PCE tomorrow and the Dec 9 Fed meeting (~95% priced for a 25bp hike) — so traders are likely to treat tonight's print as a ripple, not a wave.",
-      "What would flip the call: a big surprise, above ~95 or below ~89. A strong beat would be a short-term SELL lean toward $3,600; a big miss, a BUY lean toward $3,642.",
-      "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
-    ],
-    "verdict": "No clear winner",
-    "khmer": [
-      "ទំនុកចិត្តអ្នកប្រើប្រាស់ CB នឹងចេញក្នុង ~10 នាទី — ម៉ោង 22:00 ភ្នំពេញ។ ព្យាករណ៍ 92.4 ធៀបនឹងលើកមុន 91.7។",
-      "នេះជាព័ត៌មានតូច កម្រធ្វើឱ្យមាសរើខ្លាំង។ មាសនៅប្រហែល $3,615–3,632 នៅកណ្តាលជួរ បន្ទាប់ពីធ្លាក់កាលពីសប្តាហ៍មុន; ព័ត៌មានធំ PCE នឹងចេញនៅថ្ងៃស្អែក។",
-      "មិនច្បាស់ថាមួយណាល្អជាង [មិនទិញ មិនលក់]។ ⚠️ នាទីដំបូងៗតម្លៃអាចលោតខ្លាំង — កុំ scalp ដោយដៃ។"
-    ]
-  },
-  {
-    "ts": "2026-11-24T22:08:00+07:00",
-    "kind": "post",
-    "event": "CB Consumer Confidence",
-    "impact": "medium",
-    "time_label": "Tue 24 Nov · 22:00 Phnom Penh",
-    "call": "NO TRADE",
-    "headline": "Actual 103.3 vs forecast 92.4 vs previous 91.9 — big beat, dollar good.",
-    "body": [
-      "US consumers are far more confident than expected, which supports the dollar and pressures gold.",
-      "Gold slipped to about $3,612 after trading near $3,631 before the release.",
-      "The level to watch is $3,593 support — if it breaks, $3,502 is next."
-    ]
-  }
+ {
+  "body": [
+   "Actual: +0.3% MoM vs +0.4% forecast (previous +1.4%, revised); +6.5% YoY vs +6.6% forecast. Core +0.3% MoM, in line.",
+   "What it means: the monthly number cooled, but the yearly number is still hot — +6.5% YoY is the biggest annual rise since November 2022, and core is +4.9% YoY. With a December Fed hike still priced and Treasury yields above 5%, the pressure on gold has paused, not lifted.",
+   "Gold's reaction (Kitco): spot caught a modest bid to about $3,897.90, +0.57% on the day, testing resistance at $3,900 — a bounce off Thursday's 52-week low near $3,852 after a three-session fall of about 6%.",
+   "Levels: a firm hold above $3,900 opens $3,930, then $3,950–$3,970 and $4,000. If the bounce fails, $3,870 and then the $3,852 low are exposed again.",
+   "Call: NO TRADE into the bounce — the desk's standing rule held (no manual scalps 20:15–21:30 Phnom Penh on release night). Reassess once gold either holds above $3,900 or loses $3,870."
+  ],
+  "call": "NO TRADE",
+  "event": "US PPI (Oct)",
+  "headline": "PPI cooler than expected — a relief bounce for gold, not a trend change",
+  "kind": "post",
+  "time_label": "Fri 13 Nov · released 20:30 Phnom Penh",
+  "ts": "2026-11-13T20:45:00+07:00",
+  "impact": "high"
+ },
+ {
+  "ts": "2026-11-13T21:30:00+07:00",
+  "kind": "pre",
+  "event": "Fed's Logan Speaks",
+  "time_label": "Fri 13 Nov · 21:40 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Logan speaks in ~10 min — hawkish stance already priced in, no trade into the speech",
+  "body": [
+   "No forecast — a speech, not data. Dallas Fed President Lorie Logan (2026 FOMC voter) gives opening remarks at the 2026 Bank Funding Conference.",
+   "Her stance is already known and priced in: on Tuesday she said the FOMC needs 'at least two more 25bp hikes' and the rate is ~50bp below modestly restrictive. Gold has already fallen 4%+ this week on this hawkish repricing, with the dollar at a 19-month high.",
+   "Gold ~$3,890, just under $3,900, day range ~$3,873–3,923, just above its 52-week low near $3,853. A hawkish repeat keeps it capped under $3,900.",
+   "Tonight's PPI came in a touch softer than forecast (0.3% vs 0.4% MoM) and gave gold a small bounce — but core stayed sticky, so the Fed's hawkish line hasn't cracked.",
+   "Flip: a dovish softening (pause talk) would turn it BUY toward $3,900–3,923; a 50bp December hike endorsement would turn it SELL, watch $3,873 then $3,853.",
+   "Caution: the first minutes after any headline are spike territory — no manual scalps into the speech, per the standing rule."
+  ],
+  "impact": "low"
+ },
+ {
+  "ts": "2026-11-13T22:08:00+07:00",
+  "kind": "post",
+  "event": "Fed's Logan Speaks",
+  "time_label": "Fri 13 Nov · 21:40 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Logan's speech was technical — no new rate signal, hawkish backdrop unchanged",
+  "body": [
+   "What she said: at the Dallas Fed's Bank Funding Conference, Logan said the US Treasury market is functioning 'very well' and the Fed should strengthen its support tools, including extending discount-window operations to weekends and holidays.",
+   "No new rate-path signal: her Tuesday stance (at least two more 25bp hikes) stands unchanged. The hawkish backdrop is intact — December hike ~89–91% priced, dollar near a 19-month high, 10-year yield ~5.13%.",
+   "Gold ~$3,890–3,910, recovering modestly from Thursday's 13-month low (~$3,874) but still under the $3,900–3,910 pivot and on track for a >4% weekly loss. No source reports a specific gold move on the speech.",
+   "Levels: resistance $3,925 / $3,937 above; support $3,884 / $3,875 / $3,860 below. A break of $3,937 would change the picture.",
+   "Call: NO TRADE — nothing tradable in a technical speech, and Bowman speaks at 22:50 Phnom Penh with Daly at 00:00. No manual scalps into those prints, per the standing rule."
+  ],
+  "impact": "low"
+ },
+ {
+  "ts": "2026-11-13T22:37:00+07:00",
+  "kind": "pre",
+  "event": "Fed's Bowman Speaks",
+  "time_label": "Fri 13 Nov · 22:50 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Bowman speaks in ~13 min — same hawkish message as Tuesday, low surprise value",
+  "body": [
+   "No forecast — a speech, not data. Fed Vice Chair for Supervision Michelle Bowman speaks at 22:50 Phnom Penh.",
+   "Her last remarks were Tuesday (10 Nov) at the Council on Foreign Relations: inflation 'has persisted longer than hoped', 'still work to do' to reach 2%, core PCE ~3.3% — a hawkish lean, but she stopped short of endorsing a December hike. Tonight likely echoes that.",
+   "Gold ~$3,888–3,891, recovering slightly after Thursday's ~3% slide to a 13-month low, but still down ~4% this week. Support $3,853–3,870, resistance $3,937.",
+   "Backdrop stays hawkish: a December 25bp hike is ~85–89% priced and the dollar is near a 19-month high; today's PPI came in a touch soft (MoM 0.3% vs 0.4% forecast), giving gold only a small lift.",
+   "Flip: an explicit December hike or 50bp endorsement would turn it SELL (dollar up, gold down); a softening — hikes off the table or inflation easing — would turn it BUY.",
+   "Caution: the first minutes after a Fed speech headline are spike territory — no manual scalps into the print, per the standing rule."
+  ],
+  "impact": "low"
+ },
+ {
+  "ts": "2026-11-13T22:58:00+07:00",
+  "kind": "post",
+  "event": "Fed's Bowman Speaks",
+  "time_label": "Fri 13 Nov · 22:50 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Bowman's speech was on supervision and regulation — no new rate signal, hawkish backdrop unchanged",
+  "body": [
+   "What she said: tonight's speech was on supervision and regulation (per the Fed schedule), not the economy or rates — in line with her role as Vice Chair for Supervision. No new rate-path remarks have been reported in the wires.",
+   "Her stance is unchanged from Tuesday (10 Nov): inflation 'has persisted longer than hoped', 'still work to do' to reach 2%, core PCE ~3.3% — a hawkish lean, but she stopped short of endorsing a December hike.",
+   "What it means for gold: nothing changes. The hawkish backdrop is intact — a December 25bp hike is ~88% priced, the 10-year yield is ~5.13%, and the dollar is near a 19-month high. No source reports a gold move on the speech.",
+   "Gold ~$3,878, drifting just under $3,900 after today's small PPI bounce, still down ~4% on the week after Thursday's slide to a 13-month low near $3,853.",
+   "Levels: resistance $3,900 / $3,937 above; support $3,870 / $3,853 below. Next up: Fed's Daly speaks at 00:00 Phnom Penh — no manual scalps into that print, per the standing rule.",
+   "Call: NO TRADE — a supervision speech with no policy content is not tradable for gold."
+  ],
+  "impact": "low"
+ },
+ {
+  "ts": "2026-11-16T23:49:00+07:00",
+  "kind": "pre",
+  "event": "Fed Chair Warsh Opening Remarks (AI forum, San Francisco)",
+  "impact": "high",
+  "time_label": "Mon 16 Nov · 00:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Warsh speaks in ~10 min — themed AI remarks, little direct policy signal expected",
+  "body": [
+   "No forecast — a speech, not data. Fed Chair Kevin Warsh opens the Fed's Productivity and Jobs Task Force conference in San Francisco, on whether AI will lower inflation, raise prices, or displace workers.",
+   "Opening remarks at a themed conference usually carry little direct policy guidance — and Warsh has said he doesn't prejudge meetings and avoids forward guidance.",
+   "Gold ~$3,863, down ~0.6% today, pinned just above $3,850 support after a ~4.5% drop last week to a 13-month low ($3,832 overnight). Resistance $3,925. Two-way risk at the print.",
+   "Backdrop: the market is ~94% priced for a 25bp Dec hike, yields past 5%, and the Fed chorus this week (Schmid, Collins, Jefferson) has been hawkish. Warsh's known line — AI productivity can ease inflation — is the one dovish surprise that could lift gold.",
+   "Flip: if Warsh says AI disinflation is real and a Dec hike isn't a done deal, lean BUY; if he backs further tightening or keeps 50bp talk alive, SELL pressure — watch $3,850 then $3,832.",
+   "Caution: the first minutes after the remarks are spike territory — no manual scalps into the print, per the standing rule."
+  ]
+ },
+ {
+  "ts": "2026-11-17T00:20:00+07:00",
+  "kind": "post",
+  "event": "Fed Chair Warsh Opening Remarks (AI forum, San Francisco)",
+  "impact": "high",
+  "time_label": "Tue 17 Nov · 00:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Warsh gave no rate signal — AI remarks were neutral for gold",
+  "body": [
+   "No numbers — a speech, not data. Warsh said AI will have a 'significant impact' on the economy, from rising growth with broadly shared gains to higher unemployment and a slowdown if investment returns disappoint. The Fed is modelling the scenarios — illustrative, not predictions. His line: the Fed's role is 'neither advocacy nor opposition'.",
+   "Verdict: in line — no policy signal. He said nothing about the near-term outlook for rates or the economy, exactly as expected from opening remarks at a themed conference.",
+   "What it means for gold: neutral. No new reason to reprice the December hike — markets still ~92–94% priced for 25bp, 10-year yield above 5%. The hawkish backdrop (hot CPI, Waller/Schmid/Collins/Jefferson) is unchanged.",
+   "Gold's reaction: no clear move reported yet — gold was around $3,860–3,890 into the remarks (overnight low $3,832).",
+   "Levels: support $3,850, then $3,832; resistance $3,923, then $4,000. Next real triggers: US Retail Sales Tue 20:30 Phnom Penh, FOMC minutes Wed.",
+   "Call: NO TRADE — no rate signal, no fresh trigger; a trade here would be guessing, not trading the news."
+  ]
+ },
+ {
+  "ts": "2026-11-17T20:10:00+07:00",
+  "kind": "pre",
+  "event": "ADP Employment Change (4-week average)",
+  "impact": "medium",
+  "time_label": "Tue 17 Nov · 20:15 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "ADP weekly pulse in ~10 min — lagged average, no consensus, no trade into it",
+  "body": [
+   "No forecast published — no consensus exists for this weekly pulse. Previous: 19.75K (4-week average, week ending 24 Oct).",
+   "This is a lagged 4-week moving average (data ~2 weeks old), not a fresh payroll count — it rarely moves gold on its own.",
+   "Gold ~$3,865, hovering near a 14-month low; day range $3,843–$3,887. Support $3,840–$3,845, resistance $3,880. A firm dollar and Fed-tightening bets keep it pinned.",
+   "The real mover tonight is US Retail Sales at 20:30 Phnom Penh (high impact) — just 15 minutes later. ADP is the warm-up, not the trade.",
+   "Flip: a jump in the average above ~25K would back the dollar and push gold toward $3,845 support; a drop below ~15K would ease dollar pressure and open $3,880.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
+  ]
+ },
+ {
+  "ts": "2026-11-17T20:20:00+07:00",
+  "kind": "pre",
+  "event": "US Retail Sales (MoM, Oct)",
+  "impact": "high",
+  "time_label": "Tue 17 Nov · 20:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "US Retail Sales in ~10 min — soft consensus already priced, gold pinned on $3,850 support",
+  "body": [
+   "Forecast vs previous: headline +0.2% vs +0.8% in September; ex-autos +0.4% vs +0.9%; control group +0.4% vs +0.1%.",
+   "Gold ~$3,865, holding just above key $3,850 support (Monday's low $3,832.70). Resistance $3,880-3,890, then $3,900-3,920.",
+   "The consensus is already a sharp slowdown, so an in-line print is mostly priced in and changes little on its own.",
+   "A beat (+0.5% or more) would lift the dollar — already at a 19-month high near 103.6 — and December hike bets (~96-100% priced for 25bp) and push gold down; a miss (near 0% or a weak control group) would ease hike bets and let gold bounce.",
+   "Trend stays down: gold -6.5% in 20 days, below all major moving averages, 10-year yield above 5%. No edge in guessing long or short before the number.",
+   "Flip: beat of +0.5%+ with a strong control group -> SELL lean, $3,800 next; miss at 0.0% or below, or a falling control group -> BUY lean, $3,900-3,920 next.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
+  ]
+ },
+ {
+  "ts": "2026-11-17T20:40:00+07:00",
+  "kind": "post",
+  "event": "ADP Employment Change (4-week average)",
+  "impact": "medium",
+  "time_label": "Tue 17 Nov · 20:15 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "ADP jobs pulse beat the last print (24K vs 20K) — small, lagged, no trade",
+  "body": [
+   "Actual: 24K average weekly gain vs previous 20K (last print 19.75K for the window ending 24 Oct). No forecast was published for this weekly pulse.",
+   "Verdict: a modest beat vs the previous window — private hiring picked up slightly, but this is a lagged 4-week moving average, not a fresh payroll count.",
+   "What it means for gold: slightly stronger jobs is a small dollar-positive, gold-negative nudge — but too small and too stale to move the market on its own.",
+   "Gold's reaction: no specific move reported on this print — gold was holding ~$3,855-3,865 around the release, just above the key $3,850 support (Monday's low $3,832.70).",
+   "Levels: support $3,850, then $3,832; resistance $3,880, then $3,895-3,900. The real test came 15 minutes later: US Retail Sales at 20:30 Phnom Penh.",
+   "Call: NO TRADE — a lagged average with no consensus is not a trading signal."
+  ]
+ },
+ {
+  "ts": "2026-11-17T20:40:00+07:00",
+  "kind": "post",
+  "event": "US Retail Sales (MoM, Oct)",
+  "impact": "high",
+  "time_label": "Tue 17 Nov · 20:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Retail Sales in line on the headline, but the core beat — consumer still spending, no relief for gold",
+  "body": [
+   "Actual: headline +0.2% MoM vs +0.2% forecast, previous +0.8%. Ex-autos +0.6% vs +0.4% forecast (beat). Control group +0.60% vs +0.10% previous — a strong beat. YoY +6.8% vs +6.3%.",
+   "Verdict: headline in line, core and control group beat — the US consumer is still spending, and spending is what feeds the December hike case.",
+   "What it means for gold: no relief — a resilient consumer keeps the December 25bp hike ~95-96% priced, the dollar near a 19-month high and the 10-year yield above 5%.",
+   "Gold's reaction: no specific post-print move reported yet in the wires — gold was ~$3,855-3,865 around the release, hugging the key $3,850 support after Monday's low of $3,832.70.",
+   "Levels: support $3,850, then $3,832, then $3,800. Resistance $3,880, then $3,895-3,900, then $3,920. A break below $3,832 opens $3,800; a reclaim of $3,900 would ease the pressure.",
+   "Call: NO TRADE — the headline was exactly in line, so there is no new edge to chase at a 14-month low. Caution: the first minutes after the print are spike territory — no manual scalps, per the standing rule."
+  ]
+ },
+ {
+  "ts": "2026-11-18T01:49:00+07:00",
+  "kind": "pre",
+  "event": "FOMC Meeting Minutes (Oct 27–28 meeting)",
+  "impact": "high",
+  "time_label": "Thu 19 Nov · 02:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "FOMC minutes in ~10 min — December hike ~96% priced, no trade into a 3-week-old text",
+  "body": [
+   "No forecast — minutes, not data. The Oct 27–28 meeting held rates at 3.75–4.00% (10–2 vote; Cook and Hammack dissented, wanting a hike). Markets read the minutes for how many officials backed a December hike.",
+   "A December 25bp hike is already ~96% priced (CME FedWatch), with ~70% odds of another in January — the hawkish lean is largely in the price, so a hawkish text has limited downside room.",
+   "Minutes are a 3-week-old text record, not a number to beat or miss. Moves come from headline wording ('many' vs 'a few' on December) and are usually smaller and choppier than a data print.",
+   "Gold ~$3,865, pinned near 13-month lows (Monday's low $3,832), below all major moving averages with RSI ~38; the dollar is at 19-month highs above 103.5 and the 10-year yield is ~5.13%. Trend is down, but price is sitting on support — chasing either way into the print is poor risk.",
+   "Flip: minutes showing 'many' officials opposed a December hike, or worried about the labour market, turn it BUY toward $3,900; broad support for a December hike plus openness to more hikes in early 2027 turns it SELL — watch $3,850, then $3,832 and $3,820.",
+   "Caution: the first minutes after the release are spike territory — no manual scalps into the print, per the standing rule."
+  ]
+ },
+ {
+  "ts": "2026-11-18T14:20:00+07:00",
+  "kind": "pre",
+  "event": "BoE Governor Bailey Speaks",
+  "impact": "medium",
+  "time_label": "Wed 18 Nov · 14:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Bailey speaks in ~10 min — gold below $3,800 at a one-year low, Fed story dominates",
+  "body": [
+   "No forecast or previous — a speech, not a number.",
+   "Gold is sliding hard — about $3,790, down ~1.7% today, below $3,800 for the first time since September 2025 (a one-year low). The dollar is near 19-month highs and the US 10-year is around 5.1%. Support ~$3,760, resistance ~$3,880.",
+   "Gold's driver today is the Fed, not the BoE — markets price a ~96% chance of a December Fed hike, with the FOMC minutes due tonight (02:00 Phnom Penh). A BoE speech rarely moves gold directly.",
+   "Bailey just hiked to 4% on 5 Nov and warned another hike is likely unless the Middle East conflict is resolved. Hawkish tone firms sterling and eases the dollar a touch — mild gold support at best; cautious tone does the opposite. Either way it is second-order next to the Fed story.",
+   "Flip: a clear surprise from Bailey plus gold reclaiming $3,800 turns it a short-term BUY lean; a dovish turn pushing the dollar higher with gold breaking $3,760 support turns it SELL. Either setup forms after the print, not into it.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
+  ]
+ },
+ {
+  "ts": "2026-11-18T14:40:09+07:00",
+  "kind": "post",
+  "event": "BoE Governor Bailey Speaks",
+  "impact": "medium",
+  "time_label": "Wed 18 Nov · 14:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Bailey's morning slot was a pre-recorded fireside chat in Seoul — no new rate signal; gold still sliding under $3,800 on the Fed/dollar story",
+  "body": [
+   "Result: no new signal. Bailey's 14:30 appearance was a pre-recorded fireside chat at the accountants' congress in Seoul, not a policy speech — no new rate guidance in the wires, and the pound was steady near $1.32.",
+   "Gold's slide is the Fed/dollar story, not Bailey: spot around $3,770–$3,790, below $3,800 for the first time since September 2025 and down about 2% today.",
+   "The dollar is near 19-month highs (~103.6) and the 10-year is above 5%, with a December Fed hike about 95% priced.",
+   "Call: NO TRADE — no new information to trade on, and gold is sliding into tonight's FOMC minutes (Thu 02:00 Phnom Penh), the real event. Don't chase shorts at one-year lows into that print.",
+   "Levels to watch: support $3,760, then the $3,700s; resistance $3,800 (now overhead) and $3,880.",
+   "Next up: Bailey speaks again at 22:00 Phnom Penh (high impact) — his first chance to react to today's UK inflation numbers — and Lagarde at 21:25."
+  ]
+ },
+ {
+  "ts": "2026-11-18T20:17:34+07:00",
+  "kind": "pre",
+  "event": "US Housing Starts & Building Permits (Oct)",
+  "impact": "medium",
+  "time_label": "Wed 18 Nov · 20:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Housing data due in ~13 min — forecasts point to a small starts rebound (1.25M) and softer permits (1.38M); gold already down ~2.6% to near one-year lows on the Fed/dollar story",
+  "body": [
+   "Forecast vs previous: Housing Starts 1.25M expected (WSJ median, +2.4% MoM) vs 1.221M in September; Building Permits 1.38M expected (-1.4%) vs 1.40M.",
+   "Gold is around $3,750, down about 2.6% today and near its session low ($3,746) — its lowest in over a year — with support near $3,717 and resistance at $3,810–$3,835.",
+   "The driver is the Fed/dollar story, not housing: the dollar is at 19-month highs (~103.6), the 10-year is near 5.1%, and a December 25bp Fed hike is about 96% priced.",
+   "Housing starts and permits are medium-impact, second-tier data that rarely moves gold — and the real event tonight is the FOMC minutes at 02:00 Phnom Penh.",
+   "Call: NO TRADE — a beat would firm the dollar and yields slightly (bearish gold), a miss would soften them slightly (bullish), but the effect is small and symmetric, with no edge into the print.",
+   "What would flip it: a big surprise — starts well above 1.30M or below 1.15M — plus a clear dollar move. Otherwise wait for the FOMC minutes.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
+  ]
+ },
+ {
+  "ts": "2026-11-18T20:47:34+07:00",
+  "kind": "post",
+  "event": "Housing Starts & Building Permits (Oct)",
+  "impact": "medium",
+  "time_label": "Wed 18 Nov · 20:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Mixed print: starts beat big (+9.9%), permits missed big (−7.4%) — no edge for gold.",
+  "body": [
+   "Housing Starts: +9.9% MoM (1.31M annual rate) vs +2.4% forecast (1.25M); previous revised to −7.0% — a clear beat.",
+   "Building Permits: −7.4% MoM (1.29M) vs −1.7% forecast (1.38M); single-family permits −8.7%, weakest since COVID — a clear miss.",
+   "Verdict: mixed — the two halves cancel each other out, and permits (the forward-looking one) still show a weak pipeline.",
+   "Gold was ~$3,763 into the print near its 13-month low; no source tied a move to this release. The driver stays the Fed: Dec 25bp hike ~96% priced, DXY at 19-month highs, 10Y ~5.10%.",
+   "Call: NO TRADE — mixed data gives the dollar no clear direction, and a housing print won't turn gold's rate-driven slide below $3,800.",
+   "Levels to watch: support $3,757 (today's low), then $3,750; resistance $3,800, then $3,835–$3,860. Next event: FOMC minutes Thu 02:00 Phnom Penh."
+  ]
+ },
+ {
+  "ts": "2026-11-18T21:49:00+07:00",
+  "kind": "pre",
+  "event": "Pending Home Sales MoM (Oct)",
+  "impact": "medium",
+  "time_label": "Wed 18 Nov · 22:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Pending home sales due in ~10 min — forecast a smaller fall (−2.1% vs −7.3%); gold at a 13-month low, Fed story dominates",
+  "body": [
+   "Forecast vs previous: −2.1% MoM expected (consensus around −2.0%) vs −7.3% in September — a smaller fall, but sales are still at their slowest pace since 2010, with 30-year mortgage rates above 7%.",
+   "Gold is ~$3,763–3,779, down ~2% today at a fresh 13-month low below $3,800 (day low ~$3,757). Support $3,757, then $3,750; resistance $3,800, then $3,810–$3,835.",
+   "The driver is the Fed, not housing: DXY at 19-month highs (~103.8), the 10-year ~5.10%, and a December 25bp hike ~95% priced. Pending home sales is second-tier data that almost never moves gold on its own.",
+   "A beat (a smaller fall, or a rise) would slightly soften the dollar and could lift gold a touch; a miss would deepen the weak-housing story — either way the move, if any, is small and fades fast.",
+   "Flip: a big surprise either way (a rise, or a fall worse than −5%) together with gold breaking $3,800 or losing $3,750 — even then, wait for the move to settle rather than chase it.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule. The real event tonight is the FOMC minutes, Thu 02:00 Phnom Penh."
+  ]
+ },
+ {
+  "ts": "2026-11-18T22:09:00+07:00",
+  "kind": "post",
+  "event": "Pending Home Sales MoM (Oct)",
+  "impact": "medium",
+  "time_label": "Wed 18 Nov · 22:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Pending home sales fell 4.7% MoM — a miss vs the -2.1% forecast, but a smaller fall than September's -7.3%.",
+  "body": [
+   "Actual -4.7% MoM vs forecast -2.1% and previous -7.3%; year-on-year -16.7% (NAR, confirmed by WSJ).",
+   "Verdict: MISS — a bigger fall than expected, and a second straight record low for the index, though a smaller fall than September.",
+   "NAR's chief economist said October 'could mark the low point' as mortgage rates 'appear to have topped out' (30-year rates peaked near 7.4% in October).",
+   "Gold stayed ~$3,770-3,785 around the release, still ~2% down today at a 13-month low below $3,800; no source tied any gold move to the print.",
+   "Call NO TRADE: the print cuts both ways and housing rarely moves gold — today's slide is a rates/DXY story, with a Dec 25bp hike ~96% priced.",
+   "Levels to watch: support $3,757 / $3,750, then $3,715; resistance $3,800, then $3,832. Next: FOMC minutes, Thu 02:00 Phnom Penh."
+  ]
+ },
+ {
+  "ts": "2026-11-19T01:49:00+07:00",
+  "kind": "pre",
+  "event": "FOMC Meeting Minutes (Oct 27–28 meeting)",
+  "impact": "high",
+  "time_label": "Thu 19 Nov · 02:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "FOMC minutes due 02:00 Phnom Penh — Dec 25bp hike ~96% priced; gold at 13-month low ~$3,742",
+  "body": [
+   "Minutes of the Fed's Oct 27–28 meeting release at 02:00 Phnom Penh. No forecast/previous — minutes are text, not a number.",
+   "The Fed held at 3.75–4.00% on Oct 28 in a 10–2 vote; Cook and Hammack dissented, wanting an immediate 25bp hike.",
+   "A December 25bp hike is ~96% priced (CME FedWatch), so the hawkish lean is largely in the price already.",
+   "Gold ~$3,742, below $3,800 at a 13-month low, down ~2.8% today; DXY at 19-month highs, 10Y ~5.1%. Support $3,717/$3,700, resistance $3,810–3,835 then $3,865.",
+   "What would flip the call: a dovish surprise (officials pushing back on a December hike) would favour BUY; broad support for a 50bp December hike would favour SELL.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
+  ]
+ },
+ {
+  "ts": "2026-11-19T02:08:00+07:00",
+  "kind": "post",
+  "event": "FOMC Meeting Minutes (Oct 27–28 meeting)",
+  "impact": "high",
+  "time_label": "Thu 19 Nov · 02:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "FOMC minutes hawkish as expected — almost all saw further hikes likely, 50bp December move on the table; gold ~$3,735, flat after the print",
+  "body": [
+   "Minutes are text, not a number: no beat/miss. Verdict HAWKISH, in line with expectations, read from the Fed’s own minutes.",
+   "Almost all participants judged further hikes would likely be appropriate; a couple said a >25bp hike could warrant consideration in December if inflation data were unfavourable.",
+   "Some participants already wanted a 25bp hike in October and a few called the hold a close call. PCE inflation 3.6% in September (core 3.1%), unemployment 4.2%.",
+   "Vote was 10–2 to hold at 3.75–4.00%; Cook and Hammack dissented, wanting a hike now. December 25bp hike stays ~96% priced.",
+   "Gold quoted ~$3,735 just after the release (Orbex, 02:03 Phnom Penh), essentially flat vs ~$3,742 before the print — no sharp reaction in the first minutes.",
+   "Support $3,717 / $3,700 then $3,670; resistance $3,800, then $3,810–3,835 and $3,865."
+  ]
+ },
+ {
+  "ts": "2026-11-19T20:17:00+07:00",
+  "kind": "pre",
+  "event": "Initial Jobless Claims & Philly Fed Manufacturing Index (Nov)",
+  "impact": "medium",
+  "time_label": "Thu 19 Nov · 20:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Claims (f'cst 198K, prev 200K) and Philly Fed (f'cst 20.6, prev 20.9) due in ~10 min — gold ~$3,730 at a 14-month low, NO TRADE into the print",
+  "body": [
+   "Forecast vs previous: Initial Jobless Claims 198K (prev 200K); Philly Fed Manufacturing Index 20.6 (prev 20.9).",
+   "Gold is in a strong downtrend after Wednesday's hawkish FOMC minutes — below all major moving averages, RSI ~30 oversold, at a 14-month low ($3,693 today, now ~$3,730).",
+   "A strong print (claims under 198K / Philly above 20.6) would firm the dollar — DXY near a 19-month high ~103.9, December hike ~90-95% priced — and push gold back toward $3,700 / $3,692 support.",
+   "A weak print (claims over 200K / Philly under 20) could spark a relief bounce toward $3,750-3,768, but dip-buying already faded once today and resistance is heavy.",
+   "This is a medium-impact, routine weekly/monthly print — it rarely reverses a macro move this big on its own. Flip: claims well above ~210K AND Philly clearly below ~15 → buy the bounce only above $3,750; claims well below ~190K with Philly above ~25 → SELL on a break of $3,692 toward $3,650.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
+  ]
+ },
+ {
+  "ts": "2026-11-19T20:39:00+07:00",
+  "kind": "post",
+  "event": "Initial Jobless Claims & Philly Fed Manufacturing Index (Nov)",
+  "impact": "medium",
+  "time_label": "Thu 19 Nov · 20:30 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Both prints soft — Claims 203K vs 198K f'cst, Philly Fed 6.3 vs 20.6 f'cst — gold ~$3,730 near 14-month low, NO TRADE",
+  "body": [
+   "Initial Jobless Claims: actual 203K vs forecast 198K (previous 200K, revised to 202K) — a small miss.",
+   "Philly Fed Manufacturing Index: actual 6.3 vs forecast 20.6 (previous 20.9) — a big miss, factory activity slowed sharply.",
+   "Verdict: both prints soft. Textbook gold-positive, but one volatile regional survey plus a small claims miss does not reverse the hawkish Fed picture (December hike ~90% priced, dollar near a 19-month high ~103.9).",
+   "Gold was ~$3,730–3,743 into the print, near its 14-month low of $3,693. No post-print price reaction was stated by a source yet.",
+   "Call: NO TRADE — soft data argues against fresh shorts, but not enough to chase a long into the downtrend. A hold above $3,750 opens a relief bounce toward $3,768–3,800; a break below $3,693 opens $3,650.",
+   "Key levels: support $3,700, then $3,693 (14-month low); resistance $3,755, then $3,800."
+  ]
+ },
+ {
+  "ts": "2026-11-20T21:50:00+07:00",
+  "kind": "pre",
+  "event": "Revised UoM Consumer Sentiment & Inflation Expectations (Nov, final)",
+  "impact": "medium",
+  "time_label": "Fri 20 Nov · 22:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "UoM Sentiment final (f'cst 51.5, prev 51.0) due in ~10 min — gold ~$3,572 at a 14-month low in its worst week since March, NO TRADE into the print",
+  "body": [
+   "Forecast vs previous: Consumer Sentiment 51.5 (prev 51.0); 1-yr Inflation Expectations 4.3% (prev 4.3%); 5-yr Inflation Expectations 3.4% (prev 3.4%); Consumer Expectations 50.9 (prev 50.9).",
+   "Gold is in a heavy downtrend — ~$3,572, down ~1.5% today and ~9% this week (worst week since March), after breaking below $3,600 on hawkish Fed minutes. A December hike is ~90-97% priced; support $3,515 (today's low), next $3,449; resistance $3,590, then $3,638.",
+   "A strong print (sentiment well above 51.5, or 1-yr inflation expectations above 4.3%) would firm the dollar and push gold back toward $3,515 support. A weak print could spark a relief bounce toward $3,590, but Fed hike pricing caps any recovery.",
+   "This is a medium-impact sentiment survey — it rarely reverses a macro move this big on its own, and the inflation-expectations figures are forecast flat. Flip: 1-yr expectations above 4.5% -> SELL on a break of $3,515; below 4.0% -> buy the bounce only above $3,590.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print."
+  ]
+ },
+ {
+  "ts": "2026-11-20T22:28:00+07:00",
+  "kind": "post",
+  "event": "Revised UoM Consumer Sentiment & Inflation Expectations (Nov, final)",
+  "impact": "medium",
+  "time_label": "Fri 20 Nov · 22:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "UoM final: sentiment 51.5 in line, but 1-yr inflation expectations fell sharply to 3.7% — gold ~$3,571, NO TRADE",
+  "body": [
+   "Actual vs forecast vs previous: Consumer Sentiment 51.5 (forecast 51.5-51.7, prelim 51.0) — in line. 1-yr Inflation Expectations 3.7% (forecast 4.3%, Oct 4.7%) — a big drop. 5-yr Inflation Expectations 3.3% (forecast 3.4%). Consumer Expectations 52.9 (forecast 50.9) — a beat.",
+   "Verdict: headline in line; the dovish surprise is the 1-yr inflation-expectations fall, which slightly softens the Fed hike case.",
+   "What it means for gold: mildly supportive — households expect much less inflation — but one survey does not change the hawkish regime: a December hike is ~99% priced and the 10-year is near 5%.",
+   "Gold around $3,570-$3,576 at release time, after bouncing off today’s low near $3,515. Still below $3,600 and down ~7-8% this week, its worst week since March.",
+   "Call: NO TRADE — the print is too small and mixed to fight the downtrend. A break and hold above $3,590, then $3,625, would change the picture; a drop back under $3,515 opens $3,449 next."
+  ]
+ },
+ {
+  "ts": "2026-11-23T21:39:14+07:00",
+  "kind": "pre",
+  "event": "US Flash Manufacturing & Services PMI",
+  "impact": "medium",
+  "time_label": "Mon 23 Nov · 21:45 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Flash PMIs due 21:45 — forecasts show slight cooling, NO TRADE into the print",
+  "body": [
+   "Forecast vs previous: Manufacturing PMI 54.5 vs 54.9; Services PMI 55.6 vs 56.1. Both still well above 50 (expansion) — just cooling slightly.",
+   "Gold rebounding ~+2.7% today near $3,621 after last week's ~9% crash to ~$3,500, but sitting right under resistance at $3,637-$3,650 and the bigger trend is still bearish (below the 20-day average near $3,913).",
+   "A beat would lift the dollar and push gold back down; a miss would do the opposite — and the two PMIs could split, so direction is a coin flip.",
+   "Call: NO TRADE — an in-line print should barely move gold; no edge into the print. Bigger catalyst is Wednesday's PCE (a 25bp December hike is ~94% priced in).",
+   "What would flip the call: a big Services miss (well under 55, toward 50) -> BUY the dip; a strong beat on both (above the previous prints) -> SELL / short bias.",
+   "Caution: first minutes after the print are spike territory — no manual scalps into the release."
+  ]
+ },
+ {
+  "ts": "2026-11-23T22:00:30+07:00",
+  "kind": "post",
+  "event": "US Flash Manufacturing PMI",
+  "impact": "medium",
+  "time_label": "Mon 23 Nov · 21:45 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Manufacturing PMI 54.5 — exactly in line with forecast, no new impulse for gold",
+  "body": [
+   "Actual 54.5 vs forecast 54.5 vs previous 54.9 — in line. Still firmly above 50 (expansion), just a touch slower than October.",
+   "No surprise means no fresh dollar or yields impulse from this print; markets will look past it to Wednesday's PCE.",
+   "Gold holding around $3,670-$3,690, up ~3% today after last week's ~9% crash to ~$3,503. No clear PMI-driven gold move reported yet.",
+   "Call: NO TRADE — an in-line print gives no edge; the bigger catalyst is Wednesday's PCE (a 25bp December hike is ~94% priced in).",
+   "Levels to watch: resistance $3,685-$3,690 (today's high), then $3,700; support $3,625, then $3,585-$3,568.",
+   "Caution: first minutes after a print are spike territory — no manual scalps into the release."
+  ]
+ },
+ {
+  "ts": "2026-11-23T22:00:30+07:00",
+  "kind": "post",
+  "event": "US Flash Services PMI",
+  "impact": "medium",
+  "time_label": "Mon 23 Nov · 21:45 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Services PMI 54.7 — a 0.9-point miss, mildly dollar-negative but not a reason to chase gold",
+  "body": [
+   "Actual 54.7 vs forecast 55.6 vs previous 56.1 — a miss of 0.9 points. Services growth is cooling, but still comfortably above 50 (expansion).",
+   "A softer services print is mildly negative for the dollar and mildly supportive for gold, and it slightly tempers the case for aggressive Fed tightening.",
+   "But gold is already up ~3% today near $3,670-$3,690, right under resistance — chasing higher after the bounce, on a second-tier flash print, is poor risk/reward.",
+   "Call: NO TRADE — the miss leans bullish for gold, but only a pullback toward support ($3,585-$3,600) would make a buy worth taking.",
+   "What would flip the call: a break and hold above $3,700 -> BUY momentum; a drop back under $3,585 -> SELL / short bias.",
+   "Levels to watch: resistance $3,685-$3,690, then $3,700; support $3,625, then $3,585-$3,568, then $3,500.",
+   "Caution: first minutes after a print are spike territory — no manual scalps into the release."
+  ]
+ },
+ {
+  "ts": "2026-11-24T21:50:05+07:00",
+  "kind": "pre",
+  "event": "CB Consumer Confidence",
+  "impact": "medium",
+  "time_label": "Tue 24 Nov · 22:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "CB Consumer Confidence in ~10 min — forecast 92.4 vs previous 91.7; a sentiment survey, unlikely to move gold far",
+  "body": [
+   "Forecast 92.4 vs previous 91.7 (consensus ~92.1–92.4).",
+   "A beat usually firms the dollar and pressures gold; a miss softens the dollar and supports gold — but this is a medium-impact sentiment survey and rarely moves gold more than a few dollars.",
+   "Gold is ~$3,615–3,632, mid-range after bouncing off the 14-month low near $3,515. Support $3,600–$3,580, resistance $3,642–$3,695. The broader structure is still bearish and today's recovery is fading.",
+   "The big ones are still ahead — October PCE tomorrow and the Dec 9 Fed meeting (~95% priced for a 25bp hike) — so traders are likely to treat tonight's print as a ripple, not a wave.",
+   "What would flip the call: a big surprise, above ~95 or below ~89. A strong beat would be a short-term SELL lean toward $3,600; a big miss, a BUY lean toward $3,642.",
+   "Caution: the first minutes after a release are spike territory — no manual scalps into the print, per the standing rule."
+  ],
+  "verdict": "No clear winner",
+  "khmer": [
+   "ទំនុកចិត្តអ្នកប្រើប្រាស់ CB នឹងចេញក្នុង ~10 នាទី — ម៉ោង 22:00 ភ្នំពេញ។ ព្យាករណ៍ 92.4 ធៀបនឹងលើកមុន 91.7។",
+   "នេះជាព័ត៌មានតូច កម្រធ្វើឱ្យមាសរើខ្លាំង។ មាសនៅប្រហែល $3,615–3,632 នៅកណ្តាលជួរ បន្ទាប់ពីធ្លាក់កាលពីសប្តាហ៍មុន; ព័ត៌មានធំ PCE នឹងចេញនៅថ្ងៃស្អែក។",
+   "មិនច្បាស់ថាមួយណាល្អជាង [មិនទិញ មិនលក់]។ ⚠️ នាទីដំបូងៗតម្លៃអាចលោតខ្លាំង — កុំ scalp ដោយដៃ។"
+  ]
+ },
+ {
+  "ts": "2026-11-24T22:08:00+07:00",
+  "kind": "post",
+  "event": "CB Consumer Confidence",
+  "impact": "medium",
+  "time_label": "Tue 24 Nov · 22:00 Phnom Penh",
+  "call": "NO TRADE",
+  "headline": "Actual 103.3 vs forecast 92.4 vs previous 91.9 — big beat, dollar good.",
+  "body": [
+   "US consumers are far more confident than expected, which supports the dollar and pressures gold.",
+   "Gold slipped to about $3,612 after trading near $3,631 before the release.",
+   "The level to watch is $3,593 support — if it breaks, $3,502 is next."
+  ],
+  "verdict": "Dollar good",
+  "khmer": [
+   "ជាក់ស្តែង 103.3 ធៀបនឹងព្យាករ 92.4 និងមុន 91.9 — ខ្ពស់ជាងការរំពឹងទុកច្រើន។",
+   "អ្នកប្រើប្រាស់អាមេរិកមានទំនុកចិត្តខ្លាំង ដែលជួយដុល្លារ និងដាក់សម្ពាធលើមាស។ មាសធ្លាក់មកប្រហែល $3,612 បន្ទាប់ពីនៅជិត $3,631 មុនចេញលទ្ធផល។ កម្រិតសំខាន់គឺ $3,593 — បើបែក នឹងទៅ $3,502។",
+   "ល្អសម្រាប់ដុល្លារ [មិនទិញ មិនលក់]។"
+  ]
+ }
 ]

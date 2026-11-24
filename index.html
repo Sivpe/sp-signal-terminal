@@ -148,13 +148,66 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 .newsitem .nkh{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
 .newsitem .nkh .nkhl{font-size:12.5px;color:var(--dim2);margin-bottom:2px}
 </style>
+
+<style id="appSkin">
+/* ===== Phone App skin (preview build) ===== */
+:root{--bg:#070a12;--panel:#101826;--panel2:#16202f;--line:#1f2c42;--radius:18px}
+body{background:#070a12}
+.card{box-shadow:0 2px 14px rgba(0,0,0,.25)}
+.side{background:#0b111c}
+.main{max-width:1120px;margin:0 auto;width:100%}
+#appbar{position:sticky;top:10px;z-index:60;display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(11,17,28,.94);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:14px}
+.ab-left{display:flex;align-items:center;min-width:0}
+.ab-left>div{min-width:0;overflow:hidden}
+.ab-dot{width:10px;height:10px;border-radius:50%;background:var(--amber);flex:0 0 10px;margin-right:10px}
+.ab-price{font-size:23px;font-weight:800;line-height:1.05;white-space:nowrap}
+.ab-sub{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ab-right{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.ab-badge{font-size:10.5px;letter-spacing:.08em;color:#171106;background:var(--gold);border-radius:6px;padding:3px 7px;font-weight:800}
+#tabEditBtn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12.5px;cursor:pointer}
+#tabEditBtn.on{background:var(--gold);color:#171106;font-weight:700;border-color:var(--gold)}
+.hcard{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+.hcard h4{font-size:12.5px;color:var(--dim);font-weight:600;letter-spacing:.9px;text-transform:uppercase;margin-bottom:9px}
+.hbig{font-size:32px;font-weight:800;line-height:1.1}
+.hbig.buy{color:var(--green)}.hbig.sell{color:var(--red)}.hbig.wait{color:var(--amber)}
+.hbig2{font-size:19px;font-weight:700;line-height:1.3}
+.hsub{color:#a9bcd4;font-size:13.5px;margin-top:5px;line-height:1.55}
+.hbtn{display:inline-block;background:var(--gold);color:#171106;font-weight:800;border:0;border-radius:12px;padding:11px 20px;margin-top:13px;font-size:14px;cursor:pointer}
+.hbtn.ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line);font-weight:600;padding:9px 16px}
+.homegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.homegrid{grid-template-columns:1fr}}
+.hrow{display:flex;align-items:center;gap:9px;font-size:14px;padding:4px 0}
+.hdot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex:0 0 9px}
+#moreSheet{position:fixed;inset:0;z-index:90;background:rgba(4,6,10,.62);display:none}
+#moreSheet.open{display:block}
+#moreSheet .sheet{position:absolute;left:0;right:0;bottom:0;background:#0d1420;border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:14px 14px 22px;max-height:72vh;overflow:auto}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sheet-head b{font-size:16px}
+#sheetClose{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 11px;cursor:pointer}
+.sheetbtn{display:flex;gap:10px;align-items:center;width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);text-align:left;padding:12px;border-radius:12px;font-size:15px;margin-bottom:7px;cursor:pointer}
+.sheetbtn.active{border-color:var(--gold)}
+.sheet-link{display:block;text-align:center;margin-top:10px;font-size:13.5px}
+body.tabedit .nav button,body.tabedit .sheetbtn{outline:1.5px dashed var(--gold);outline-offset:-4px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+button.dragging{opacity:.5}
+@media(max-width:980px){
+  #mnav{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:80;background:#0b111c;border-top:1px solid #1b2637;display:flex;flex-direction:row;padding:8px 4px calc(8px + env(safe-area-inset-bottom));gap:2px;overflow:visible}
+  #mnav button{flex:1 1 0;flex-direction:column;gap:3px;font-size:10px;padding:7px 1px;text-align:center;justify-content:center;align-items:center;border-radius:10px;white-space:nowrap;overflow:hidden;background:none;border:0;color:var(--dim)}
+  #mnav button .ic{font-size:19px}
+  #mnav button.active{background:var(--panel2);color:var(--gold)}
+  #mnav button.barhide{display:none}
+  #mnav #moreBtn{flex:0 0 52px}
+  .main{padding-bottom:104px}
+  #appbar{top:6px}
+}
+</style>
 </head>
 <body>
 <div class="layout">
   <aside class="side">
     <div class="logo"><div class="mark">SP</div><div><b>SP Gold<br>Trading</b><span>Public · XAUUSD</span></div></div>
     <nav class="nav">
-      <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
+      <button data-sec="home" class="active"><span class="ic">⌂</span> Home</button>
+      <button data-sec="terminal"><span class="ic">◈</span> Terminal</button>
       <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
       <button data-sec="limit"><span class="ic">⚡</span> SP Limit Quick Scalp</button>
@@ -168,8 +221,13 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
   </aside>
 
   <main class="main">
+    <div id="appbar">
+      <div class="ab-left"><span class="ab-dot" id="abDot"></span><div><div class="ab-price" id="abPrice">—</div><div class="ab-sub" id="abSub">connecting…</div></div></div>
+      <div class="ab-right"><button id="tabEditBtn" type="button">⇅ Edit tabs</button></div>
+    </div>
     <nav class="nav mnav" id="mnav">
-      <button data-sec="terminal" class="active"><span class="ic">◈</span> Terminal</button>
+      <button data-sec="home" class="active"><span class="ic">⌂</span> Home</button>
+      <button data-sec="terminal"><span class="ic">◈</span> Terminal</button>
       <button data-sec="signals"><span class="ic">↯</span> Signals &amp; Record</button>
       <button data-sec="mt5"><span class="ic">▦</span> My MT5 Panel</button>
       <button data-sec="limit"><span class="ic">⚡</span> SP Limit Quick Scalp</button>
@@ -195,7 +253,36 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
     </div>
 
     <!-- ============ TERMINAL ============ -->
-    <section class="section active" id="sec-terminal">
+        <section class="section active" id="sec-home">
+      <div class="hcard mb">
+        <h4>Desk call</h4>
+        <div class="hbig wait" id="homeDeskDir">—</div>
+        <div class="hsub" id="homeDeskSub">Reading the desk…</div>
+        <button class="hbtn" data-goto="terminal" type="button">Open Terminal</button>
+      </div>
+      <div class="homegrid">
+        <div class="hcard">
+          <h4>EA Servers</h4>
+          <div class="hrow"><span class="hdot" id="homeEaDot"></span><span id="homeEaTxt">VPS link: …</span></div>
+          <div class="hsub">Smart Grid Hunter dashboard — live from your VPS, private Tailscale link</div>
+          <button class="hbtn ghost" data-goto="easervers" type="button">Open EA Servers</button>
+        </div>
+        <div class="hcard">
+          <h4>News shield</h4>
+          <div class="hbig2" id="homeShield">…</div>
+          <div class="hsub" id="homeShieldSub">High + medium US events only</div>
+          <button class="hbtn ghost" data-goto="news" type="button">Gold News</button>
+        </div>
+      </div>
+      <div class="hcard mt">
+        <h4>SP Limit Quick Scalp</h4>
+        <div class="hbig2" id="homeLimState">…</div>
+        <div class="hsub" id="homeLimSub">Waiting for the VPS link…</div>
+        <button class="hbtn ghost" data-goto="limit" type="button">Open panel</button>
+      </div>
+    </section>
+
+    <section class="section" id="sec-terminal">
     <div class="warn"><div class="infohead"><span>ℹ️ <b>About this feed</b> — a real exchange XAU gold contract (not Exness XAUUSDc)</span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">Real gold market: candles are a <b>real exchange-traded XAU gold contract</b> that tracks spot XAU/USD trade by trade (no token) — OKX first, with Gate.io and Bitget stepping in automatically if one exchange can't be reached from your phone. The price box always names the exchange you're actually seeing. The spot reference under the price comes from a live spot-gold feed. It is still not identical to your Exness XAUUSDc — brokers add their own spread, usually a few tenths to ~$2 — so confirm the entry on your MT5 chart before trading. For broker-grade spot candles you can also plug in a free Twelve Data key (see “How it works” → Data feed).</div></div>
 
     <div class="warn" id="wkndBar" style="display:none"><div class="infohead"><span>🏖️ <b>Weekend — the real gold market is closed</b></span><button class="infotoggle" aria-expanded="false">Show more ▾</button></div><div class="infobody">This feed is OKX's 24/7 gold contract, so thin candles keep printing on Saturday and Sunday, drifting a few dollars with no spot market underneath. Your Exness MT5 is closed, weekend moves are not tradable, and Monday's open can gap away from Friday's close. The real market reopens Monday ~05:00 Phnom Penh — treat any weekend signal as a preview, never a trade.</div></div>
@@ -725,6 +812,11 @@ function fetchBias(){
   }).catch(function(){});
 }
 </script>
+<div id="moreSheet"><div class="sheet">
+  <div class="sheet-head"><b>All tabs</b><button id="sheetClose" type="button">✕</button></div>
+  <div id="sheetList"></div>
+  <p class="note" id="sheetHint" style="display:none">Drag tabs to reorder — the first five sit in the bottom bar. Your order is saved on this device.</p>
+</div></div>
 <script>
 "use strict";
 /* ================= scan / council ================= */
@@ -2667,6 +2759,52 @@ renderFeedMode();
 restoreMt5();
 renderHistory();
 refresh(); fetchBias();
+/* ================= APP PREVIEW: home screen, tab order, drag-to-reorder ================= */
+var NAVKEY="sp_nav_order_v2", suppressClick=false;
+function sideNav(){ return document.querySelector(".side .nav"); }
+function readOrder(container){ if(!container) return []; return Array.prototype.map.call(container.querySelectorAll("button[data-sec]"), function(b){ return b.getAttribute("data-sec"); }); }
+function currentOrder(){ return readOrder(sideNav()); }
+function applyOrderTo(nav, order){ if(!nav || !order || !order.length) return; var btns={}; nav.querySelectorAll("button[data-sec]").forEach(function(b){ btns[b.getAttribute("data-sec")]=b; }); order.forEach(function(sec){ if(btns[sec]) nav.appendChild(btns[sec]); }); }
+var SHORTLBL={home:"Home",terminal:"Terminal",signals:"Signals",mt5:"MT5",limit:"Scalp",easervers:"Servers",backtest:"Backtest",news:"News",journal:"Journal",about:"Help"};
+function layoutBar(){ var bar=$("mnav"); if(!bar) return; var mb=$("moreBtn"); if(mb) bar.appendChild(mb); bar.querySelectorAll("button[data-sec]").forEach(function(b,i){ b.classList.toggle("barhide", i>=5); var sec=b.getAttribute("data-sec"); if(SHORTLBL[sec]){ for(var n=0;n<b.childNodes.length;n++){ if(b.childNodes[n].nodeType===3 && b.childNodes[n].textContent.trim()){ b.childNodes[n].textContent=" "+SHORTLBL[sec]; break; } } } }); }
+function buildSheet(){ var list=$("sheetList"); if(!list) return; list.innerHTML=""; currentOrder().forEach(function(sec){ var srcBtn=document.querySelector('.side .nav button[data-sec="'+sec+'"]'); if(!srcBtn) return; var b=document.createElement("button"); b.type="button"; b.className="sheetbtn"; b.setAttribute("data-sec", sec); b.innerHTML=srcBtn.innerHTML; if(srcBtn.classList.contains("active")) b.classList.add("active"); b.addEventListener("click", function(){ closeSheet(); var t=document.querySelector('.nav button[data-sec="'+sec+'"]'); if(t) t.click(); }); list.appendChild(b); }); }
+function saveOrderFrom(order){ try{ localStorage.setItem(NAVKEY, JSON.stringify(order)); }catch(e){} applyOrderTo(sideNav(), order); applyOrderTo($("mnav"), order); layoutBar(); buildSheet(); }
+function openSheet(){ buildSheet(); $("moreSheet").classList.add("open"); }
+function closeSheet(){ var s=$("moreSheet"); if(s) s.classList.remove("open"); }
+(function(){ var bar=$("mnav"); if(bar){ var mb=document.createElement("button"); mb.type="button"; mb.id="moreBtn"; mb.innerHTML='<span class="ic">☰</span> More'; mb.addEventListener("click", function(){ openSheet(); }); bar.appendChild(mb); }
+  var o=null; try{ o=JSON.parse(localStorage.getItem(NAVKEY)||"null"); }catch(e){}
+  if(o && o.length){ applyOrderTo(sideNav(), o); applyOrderTo(bar, o); }
+  layoutBar();
+  $("sheetClose").addEventListener("click", closeSheet);
+  $("moreSheet").addEventListener("click", function(e){ if(e.target===$("moreSheet")) closeSheet(); });
+})();
+document.addEventListener("click", function(e){ var g=e.target.closest("[data-goto]"); if(!g) return; var t=document.querySelector('.nav button[data-sec="'+g.getAttribute("data-goto")+'"]'); if(t) t.click(); });
+/* --- edit mode + drag --- */
+var dragEl=null, dragMoved=false, dragAxis="y";
+function setEdit(on){ document.body.classList.toggle("tabedit", on); var b=$("tabEditBtn"); if(b){ b.classList.toggle("on", on); b.textContent= on? "✓ Done" : "⇅ Edit tabs"; } var h=$("sheetHint"); if(h) h.style.display= on? "" : "none"; if(on && window.innerWidth<=980) openSheet(); if(!on) closeSheet(); }
+$("tabEditBtn").addEventListener("click", function(){ setEdit(!document.body.classList.contains("tabedit")); });
+document.addEventListener("pointerdown", function(e){ if(!document.body.classList.contains("tabedit")) return; var b=e.target.closest("#mnav button, .side .nav button, #sheetList button"); if(!b || b.id==="moreBtn") return; dragEl=b; dragMoved=false; dragAxis= b.closest("#mnav")? "x" : "y"; try{ b.setPointerCapture(e.pointerId); }catch(err){} b.classList.add("dragging"); e.preventDefault(); });
+document.addEventListener("pointermove", function(e){ if(!dragEl) return; var parent=dragEl.parentElement; if(!parent) return; var pos= dragAxis==="x"? e.clientX : e.clientY; var sibs=Array.prototype.filter.call(parent.children, function(x){ return x!==dragEl && x.tagName==="BUTTON" && x.id!=="moreBtn"; }); for(var i=0;i<sibs.length;i++){ var r=sibs[i].getBoundingClientRect(); var mid= dragAxis==="x"? r.left+r.width/2 : r.top+r.height/2; if(pos<mid){ if(sibs[i].previousElementSibling!==dragEl){ parent.insertBefore(dragEl, sibs[i]); dragMoved=true; } return; } } var last=sibs[sibs.length-1]; if(last && dragEl!==last){ var nx=last.nextElementSibling; if(nx!==dragEl){ parent.insertBefore(dragEl, nx); dragMoved=true; } } });
+document.addEventListener("pointerup", function(){ if(!dragEl) return; dragEl.classList.remove("dragging"); if(dragMoved){ var container= dragEl.closest("#sheetList")? $("sheetList") : (dragEl.closest("#mnav")? $("mnav") : sideNav()); saveOrderFrom(readOrder(container)); suppressClick=true; setTimeout(function(){ suppressClick=false; }, 300); } dragEl=null; dragMoved=false; });
+document.addEventListener("click", function(e){ if(suppressClick){ e.stopPropagation(); e.preventDefault(); suppressClick=false; } }, true);
+/* --- home screen mirror --- */
+function fmtEvT(t){ return new Date(t).toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}); }
+function homeTick(){
+  var p=$("stPrice");
+  if(p && p.textContent && p.textContent!=="—"){ $("abPrice").textContent=p.textContent; var fn=$("feedName"); $("abSub").textContent=($("stChange")? $("stChange").textContent.split("(")[0].trim()+" · " : "")+"Feed: "+(fn? fn.textContent : ""); $("abDot").style.background="var(--green)"; $("abDot").style.boxShadow="0 0 8px var(--green)"; }
+  var d=$("sigDir");
+  if(d && $("homeDeskDir")){ var hd=$("homeDeskDir"); hd.textContent=d.textContent; hd.className="hbig "+(d.classList.contains("buy")? "buy" : (d.classList.contains("sell")? "sell" : "wait")); var e1=$("sigEntry"), s1=$("sigSL"), t1=$("sigTP1"); if(e1 && e1.textContent!=="—"){ $("homeDeskSub").textContent="Entry "+e1.textContent+" · SL "+s1.textContent+" · TP1 "+t1.textContent+($("sigTime") && $("sigTime").textContent? " · "+$("sigTime").textContent : ""); } else if($("sigReason")){ $("homeDeskSub").textContent=$("sigReason").textContent; } }
+  var mp=$("mt5LivePill"), mOn= mp && mp.style.display!=="none" && !!mp.textContent.trim();
+  var lOn= (typeof limLive!=="undefined") && limLive.data && limLive.fails===0;
+  var eaUp= !!(mOn || lOn);
+  $("homeEaTxt").textContent="VPS link: "+(eaUp? "LIVE" : "not reachable — Tailscale on?");
+  $("homeEaDot").style.background= eaUp? "var(--green)" : "var(--amber)";
+  if(lOn){ var j=limLive.data; $("homeLimState").textContent=j.status||"—"; $("homeLimSub").textContent="Balance "+Number(j.balance||0).toFixed(2)+" "+(j.currency||"USC")+" · Trend: "+(j.trend||"—")+" · Profit today "+(Number(j.profit_today||0)>=0? "+":"")+Number(j.profit_today||0).toFixed(2)+" "+(j.currency||"USC"); }
+  if(typeof shieldEvents!=="undefined"){ var now=Date.now(), nx=null; for(var i=0;i<shieldEvents.length;i++){ if(shieldEvents[i].t+3600000>now){ nx=shieldEvents[i]; break; } } if(nx){ $("homeShield").textContent=(nx.impact==="high"? "🔴 " : "🟠 ")+nx.name; $("homeShieldSub").textContent=fmtEvT(nx.t)+" · Phnom Penh · "+(nx.t>now? "blackout armed" : "blackout window now"); } else { $("homeShield").textContent="All clear"; $("homeShieldSub").textContent="No high/medium US events on the calendar"; } }
+}
+setInterval(homeTick, 1500);
+homeTick();
+
 </script>
 </body>
 </html>

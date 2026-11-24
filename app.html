@@ -262,10 +262,10 @@ button.dragging{opacity:.5}
       </div>
       <div class="homegrid">
         <div class="hcard">
-          <h4>My panels</h4>
-          <div class="hrow"><span class="hdot" id="homeMt5Dot"></span><span id="homeMt5Txt">MT5 Panel: …</span></div>
-          <div class="hrow"><span class="hdot" id="homeLimDot"></span><span id="homeLimTxt">Limit Scalp: …</span></div>
-          <button class="hbtn ghost" data-goto="mt5" type="button">Open panels</button>
+          <h4>EA Servers</h4>
+          <div class="hrow"><span class="hdot" id="homeEaDot"></span><span id="homeEaTxt">VPS link: …</span></div>
+          <div class="hsub">Smart Grid Hunter dashboard — live from your VPS, private Tailscale link</div>
+          <button class="hbtn ghost" data-goto="easervers" type="button">Open EA Servers</button>
         </div>
         <div class="hcard">
           <h4>News shield</h4>
@@ -2797,11 +2797,10 @@ function homeTick(){
   var d=$("sigDir");
   if(d && $("homeDeskDir")){ var hd=$("homeDeskDir"); hd.textContent=d.textContent; hd.className="hbig "+(d.classList.contains("buy")? "buy" : (d.classList.contains("sell")? "sell" : "wait")); var e1=$("sigEntry"), s1=$("sigSL"), t1=$("sigTP1"); if(e1 && e1.textContent!=="—"){ $("homeDeskSub").textContent="Entry "+e1.textContent+" · SL "+s1.textContent+" · TP1 "+t1.textContent+($("sigTime") && $("sigTime").textContent? " · "+$("sigTime").textContent : ""); } else if($("sigReason")){ $("homeDeskSub").textContent=$("sigReason").textContent; } }
   var mp=$("mt5LivePill"), mOn= mp && mp.style.display!=="none" && !!mp.textContent.trim();
-  $("homeMt5Txt").textContent="MT5 Panel: "+(mOn? mp.textContent.replace(/\s+/g," ").trim() : "not connected yet — open its tab once");
-  $("homeMt5Dot").style.background= (mOn && /LIVE/.test(mp.textContent) && !/NOT/.test(mp.textContent))? "var(--green)" : "var(--amber)";
   var lOn= (typeof limLive!=="undefined") && limLive.data && limLive.fails===0;
-  $("homeLimTxt").textContent="Limit Scalp: "+(lOn? "LIVE · "+(limLive.data.status||"") : "not connected yet — open its tab once");
-  $("homeLimDot").style.background= lOn? "var(--green)" : "var(--amber)";
+  var eaUp= !!(mOn || lOn);
+  $("homeEaTxt").textContent="VPS link: "+(eaUp? "LIVE" : "not reachable — Tailscale on?");
+  $("homeEaDot").style.background= eaUp? "var(--green)" : "var(--amber)";
   if(lOn){ var j=limLive.data; $("homeLimState").textContent=j.status||"—"; $("homeLimSub").textContent="Balance "+Number(j.balance||0).toFixed(2)+" "+(j.currency||"USC")+" · Trend: "+(j.trend||"—")+" · Profit today "+(Number(j.profit_today||0)>=0? "+":"")+Number(j.profit_today||0).toFixed(2)+" "+(j.currency||"USC"); }
   if(typeof shieldEvents!=="undefined"){ var now=Date.now(), nx=null; for(var i=0;i<shieldEvents.length;i++){ if(shieldEvents[i].t+3600000>now){ nx=shieldEvents[i]; break; } } if(nx){ $("homeShield").textContent=(nx.impact==="high"? "🔴 " : "🟠 ")+nx.name; $("homeShieldSub").textContent=fmtEvT(nx.t)+" · Phnom Penh · "+(nx.t>now? "blackout armed" : "blackout window now"); } else { $("homeShield").textContent="All clear"; $("homeShieldSub").textContent="No high/medium US events on the calendar"; } }
 }

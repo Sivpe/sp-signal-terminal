@@ -145,6 +145,8 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 .newsitem .nhl{font-weight:700;font-size:15px;margin:2px 0}
 .newsitem p{color:var(--dim);font-size:14px;line-height:1.55;margin-top:4px}
 .newsitem p b{color:var(--txt)}
+.newsitem .nkh{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
+.newsitem .nkh .nkhl{font-size:12.5px;color:var(--dim2);margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -2633,9 +2635,11 @@ function loadNews(){
       var impTag = n.impact==="high" ? '<span class="tag sell">🔴 HIGH</span>' : (n.impact==="medium" ? '<span class="tag wait">🟠 MEDIUM</span>' : (n.impact==="low" ? '<span class="tag be">🟡 LOW</span>' : ""));
       var callCls = n.call==="BUY" ? "buy" : (n.call==="SELL" ? "sell" : "wait");
       var callTag = n.call ? '<span class="tag '+callCls+'">'+esc(n.call)+'</span>' : "";
+      var verdictTag = n.verdict==="Gold good" ? '<span class="tag buy">🥇 GOLD GOOD</span>' : (n.verdict==="Dollar good" ? '<span class="tag sell">💵 DOLLAR GOOD</span>' : (n.verdict==="No clear winner" ? '<span class="tag be">⚖️ NO CLEAR WINNER</span>' : ""));
       var body=(n.body||[]).map(function(p){ return "<p>"+esc(p)+"</p>"; }).join("");
-      return '<div class="newsitem"><div class="nh"><div>'+impTag+" "+kindTag+" "+callTag+' <b style="margin-left:6px">'+esc(n.event||"")+'</b></div><div class="nt">'+esc(n.time_label||"")+'</div></div>'
-        +(n.headline ? '<div class="nhl">'+esc(n.headline)+'</div>' : "")+body+'</div>';
+      var khmer=(n.khmer&&n.khmer.length) ? '<div class="nkh"><div class="nkhl">🇰🇭 Khmer</div>'+n.khmer.map(function(p){ return "<p>"+esc(p)+"</p>"; }).join("")+'</div>' : "";
+      return '<div class="newsitem"><div class="nh"><div>'+impTag+" "+kindTag+" "+callTag+" "+verdictTag+' <b style="margin-left:6px">'+esc(n.event||"")+'</b></div><div class="nt">'+esc(n.time_label||"")+'</div></div>'
+        +(n.headline ? '<div class="nhl">'+esc(n.headline)+'</div>' : "")+body+khmer+'</div>';
     }).join("");
     var u=$("newsUpdated"); if(u) u.textContent="· updated "+new Date().toLocaleTimeString("en-GB")+" Phnom Penh";
   }).catch(function(e){ var u=$("newsUpdated"); if(u) u.textContent="· could not load reports ("+e.message+")"; });

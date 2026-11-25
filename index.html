@@ -151,8 +151,8 @@ input[type=text]{background:#0d1320;border:1px solid var(--line);border-radius:9
 
 <style id="appSkin">
 /* ===== Phone App skin (preview build) ===== */
-:root{--bg:#070a12;--panel:#101826;--panel2:#16202f;--line:#1f2c42;--radius:18px}
-body{background:#070a12}
+:root{--bg:#080604;--panel:#15110a;--panel2:#1e1810;--line:#3d2f16;--radius:18px;--txt:#f2ecdc;--dim:#ab9c78;--dim2:#6f6350}
+body{background:#080604}
 .card{box-shadow:0 2px 14px rgba(0,0,0,.25)}
 .side{background:#0b111c}
 .main{max-width:1120px;margin:0 auto;width:100%}
@@ -199,6 +199,24 @@ button.dragging{opacity:.5}
   .main{padding-bottom:104px}
   #appbar{top:6px}
 }
+/* ===== Gold Luxury skin (Steven's pick, 2026-11-25) ===== */
+.side{background:#0a0806;border-right-color:#3d2f16}
+.nav button.active{background:var(--panel2);color:var(--txt);box-shadow:inset 3px 0 0 var(--gold)}
+#appbar{background:rgba(18,14,8,.95);border-color:#57451d;box-shadow:0 4px 22px rgba(0,0,0,.45)}
+.ab-price{font-family:Georgia,"Times New Roman",serif;font-size:25px;background:linear-gradient(180deg,#f6e27a,#caa437);-webkit-background-clip:text;background-clip:text;color:transparent}
+.topbar h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:.3px}
+.card{background:linear-gradient(165deg,#17130c,#100d08);border-color:#3d2f16;box-shadow:0 2px 14px rgba(0,0,0,.4)}
+.hcard{background:linear-gradient(165deg,#17130c,#100d08);border-color:#3d2f16}
+.hcard h4{color:#c9a44e}
+.hbig{font-family:Georgia,"Times New Roman",serif;letter-spacing:.4px}
+.hsub{color:#c4b894}
+.hbtn{background:linear-gradient(180deg,#f0cd6e,#c1922a);color:#1a1405;box-shadow:0 3px 12px rgba(200,150,40,.25)}
+.hbtn.ghost{background:transparent;color:var(--gold2);border-color:#57451d}
+#tabEditBtn{background:var(--panel2);border-color:#57451d}
+#moreSheet .sheet{background:#0d0b07;border-top-color:#57451d}
+.sheetbtn{background:#15110a}
+input,select,textarea{background:#0d0b07!important;border-color:#3d2f16!important;color:var(--txt)!important}
+@media(max-width:980px){#mnav{background:#0a0806;border-top-color:#3d2f16}}
 </style>
 </head>
 <body>

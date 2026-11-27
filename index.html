@@ -51,15 +51,15 @@ button{font-family:inherit;cursor:pointer}
 #btStratBtns button{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 10px;flex:1 1 30%;white-space:normal;line-height:1.25}
 #btStratBtns button.active{background:var(--gold);color:#171106;font-weight:700}
 .fmbtn.on{background:var(--gold);color:#171106;border-color:var(--gold);font-weight:700}
-.limpanel{background:#0a1019;border:1px solid #32506e;border-radius:10px;padding:14px 16px;font-family:Consolas,'Courier New',monospace;font-size:13.5px;color:#dfe9f5;line-height:1.55;overflow-x:auto}
-.limpanel .lt{color:#39c2d7;font-size:16px;font-weight:700}
-.limpanel .dim{color:#8fa8bf}
-.limpanel .gold{color:#f5c542}
-.limpanel .up{color:#3ddc84}
-.limpanel .dn{color:#ff6b5e}
-.limpanel .sep{color:#32506e}
-.limbar{height:5px;background:#2d3b4a;border-radius:3px;overflow:hidden;vertical-align:middle;display:inline-block;width:170px;margin-left:8px}
-.limbar i{display:block;height:100%;background:#39c2d7}
+.limpanel{background:linear-gradient(165deg,#17130c,#100d08);border:1px solid #3d2f16;border-radius:16px;padding:16px 18px;font-size:14px;color:var(--txt);line-height:1.6;overflow-x:auto;box-shadow:0 2px 14px rgba(0,0,0,.4)}
+.limpanel .lt{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:700;letter-spacing:.3px;background:linear-gradient(180deg,#f6e27a,#caa437);-webkit-background-clip:text;background-clip:text;color:transparent}
+.limpanel .dim{color:var(--dim)}
+.limpanel .gold{color:var(--gold2)}
+.limpanel .up{color:var(--green)}
+.limpanel .dn{color:var(--red)}
+.limpanel .sep{font-size:0;line-height:0;height:0;border-top:1px dashed #57451d;margin:11px 0;overflow:hidden}
+.limbar{height:5px;background:#2a2113;border-radius:3px;overflow:hidden;vertical-align:middle;display:inline-block;width:170px;margin-left:8px}
+.limbar i{display:block;height:100%;background:linear-gradient(90deg,#caa437,#f0cd6e)}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
 .mnav{display:none}
 @media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}

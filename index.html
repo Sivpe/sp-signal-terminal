@@ -60,6 +60,42 @@ button{font-family:inherit;cursor:pointer}
 .limpanel .sep{font-size:0;line-height:0;height:0;border-top:1px dashed #57451d;margin:11px 0;overflow:hidden}
 .limbar{height:5px;background:#2a2113;border-radius:3px;overflow:hidden;vertical-align:middle;display:inline-block;width:170px;margin-left:8px}
 .limbar i{display:block;height:100%;background:linear-gradient(90deg,#caa437,#f0cd6e)}
+.jday{background:linear-gradient(180deg,#17130c,#100d08);border:1px solid #3d2f16;border-radius:16px;padding:14px;margin-top:12px;box-shadow:0 8px 22px rgba(0,0,0,.45)}
+.jtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.jdate{font-family:Georgia,"Times New Roman",serif;font-size:16px;color:#f6d47c}
+.jpl{font-size:13px;margin-top:2px}.jpl.pos{color:#3ddc84}.jpl.neg{color:#ff6b5e}
+.jscore{text-align:center;min-width:74px;flex:0 0 auto}
+.jscore .n{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1}
+.jscore .l{font-size:10px;color:#a5936e;letter-spacing:1px}
+.jscore.sg .n{color:#3ddc84}.jscore.sm .n{color:#f6d47c}.jscore.sb .n{color:#ff6b5e}
+.jstats{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:12px;color:#cbbd97;border-top:1px dashed #57451d;border-bottom:1px dashed #57451d;padding:8px 0;margin:10px 0}
+.jstats b{color:#f3e9d2}
+.jparts{display:flex;gap:6px;margin:0 0 4px}
+.jpart{flex:1;background:#0d0a06;border:1px solid #2c2210;border-radius:9px;padding:5px 2px;text-align:center;min-width:0}
+.jpart .v{font-size:13px;font-weight:700;color:#f6d47c}.jpart .k{font-size:9px;color:#a5936e;letter-spacing:.4px}
+.jday h4{margin:10px 0 4px;font-size:12px;letter-spacing:1px}
+.jday h4.jg{color:#3ddc84}.jday h4.jb{color:#ff6b5e}.jday h4.ji{color:#f6d47c;margin-top:0}
+.jday ul{margin:0;padding-left:17px;font-size:13px;line-height:1.55;color:#e8dcbb}
+.jimp{background:#0d0a06;border:1px solid #2c2210;border-radius:9px;padding:7px 10px 8px;margin-top:10px}
+.jimp ul{padding-left:15px}
+.jnote{font-size:11.5px;color:#a5936e;margin-top:8px}
+.jcal-head{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.jcal-title{font-family:Georgia,"Times New Roman",serif;font-size:17px;color:#f6d47c}
+.jcal-nav{padding:4px 13px;font-size:16px;line-height:1}
+.jcal-dow{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:10px 0 5px;text-align:center;font-size:11px;color:#a5936e;letter-spacing:.5px}
+.jcal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.jcell{background:#0d0a06;border:1px solid #2c2210;border-radius:10px;min-height:60px;padding:5px 6px}
+.jcell.blank{background:transparent;border:0}
+.jcell.has{cursor:pointer;background:linear-gradient(180deg,#17130c,#100d08)}
+.jcell.today{border-color:#caa437;box-shadow:0 0 0 1px #caa437}
+.jcell.sel{border-color:#fff;box-shadow:0 0 0 1px #fff}
+.jcell .dnum{font-size:11px;color:#a5936e}
+.jcell .dpl{font-size:11px;margin-top:1px}
+.jcell .dpl.pos{color:#3ddc84}.jcell .dpl.neg{color:#ff6b5e}
+.jcell .dscore{font-family:Georgia,"Times New Roman",serif;font-size:19px;font-weight:700;line-height:1.15}
+.jcell .dscore.sg{color:#3ddc84}.jcell .dscore.sm{color:#f6d47c}.jcell .dscore.sb{color:#ff6b5e}
+.jperrow{margin:12px 0 0}
+.jper{letter-spacing:.06em;font-weight:700}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
 .mnav{display:none}
 @media(max-width:980px){.grid{grid-template-columns:1fr}.side{display:none}
@@ -526,8 +562,13 @@ input,select,textarea{background:#0d0b07!important;border-color:#3d2f16!importan
 
     <!-- ============ JOURNAL ============ -->
     <section class="section" id="sec-journal">
+      <div class="card mb">
+        <h3>✎ Daily trading journal — automatic</h3>
+        <p class="note">Written automatically from your Smart Grid Hunter EA's own numbers — every trading day lands in the calendar with its profit/loss and score. <b>Tap a day</b> to see its full analytics: score out of 100, what was good, what was bad, and what to improve — or tap <b>WEEK · MONTH · ALL TIME</b> for a whole period. It loads over your private link, so it only works on <b>your</b> devices with <b>Tailscale ON</b> and the dashboard running on the VPS. Money is in account cents (¢), exactly as the EA records it.</p>
+        <div id="autoJournal"><p class="note">Loading your journal…</p></div>
+      </div>
       <div class="card">
-        <h3>Trading journal — today</h3>
+        <h3>Your own notes</h3>
         <textarea id="journalBox" placeholder="What did the desk say? Did you take it? What happened? How did you feel?&#10;Example: 09:15 SELL scan, waited for my MT5 price, took 0.01, TP1 hit +$9. Felt calm."></textarea>
         <div class="pillrow mt">
           <button class="ghostbtn" id="saveJournal">Save journal</button>
@@ -1213,6 +1254,159 @@ var JKEY="sp_gold_journal_v1";
 try{ $("journalBox").value=localStorage.getItem(JKEY)||""; }catch(e){}
 $("saveJournal").addEventListener("click", function(){ localStorage.setItem(JKEY, $("journalBox").value); $("journalMsg").textContent="Saved ✓ "+new Date().toLocaleTimeString("en-GB")+" — on this device only."; });
 
+/* ================= automatic daily journal (VPS feed) =================
+   One card per trading day, written by the dashboard server on the VPS from
+   the EA's own report + SGH_journal.csv, served over the private Tailscale
+   link (same pattern as /limit.json). Degrades to a friendly note when the
+   link is unreachable — never a blank section. */
+var JOURNAL_URL="https://win-54huck5cs86.tail0db2c5.ts.net/journal.json";
+var JMONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function jDateLabel(d){
+  var p=String(d.date||"").split("-");
+  if(p.length!==3) return esc(d.date||"");
+  var wd=String(d.weekday||"").slice(0,3);
+  return (wd? wd+" ":"")+Number(p[2])+" "+(JMONTHS[Number(p[1])-1]||"")+" "+p[0];
+}
+function jList(title, cls, items){
+  if(!items || !items.length) return "";
+  var h='<h4 class="'+cls+'">'+title+'</h4><ul>';
+  items.forEach(function(t){ h+="<li>"+esc(t)+"</li>"; });
+  return h+"</ul>";
+}
+function jScoreHtml(d){
+  if(!(typeof d.score==="number" && isFinite(d.score))) return "";
+  var cls= d.score>=75? "sg" : (d.score>=50? "sm" : "sb");
+  return '<div class="jscore '+cls+'"><div class="n">'+Math.round(d.score)+'</div><div class="l">SCORE /100</div></div>';
+}
+function jPlHtml(d){
+  if(!(typeof d.pl==="number" && isFinite(d.pl))) return "";
+  return '<div class="jpl '+(d.pl>0?"pos":(d.pl<0?"neg":""))+'"><b>'+sghMoney(d.pl)+'</b>'+(d.pl>0?" profit":(d.pl<0?" loss":" — flat"))+'</div>';
+}
+function jCardInner(d){
+  var hasScore=(typeof d.score==="number" && isFinite(d.score));
+  var bits=[];
+  if(typeof d.baskets==="number") bits.push("<span>Baskets <b>"+d.baskets+"</b></span>");
+  if(typeof d.win_rate==="number") bits.push("<span>Win rate <b>"+Math.round(d.win_rate)+"%</b></span>");
+  if(typeof d.worst_dd==="number") bits.push("<span>Worst DD <b>"+fmt(d.worst_dd,1).replace(/\.0$/,"")+"%</b></span>");
+  if(typeof d.max_layers==="number") bits.push("<span>Max layers <b>"+d.max_layers+"</b></span>");
+  var stats= bits.length? '<div class="jstats">'+bits.join("")+'</div>' : "";
+  var parts="";
+  if(hasScore && d.parts){
+    var P=[["RESULT /30","result"],["WIN /20","win"],["DD /25","dd"],["CLOSES /15","closes"],["DISC. /10","disc"]];
+    parts='<div class="jparts">'+P.map(function(x){ return '<div class="jpart"><div class="v">'+(typeof d.parts[x[1]]==="number"? Math.round(d.parts[x[1]]) : "—")+'</div><div class="k">'+x[0]+'</div></div>'; }).join("")+'</div>';
+  }
+  var basic= hasScore? "" : '<p class="jnote">Basic entry — the full score appears once the EA journal file is connected on the VPS.</p>';
+  return stats + parts
+    + jList("GOOD","jg",d.good) + jList("BAD","jb",d.bad)
+    + ((d.improve && d.improve.length)? '<div class="jimp">'+jList("→ IMPROVE","ji",d.improve)+'</div>' : "")
+    + basic;
+}
+function jDayCard(d){
+  return '<div class="jday"><div class="jtop"><div><div class="jdate">'+jDateLabel(d)+'</div>'+jPlHtml(d)+'</div>'+jScoreHtml(d)+'</div>'
+    + jCardInner(d) + '</div>';
+}
+function jDayRef(x){
+  if(!x) return "";
+  if(typeof x==="string") return esc(x);
+  var p=String(x.date||"").split("-");
+  var lbl= (p.length===3)? Number(p[2])+" "+(JMONTHS[Number(p[1])-1]||"")+" "+p[0] : esc(x.date||"");
+  if(typeof x.pl==="number" && isFinite(x.pl)) lbl+=" · "+sghMoney(x.pl);
+  return lbl;
+}
+function jPeriodCard(p){
+  var title='<div class="jdate">'+esc(p.label||"Period")+'</div>'+(p.range? '<div class="small" style="margin-top:2px">'+esc(p.range)+'</div>' : "");
+  if(!(typeof p.baskets==="number" && p.baskets>0)){
+    return '<div class="jday"><div class="jtop"><div>'+title+'</div></div><p class="note" style="margin-top:8px">No trades in this period yet.</p></div>';
+  }
+  var bd=jDayRef(p.best_day), wd2=jDayRef(p.worst_day), bw="";
+  if(bd || wd2) bw='<p class="small" style="margin-top:8px">'+(bd? "Best day: <b>"+bd+"</b>" : "")+(bd && wd2? " · " : "")+(wd2? "Worst day: <b>"+wd2+"</b>" : "")+'</p>';
+  return '<div class="jday"><div class="jtop"><div>'+title+jPlHtml(p)+'</div>'+jScoreHtml(p)+'</div>'
+    + jCardInner(p) + bw + '</div>';
+}
+var jData=null, jViewY=0, jViewM=0, jSel=null, jPeriod=null;
+function jIso(y,m,d){ return y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0"); }
+function renderJournal(){
+  var box=$("autoJournal"); if(!box || !jData) return;
+  var byDate={};
+  (jData.days||[]).forEach(function(d){ byDate[d.date]=d; });
+  var head="";
+  if(jData.recipe) head+='<p class="small">Score recipe: '+esc(jData.recipe)+'</p>';
+  if(jData.csv_found===false) head+='<p class="small">Basic mode for now — days show the numbers without scores until the EA journal file is connected on the VPS.</p>';
+  if(!jSel){
+    var dates=Object.keys(byDate).sort();
+    if(!dates.length){ box.innerHTML=head+'<p class="note">No trading days recorded yet — your first entry appears once the EA has a closed day to report.</p>'; return; }
+    jSel=dates[dates.length-1];
+    var p=jSel.split("-"); jViewY=+p[0]; jViewM=+p[1];
+  }
+  var lastDay=new Date(jViewY, jViewM, 0).getDate();
+  var now=new Date(), todayIso=jIso(now.getFullYear(), now.getMonth()+1, now.getDate());
+  var cells=[], started=false;
+  for(var dnum=1; dnum<=lastDay; dnum++){
+    var wd=(new Date(jViewY, jViewM-1, dnum).getDay()+6)%7; /* Mon=0..Sun=6 */
+    if(wd>=5) continue; /* no Sat/Sun — the EA does not trade weekends */
+    if(!started){ for(var b=0;b<wd;b++) cells.push('<div class="jcell blank"></div>'); started=true; }
+    var iso=jIso(jViewY, jViewM, dnum), e=byDate[iso];
+    if(e){
+      var sc=(typeof e.score==="number" && isFinite(e.score))? Math.round(e.score) : null;
+      var sCls= sc===null? "" : (sc>=75? "sg" : (sc>=50? "sm" : "sb"));
+      cells.push('<div class="jcell has'+(iso===todayIso?" today":"")+(iso===jSel?" sel":"")+'" data-jdate="'+iso+'">'
+        +'<div class="dnum">'+dnum+'</div>'
+        +((typeof e.pl==="number" && isFinite(e.pl))? '<div class="dpl '+(e.pl>0?"pos":(e.pl<0?"neg":""))+'">'+sghMoney(e.pl)+'</div>' : "")
+        +(sc!==null? '<div class="dscore '+sCls+'">'+sc+'</div>' : "")
+        +'</div>');
+    } else {
+      cells.push('<div class="jcell'+(iso===todayIso?" today":"")+'"><div class="dnum">'+dnum+'</div></div>');
+    }
+  }
+  var perBtns="";
+  if(jData.periods){
+    var bs=[["week","WEEK"],["month","MONTH"],["all","ALL TIME"]].filter(function(x){ return jData.periods[x[0]]; }).map(function(x){
+      return '<button class="ghostbtn jper'+(jPeriod===x[0]?" on":"")+'" data-jper="'+x[0]+'">'+x[1]+'</button>';
+    }).join("");
+    if(bs) perBtns='<div class="pillrow jperrow">'+bs+'</div>';
+  }
+  var detail= (jPeriod && jData.periods && jData.periods[jPeriod])? jPeriodCard(jData.periods[jPeriod]) : (byDate[jSel]? jDayCard(byDate[jSel]) : "");
+  box.innerHTML=head + perBtns
+    +'<div class="jcal-head"><button class="ghostbtn jcal-nav" id="jPrev" aria-label="Previous month">‹</button>'
+    +'<div class="jcal-title">'+JMONTHS[jViewM-1]+' '+jViewY+'</div>'
+    +'<button class="ghostbtn jcal-nav" id="jNext" aria-label="Next month">›</button></div>'
+    +'<div class="jcal-dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span></div>'
+    +'<div class="jcal-grid" id="jGrid">'+cells.join("")+'</div>'
+    +'<div id="jDetail">'+detail+'</div>';
+  box.querySelectorAll("[data-jper]").forEach(function(b){
+    b.addEventListener("click", function(){ jPeriod=b.getAttribute("data-jper"); renderJournal(); });
+  });
+  $("jPrev").addEventListener("click", function(){ jViewM--; if(jViewM<1){ jViewM=12; jViewY--; } renderJournal(); });
+  $("jNext").addEventListener("click", function(){ jViewM++; if(jViewM>12){ jViewM=1; jViewY++; } renderJournal(); });
+  $("jGrid").addEventListener("click", function(ev){
+    var c=ev.target.closest("[data-jdate]"); if(!c) return;
+    jSel=c.getAttribute("data-jdate");
+    jPeriod=null;
+    var p=jSel.split("-"); jViewY=+p[0]; jViewM=+p[1];
+    renderJournal();
+  });
+}
+var journalFetching=false;
+function loadAutoJournal(){
+  var box=$("autoJournal"); if(!box || journalFetching) return;
+  journalFetching=true;
+  if(!box.getAttribute("data-has")) box.innerHTML='<p class="note">Loading your journal…</p>';
+  fetchT(JOURNAL_URL+"?v="+Date.now(), 12000).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+  .then(function(j){
+    if(!j || j.ok!==true || !Array.isArray(j.days)) throw new Error("unexpected data");
+    box.setAttribute("data-has","1");
+    jData=j;
+    renderJournal();
+  })
+  .catch(function(){
+    if(!box.getAttribute("data-has")){
+      box.innerHTML='<p class="note">Journal needs your private link — open Tailscale and refresh. (The dashboard on the VPS must be running too.) Your own notes below still work — they live on this device.</p>';
+    }
+  })
+  .finally(function(){ journalFetching=false; });
+}
+loadAutoJournal();
+
 /* ================= MT5 JSON ================= */
 function renderMt5(j, source){
   if(j && j.scalp) j=j.scalp; // tolerate an /api/status-shaped reply
@@ -1605,6 +1799,7 @@ document.querySelectorAll(".nav button").forEach(function(b){
     if(b.getAttribute("data-sec")==="terminal" && candles.length) renderMarket();
     if(b.getAttribute("data-sec")==="news") loadNews();
     if(b.getAttribute("data-sec")==="easervers") loadEaFrames();
+    if(b.getAttribute("data-sec")==="journal") loadAutoJournal();
   });
 });
 document.addEventListener("click", function(e){
